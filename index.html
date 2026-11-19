@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ChessOn</title>
 <style>
-:root{--bg:#161512;--panel:#262421;--panel2:#302e2b;--text:#e8e6e3;--muted:#aaa69f;--green:#81b64c;--green2:#a3d160;--light:#ebecd0;--dark:#779556;--accent:#3d3a36;--red:#d45b55}
+:root{--bg:#161512;--panel:#262421;--panel2:#302e2b;--text:#e8e6e3;--muted:#aaa69f;--green:#81b64c;--green2:#a3d160;--light:#ebecd0;--dark:#779556}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:15px Inter,system-ui,Segoe UI,Arial,sans-serif}
 button,select,input{font:inherit}
@@ -33,23 +33,28 @@ main{max-width:1320px;margin:24px auto;padding:0 20px;display:grid;grid-template
 .evalbar{width:15px;min-width:15px;background:#333;border-radius:4px;overflow:hidden;position:relative}
 .eval-black{position:absolute;top:0;left:0;right:0;height:50%;background:#252321;transition:height .35s}
 .eval-label{position:absolute;bottom:5px;left:0;right:0;text-align:center;color:#fff;font-size:9px;font-weight:800;writing-mode:vertical-rl;transform:rotate(180deg)}
-.board{width:100%;aspect-ratio:1;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));border-radius:3px;overflow:hidden;box-shadow:0 5px 24px #0006;touch-action:manipulation;min-width:0;min-height:0}
-.square{position:relative;display:grid;place-items:center;width:100%;height:100%;min-width:0;min-height:0;border-radius:0;padding:0;color:#111;cursor:pointer;user-select:none;overflow:hidden}
+.board{width:100%;aspect-ratio:1;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));border-radius:3px;overflow:hidden;box-shadow:0 5px 24px #0006;touch-action:manipulation;position:relative;min-width:0;min-height:0}
+.square{position:relative;display:grid;place-items:center;width:100%;height:100%;min-width:0;min-height:0;border-radius:0;padding:0;color:#111;cursor:pointer;user-select:none;overflow:visible}
 .square.light{background:var(--light)}
 .square.dark{background:var(--dark)}
-.square.selected{background:#baca44}
+.square.selected{background:#baca44;z-index:4}
 .square.last{box-shadow:inset 0 0 0 999px #f6f66955}
 .square.hint-from{box-shadow:inset 0 0 0 999px #a7c94a66}
-.square.legal:after{content:"";position:absolute;width:27%;height:27%;border-radius:50%;background:#25351b55;pointer-events:none}
-.square.legal.capture:after{width:88%;height:88%;background:transparent;border:6px solid #25351b55}
+.square.legal:after{content:"";position:absolute;width:27%;height:27%;border-radius:50%;background:#25351b66;pointer-events:none;z-index:2}
+.square.legal.capture:after{width:88%;height:88%;background:transparent;border:6px solid #25351b66}
 .square.check{background:#e56b5d}
-.piece-image{display:block;width:84%;height:84%;object-fit:contain;pointer-events:none;user-select:none;z-index:1}
+.piece-image{display:block;width:84%;height:84%;object-fit:contain;pointer-events:none;user-select:none;z-index:3;transition:transform .12s ease,filter .12s ease}
 .piece-image[hidden]{display:none}
-.coord{position:absolute;font-size:clamp(8px,1.1vw,12px);font-weight:750;z-index:2;pointer-events:none}
+.square.selected .piece-image{transform:translateY(-13%);filter:drop-shadow(0 9px 5px #0008);z-index:8}
+.coord{position:absolute;font-size:clamp(8px,1.1vw,12px);font-weight:750;z-index:9;pointer-events:none}
 .coord.file{right:4px;bottom:2px}
 .coord.rank{left:4px;top:2px}
 .light .coord{color:var(--dark)}
 .dark .coord{color:var(--light)}
+.arrow-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:7;overflow:visible}
+.arrow-line{stroke:#e5a900;stroke-width:8;stroke-linecap:round;opacity:.85}
+.arrow-head{fill:#e5a900;opacity:.9}
+.arrow-start{fill:#e5a900;opacity:.32}
 .board-tools{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 .board-tools button{flex:1}
 .side{background:var(--panel);border-radius:10px;overflow:hidden}
@@ -142,7 +147,7 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
   <div class="premove-indicator" id="premoveText"></div>
   <label>Move history</label>
   <div class="moves" id="moves"></div>
-  <div class="small">ELO controls Stockfish's UCI strength limit and skill level. Engine analysis is separate from playing the suggested move.</div>
+  <div class="small">Stockfish uses a 3-second thinking time for its replies.</div>
  </div>
 
  <div class="panel-content" id="analysisPanel" style="display:none">
@@ -167,44 +172,171 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
 import { Chess } from "https://cdn.jsdelivr.net/npm/chess.js@1.4.0/dist/esm/chess.js";
 
 const $=id=>document.getElementById(id);
-const GLYPHS={wk:"♔",wq:"♕",wr:"♖",wb:"♗",wn:"♘",wp:"♙",bk:"♚",bq:"♛",br:"♜",bb:"♝",bn:"♞",bp:"♟"};
+
+const GLYPHS={
+ wk:"♔",wq:"♕",wr:"♖",wb:"♗",wn:"♘",wp:"♙",
+ bk:"♚",bq:"♛",br:"♜",bb:"♝",bn:"♞",bp:"♟"
+};
 
 const PIECE_IMAGES={
  wp:"./WPawn.png",
  wr:"./WRook.png",
- wn:"./WKnight.png",
+ wn:"./WHorse.png",
  wb:"./WBishop.png",
  wq:"./WQueen.png",
  wk:"./Wking.png",
  bp:"./BPawn.png",
  br:"./BRook.png",
- bn:"./BKnight.png",
+ bn:"./BHorse.png",
  bb:"./BBishop.png",
  bq:"./BQueen.png",
  bk:"./Bking.png"
 };
 
-let game=new Chess(),engine=null,engineReady=false,engineBusy=false,engineMode="play";
-let humanColor="w",orientation="w",chosenColor="w",elo=1500,selected=null,legalTargets=[];
-let history=[],lastMove=null,bestUci=null,bestSan=null,bestForFen=null,premoveEnabled=false,queuedPremove=null;
+let game=new Chess();
+let engine=null;
+let engineReady=false;
+let engineBusy=false;
+let engineMode="play";
+
+let humanColor="w";
+let orientation="w";
+let chosenColor="w";
+let elo=1500;
+
+let selected=null;
+let legalTargets=[];
+let lastMove=null;
+
+let bestUci=null;
+let bestSan=null;
+let bestForFen=null;
+
+let premoveEnabled=false;
+let queuedPremove=null;
+
 let engineCandidates=[];
-let pendingPromotion=null,analysisFen=null,lastEval=0,searchToken=0;
+let pendingPromotion=null;
+let analysisFen=null;
+let lastEval=0;
+let searchToken=0;
+let engineSearchPurpose="analysis";
+
 let boardSquares=[];
+let arrowFrom=null;
+let arrows=[];
 
 function setStatus(s){$("status").textContent=s}
 function setEngineStatus(s){$("analysisStatus").textContent=s}
-function squareName(file,rank){return "abcdefgh"[file]+(8-rank)}
+
+function squareName(file,rank){
+ return "abcdefgh"[file]+(8-rank);
+}
+
 function pieceAt(sq){return game.get(sq)}
 function legalFrom(sq){return game.moves({square:sq,verbose:true})}
 function clearSelection(){selected=null;legalTargets=[]}
 function uci(move){return move.from+move.to+(move.promotion||"")}
 function getMoveFromUci(code){return game.moves({verbose:true}).find(m=>uci(m)===code)}
 function sideName(c){return c==="w"?"White":"Black"}
-function isGameOver(){return game.isGameOver()}
+
+function clearArrows(){
+ arrows=[];
+ arrowFrom=null;
+ renderArrows();
+}
+
+function renderArrows(){
+ const svg=$("arrowLayer");
+ if(!svg)return;
+
+ svg.innerHTML="";
+
+ const ns="http://www.w3.org/2000/svg";
+
+ for(const arrow of arrows){
+  const from=coordinatesForSquare(arrow.from);
+  const to=coordinatesForSquare(arrow.to);
+
+  const dx=to.x-from.x;
+  const dy=to.y-from.y;
+  const length=Math.sqrt(dx*dx+dy*dy);
+
+  if(length===0)continue;
+
+  const ux=dx/length;
+  const uy=dy/length;
+
+  const endX=to.x-ux*15;
+  const endY=to.y-uy*15;
+
+  const line=document.createElementNS(ns,"line");
+  line.setAttribute("x1",from.x);
+  line.setAttribute("y1",from.y);
+  line.setAttribute("x2",endX);
+  line.setAttribute("y2",endY);
+  line.setAttribute("class","arrow-line");
+  svg.appendChild(line);
+
+  const head=document.createElementNS(ns,"polygon");
+  const px=-uy*10;
+  const py=ux*10;
+
+  head.setAttribute("points",
+   `${to.x},${to.y} ${endX+px},${endY+py} ${endX-px},${endY-py}`
+  );
+  head.setAttribute("class","arrow-head");
+  svg.appendChild(head);
+
+  const start=document.createElementNS(ns,"circle");
+  start.setAttribute("cx",from.x);
+  start.setAttribute("cy",from.y);
+  start.setAttribute("r",15);
+  start.setAttribute("class","arrow-start");
+  svg.appendChild(start);
+ }
+
+ if(arrowFrom){
+  const from=coordinatesForSquare(arrowFrom);
+  const circle=document.createElementNS(ns,"circle");
+  circle.setAttribute("cx",from.x);
+  circle.setAttribute("cy",from.y);
+  circle.setAttribute("r",17);
+  circle.setAttribute("class","arrow-start");
+  svg.appendChild(circle);
+ }
+}
+
+function coordinatesForSquare(sq){
+ const file="abcdefgh".indexOf(sq[0]);
+ const rank=Number(sq[1])-1;
+
+ const col=orientation==="w"?file:7-file;
+ const row=orientation==="w"?7-rank:rank;
+
+ return {
+  x:(col+.5)*100,
+  y:(row+.5)*100
+ };
+}
+
+function addArrow(from,to){
+ const existing=arrows.findIndex(a=>a.from===from&&a.to===to);
+
+ if(existing>=0)arrows.splice(existing,1);
+ else arrows.push({from,to});
+
+ arrowFrom=null;
+ renderArrows();
+}
 
 function updateLabels(){
  const turn=game.turn();
- $("turnLabel").textContent=isGameOver()?(game.isCheckmate()?sideName(turn==="w"?"b":"w")+" wins by checkmate":"Game drawn"):sideName(turn)+" to move"+(game.isCheck()?" · Check":"");
+
+ $("turnLabel").textContent=game.isGameOver()
+  ?(game.isCheckmate()?sideName(turn==="w"?"b":"w")+" wins by checkmate":"Game drawn")
+  :sideName(turn)+" to move"+(game.isCheck()?" · Check":"");
+
  if(engineMode==="play"){
   $("topName").textContent=humanColor==="w"?"Stockfish 19":"You";
   $("bottomName").textContent=humanColor==="w"?"You":"Stockfish 19";
@@ -223,27 +355,41 @@ function updateLabels(){
 function renderMoves(){
  const hist=game.history({verbose:true});
  let out="";
+
  for(let i=0;i<hist.length;i+=2){
-  const w=hist[i],b=hist[i+1];
-  out+=`<div class="move-row"><span class="move-no">${Math.floor(i/2)+1}.</span><span class="move ${i===hist.length-1?'current':''}" data-ply="${i+1}">${w.san}</span><span class="move ${i+1===hist.length-1?'current':''}" data-ply="${i+2}">${b?b.san:""}</span></div>`;
+  const w=hist[i];
+  const b=hist[i+1];
+
+  out+=`<div class="move-row">
+   <span class="move-no">${Math.floor(i/2)+1}.</span>
+   <span class="move ${i===hist.length-1?'current':''}" data-ply="${i+1}">${w.san}</span>
+   <span class="move ${i+1===hist.length-1?'current':''}" data-ply="${i+2}">${b?b.san:""}</span>
+  </div>`;
  }
+
  $("moves").innerHTML=out||'<div class="small">No moves yet.</div>';
  $("moves").scrollTop=$("moves").scrollHeight;
- $("moves").querySelectorAll("[data-ply]").forEach(el=>el.addEventListener("click",()=>jumpToPly(Number(el.dataset.ply))));
+
+ $("moves").querySelectorAll("[data-ply]").forEach(el=>{
+  el.addEventListener("click",()=>jumpToPly(Number(el.dataset.ply)));
+ });
 }
 
 function jumpToPly(ply){
  const hist=game.history();
  game.reset();
+
  for(let i=0;i<Math.min(ply,hist.length);i++)game.move(hist[i]);
+
  clearSelection();
  queuedPremove=null;
+ clearArrows();
  renderAll();
  requestAnalysis(false);
 }
 
-/* Build the 64 squares only once.
-   Updating the board no longer destroys and recreates every square. */
+/* Build the board once, then update its squares.
+   This avoids destroying the board every time a piece is selected. */
 function buildBoardOnce(){
  if(boardSquares.length)return;
 
@@ -277,28 +423,62 @@ function buildBoardOnce(){
   }
  }
 
- // One click listener for the entire board.
- // No drag events are used.
+ const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+ svg.setAttribute("id","arrowLayer");
+ svg.setAttribute("class","arrow-layer");
+ svg.setAttribute("viewBox","0 0 800 800");
+ svg.setAttribute("preserveAspectRatio","none");
+ board.appendChild(svg);
+
  board.addEventListener("click",event=>{
   const square=event.target.closest(".square");
   if(!square||!board.contains(square))return;
 
   const row=Number(square.dataset.row);
   const col=Number(square.dataset.col);
-  const files=orientation==="w"?[0,1,2,3,4,5,6,7]:[7,6,5,4,3,2,1,0];
-  const ranks=orientation==="w"?[0,1,2,3,4,5,6,7]:[7,6,5,4,3,2,1,0];
 
-  const file=files[col];
-  const rank=ranks[row];
-  onSquare(squareName(file,rank));
+  const files=orientation==="w"
+   ?[0,1,2,3,4,5,6,7]
+   :[7,6,5,4,3,2,1,0];
+
+  const ranks=orientation==="w"
+   ?[7,6,5,4,3,2,1,0]
+   :[0,1,2,3,4,5,6,7];
+
+  const sq=squareName(files[col],ranks[row]);
+
+  // Shift-click twice to draw an arrow.
+  if(event.shiftKey){
+   if(!arrowFrom){
+    arrowFrom=sq;
+   }else{
+    addArrow(arrowFrom,sq);
+   }
+   renderArrows();
+   return;
+  }
+
+  // A normal click cancels an unfinished arrow.
+  if(arrowFrom){
+   arrowFrom=null;
+   renderArrows();
+  }
+
+  onSquare(sq);
  });
 }
 
 function renderBoard(){
  buildBoardOnce();
 
- const files=orientation==="w"?[0,1,2,3,4,5,6,7]:[7,6,5,4,3,2,1,0];
- const ranks=orientation==="w"?[0,1,2,3,4,5,6,7]:[7,6,5,4,3,2,1,0];
+ const files=orientation==="w"
+  ?[0,1,2,3,4,5,6,7]
+  :[7,6,5,4,3,2,1,0];
+
+ const ranks=orientation==="w"
+  ?[7,6,5,4,3,2,1,0]
+  :[0,1,2,3,4,5,6,7];
+
  const checkKing=game.isCheck()?findKing(game.turn()):null;
 
  for(let row=0;row<8;row++){
@@ -314,15 +494,26 @@ function renderBoard(){
    if(selected===sq)el.classList.add("selected");
    if(lastMove&&(lastMove.from===sq||lastMove.to===sq))el.classList.add("last");
    if(checkKing===sq)el.classList.add("check");
-   if(legalTargets.includes(sq))el.classList.add("legal",p?"capture":"");
-   if(queuedPremove&&(queuedPremove.from===sq||queuedPremove.to===sq))el.classList.add("hint-from");
+
+   // IMPORTANT: only add "capture" when the square contains a piece.
+   // Adding an empty class name would stop rendering with a DOM exception.
+   if(legalTargets.includes(sq)){
+    el.classList.add("legal");
+    if(p)el.classList.add("capture");
+   }
+
+   if(queuedPremove&&(queuedPremove.from===sq||queuedPremove.to===sq)){
+    el.classList.add("hint-from");
+   }
 
    const img=el.querySelector(".piece-image");
 
    if(p){
     const imagePath=PIECE_IMAGES[p.color+p.type];
+
     if(img.getAttribute("src")!==imagePath)img.src=imagePath;
-    img.alt=sideName(p.color)+" "+p.type;
+
+    img.alt=sideName(p.color)+" "+(p.type==="n"?"horse":p.type);
     img.hidden=false;
    }else{
     img.hidden=true;
@@ -339,12 +530,14 @@ function renderBoard(){
  }
 
  updateLabels();
+ renderArrows();
 }
 
 function findKing(color){
  for(let r=1;r<=8;r++){
   for(const f of "abcdefgh"){
-   const s=f+r,p=game.get(s);
+   const s=f+r;
+   const p=game.get(s);
    if(p&&p.type==="k"&&p.color===color)return s;
   }
  }
@@ -365,6 +558,7 @@ function onSquare(sq){
   handlePremoveSquare(sq);
   return;
  }
+
  if(engineMode==="play"&&turn!==humanColor)return;
 
  const p=game.get(sq);
@@ -375,14 +569,17 @@ function onSquare(sq){
    renderBoard();
    return;
   }
+
   if(legalTargets.includes(sq)){
    attemptMove(selected,sq);
    return;
   }
+
   if(p&&p.color===turn){
    selectSquare(sq);
    return;
   }
+
   clearSelection();
   renderBoard();
   return;
@@ -423,11 +620,13 @@ function showPromotion(from,to,moves){
  for(const type of ["q","r","b","n"]){
   const b=document.createElement("button");
   b.textContent=GLYPHS[game.turn()+type];
+
   b.onclick=()=>{
    $("promoOverlay").style.display="none";
    pendingPromotion=null;
    attemptMove(from,to,type);
   };
+
   $("promoChoices").append(b);
  }
 
@@ -436,17 +635,27 @@ function showPromotion(from,to,moves){
 
 function makeMove(move,preservePremove=false){
  const savedPremove=preservePremove?queuedPremove:null;
- const made=game.move({from:move.from,to:move.to,promotion:move.promotion||"q"});
+
+ const made=game.move({
+  from:move.from,
+  to:move.to,
+  promotion:move.promotion||"q"
+ });
+
  if(!made)return;
 
  lastMove={from:made.from,to:made.to};
+
  clearSelection();
+ clearArrows();
+
  bestUci=null;
  bestSan=null;
  bestForFen=null;
  queuedPremove=savedPremove;
 
  renderAll();
+
  setStatus(game.isGameOver()?gameOverText():"Your move played.");
 
  if(engineMode==="play"&&game.turn()!==humanColor&&!game.isGameOver()){
@@ -476,8 +685,10 @@ function undo(){
 
  queuedPremove=null;
  clearSelection();
+ clearArrows();
  lastMove=null;
  bestUci=null;
+
  renderAll();
  setStatus("Move undone.");
  requestAnalysis(false);
@@ -486,14 +697,20 @@ function undo(){
 function restart(){
  game.reset();
  clearSelection();
+ clearArrows();
+
  lastMove=null;
  bestUci=null;
  bestSan=null;
  queuedPremove=null;
+
  renderAll();
+
  setStatus(engineReady?"New game.":"Waiting for Stockfish…");
 
- if(engineMode==="play"&&humanColor==="b")setTimeout(()=>engineMove(),200);
+ if(engineMode==="play"&&humanColor==="b"){
+  setTimeout(()=>engineMove(),200);
+ }
 }
 
 function queuePremove(from,to){
@@ -508,11 +725,13 @@ function handlePremoveSquare(sq){
   if(p&&p.color===humanColor)selectSquare(sq);
   return;
  }
+
  if(sq===selected){
   clearSelection();
   renderBoard();
   return;
  }
+
  queuePremove(selected,sq);
  clearSelection();
  renderBoard();
@@ -526,6 +745,7 @@ function tryPremove(){
  $("premoveText").textContent="";
 
  const moves=game.moves({square:q.from,verbose:true}).filter(m=>m.to===q.to);
+
  if(moves.length){
   makeMove(moves[0]);
  }else{
@@ -534,20 +754,20 @@ function tryPremove(){
  }
 }
 
-function requestAnalysis(force){
- if(engineMode==="analysis"||force)beginSearch("analysis",16);
-}
-
 function initEngine(){
  try{
   const workerUrl="./engine/stockfish-19-lite-single.js";
+
   engine=new Worker(workerUrl);
+
   engine.onmessage=e=>onEngineMessage(String(e.data));
+
   engine.onerror=()=>{
    engineReady=false;
    setStatus("Could not load Stockfish. Check your internet connection and reload.");
    setEngineStatus("Engine failed to load.");
   };
+
   engine.postMessage("uci");
  }catch(e){
   setStatus("Engine startup failed: "+e.message);
@@ -564,6 +784,7 @@ function onEngineMessage(line){
   engineReady=true;
   setStatus("Stockfish 19 ready.");
   setEngineStatus("Stockfish 19 ready.");
+
   if(engineMode==="play"&&game.turn()!==humanColor)engineMove();
   return;
  }
@@ -571,9 +792,16 @@ function onEngineMessage(line){
  if(line.startsWith("info ")){
   const depth=+(line.match(/\bdepth (\d+)/)||[])[1]||0;
   const multipv=+(line.match(/\bmultipv (\d+)/)||[])[1]||1;
+
   const cpMatch=line.match(/\bscore cp (-?\d+)/);
   const mateMatch=line.match(/\bscore mate (-?\d+)/);
-  const score=cpMatch?Number(cpMatch[1])/100:mateMatch?(Number(mateMatch[1])>0?99:-99):null;
+
+  const score=cpMatch
+   ?Number(cpMatch[1])/100
+   :mateMatch
+    ?(Number(mateMatch[1])>0?99:-99)
+    :null;
+
   const pv=(line.match(/\bpv (.+)$/)||[])[1];
 
   if(engineSearchPurpose==="play"&&pv){
@@ -598,6 +826,7 @@ function onEngineMessage(line){
     $("analysisPv").textContent=pv;
    }
   }
+
   return;
  }
 
@@ -628,12 +857,11 @@ function onEngineMessage(line){
  }
 }
 
-let engineSearchPurpose="analysis";
-
 function configureStrength(){
  if(!engine)return;
 
  const skill=Math.round(Math.max(0,Math.min(20,(elo-400)/140)));
+
  engine.postMessage("setoption name UCI_LimitStrength value true");
  engine.postMessage("setoption name UCI_Elo value "+Math.max(1320,Math.min(3190,elo)));
  engine.postMessage("setoption name Skill Level value "+skill);
@@ -653,20 +881,42 @@ function beginSearch(purpose,depth=15){
 
  engine.postMessage("stop");
  configureStrength();
+
  engine.postMessage("setoption name MultiPV value "+(purpose==="play"?4:1));
  engine.postMessage("position fen "+game.fen());
- engine.postMessage("go depth "+depth);
 
- if(purpose==="analysis")setEngineStatus("Analyzing current position…");
- else setStatus("Stockfish is thinking…");
+ // The actual bot reply uses a fixed 3-second search time.
+ // Analysis and hints still use depth-based searches.
+ if(purpose==="play"){
+  engine.postMessage("go movetime 3000");
+ }else{
+  engine.postMessage("go depth "+depth);
+ }
+
+ if(purpose==="analysis"){
+  setEngineStatus("Analyzing current position…");
+ }else if(purpose==="play"){
+  setStatus("Stockfish is thinking…");
+ }else{
+  setStatus("Finding the best move…");
+ }
 }
 
 function chooseBotMove(topMove){
- const candidates=engineCandidates.filter(Boolean).sort((a,b)=>a.score===null?1:b.score===null?-1:b.score-a.score);
+ const candidates=engineCandidates
+  .filter(Boolean)
+  .sort((a,b)=>a.score===null?1:b.score===null?-1:b.score-a.score);
+
  const legal=game.moves({verbose:true});
  if(!legal.length)return topMove;
 
- const chance=elo<700?.18:elo<1000?.13:elo<1300?.085:elo<1600?.05:elo<2000?.025:elo<2400?.01:elo<2800?.004:.001;
+ const chance=elo<700?.18:
+  elo<1000?.13:
+  elo<1300?.085:
+  elo<1600?.05:
+  elo<2000?.025:
+  elo<2400?.01:
+  elo<2800?.004:.001;
 
  if(Math.random()<chance){
   const random=legal[Math.floor(Math.random()*legal.length)];
@@ -674,30 +924,45 @@ function chooseBotMove(topMove){
  }
 
  const pool=candidates.length?candidates:[{uci:topMove}];
- const weights=elo<700?[10,20,28,42]:elo<1000?[18,27,27,28]:elo<1300?[28,31,25,16]:elo<1600?[43,30,19,8]:elo<2000?[61,25,11,3]:elo<2400?[76,17,6,1]:elo<2800?[86,11,2.5,.5]:[93,5.5,1.2,.3];
+
+ const weights=elo<700?[10,20,28,42]:
+  elo<1000?[18,27,27,28]:
+  elo<1300?[28,31,25,16]:
+  elo<1600?[43,30,19,8]:
+  elo<2000?[61,25,11,3]:
+  elo<2400?[76,17,6,1]:
+  elo<2800?[86,11,2.5,.5]:
+  [93,5.5,1.2,.3];
+
  const available=pool.slice(0,4);
  const total=weights.slice(0,available.length).reduce((a,b)=>a+b,0);
+
  let roll=Math.random()*total;
 
  for(let i=0;i<available.length;i++){
   roll-=weights[i];
   if(roll<=0)return available[i].uci;
  }
+
  return available[0].uci;
 }
 
 function engineMove(){
  if(!engineReady||game.isGameOver()||game.turn()===humanColor)return;
- beginSearch("play",Math.max(10,Math.min(18,Math.round(11+(elo/500)))));
+
+ // Exactly 3000 milliseconds of requested Stockfish search time.
+ beginSearch("play",15);
 }
 
 function playEngineMove(code){
  if(game.turn()===humanColor||game.isGameOver())return;
 
  const m=getMoveFromUci(code);
+
  if(m){
   makeMove(m,true);
   setStatus("Stockfish played "+m.san+".");
+
   if(queuedPremove)tryPremove();
  }
 }
@@ -705,40 +970,61 @@ function playEngineMove(code){
 function updateEval(score){
  const white=Math.max(-8,Math.min(8,score));
  const blackPct=100-(Math.max(0,Math.min(100,(white+8)/16*100)));
+
  $("evalBlack").style.height=blackPct+"%";
- $("evalText").textContent=Math.abs(score)>9?(score>0?"M":"-M")+Math.round(Math.abs(score)):((score>0?"+":"")+score.toFixed(1));
+
+ $("evalText").textContent=Math.abs(score)>9
+  ?(score>0?"M":"-M")+Math.round(Math.abs(score))
+  :((score>0?"+":"")+score.toFixed(1));
+}
+
+function requestAnalysis(force){
+ if(engineMode==="analysis"||force)beginSearch("analysis",16);
 }
 
 function applyNewGame(){
- humanColor=chosenColor==="random"?(Math.random()<.5?"w":"b"):chosenColor;
+ humanColor=chosenColor==="random"
+  ?(Math.random()<.5?"w":"b")
+  :chosenColor;
+
  orientation=humanColor;
  engineMode="play";
+
  $("modeLabel").textContent="PLAY AGAINST STOCKFISH";
  $("playPanel").style.display="block";
  $("analysisPanel").style.display="none";
+
  $("playTab").classList.add("active");
  $("analysisTab").classList.remove("active");
  $("navPlay").classList.add("active");
  $("navAnalysis").classList.remove("active");
+
  restart();
  renderAll();
+
  setStatus(engineReady?"New game. Stockfish is ready.":"Loading Stockfish 19…");
 }
 
 function setMode(mode){
  engineMode=mode;
  clearSelection();
+ clearArrows();
  queuedPremove=null;
 
  $("playPanel").style.display=mode==="play"?"block":"none";
  $("analysisPanel").style.display=mode==="analysis"?"block":"none";
+
  $("playTab").classList.toggle("active",mode==="play");
  $("analysisTab").classList.toggle("active",mode==="analysis");
  $("navPlay").classList.toggle("active",mode==="play");
  $("navAnalysis").classList.toggle("active",mode==="analysis");
- $("modeLabel").textContent=mode==="play"?"PLAY AGAINST STOCKFISH":"ANALYSIS BOARD";
+
+ $("modeLabel").textContent=mode==="play"
+  ?"PLAY AGAINST STOCKFISH"
+  :"ANALYSIS BOARD";
 
  renderAll();
+
  if(mode==="analysis")requestAnalysis(false);
 }
 
@@ -748,24 +1034,35 @@ $("elo").addEventListener("input",e=>{
  $("topRating").textContent="ELO "+elo;
 });
 
-document.querySelectorAll("[data-color]").forEach(b=>b.addEventListener("click",()=>{
- chosenColor=b.dataset.color;
- document.querySelectorAll("[data-color]").forEach(x=>x.classList.toggle("active",x===b));
-}));
+document.querySelectorAll("[data-color]").forEach(b=>{
+ b.addEventListener("click",()=>{
+  chosenColor=b.dataset.color;
+
+  document.querySelectorAll("[data-color]").forEach(x=>{
+   x.classList.toggle("active",x===b);
+  });
+ });
+});
 
 $("startBtn").onclick=applyNewGame;
 $("undoBtn").onclick=undo;
+
 $("flipBtn").onclick=()=>{
  orientation=orientation==="w"?"b":"w";
  renderBoard();
 };
+
 $("restartBtn").onclick=restart;
 
 $("premoveBtn").onclick=()=>{
  premoveEnabled=!premoveEnabled;
+
  $("premoveBtn").textContent="Premove: "+(premoveEnabled?"On":"Off");
  $("premoveBtn").classList.toggle("active",premoveEnabled);
- $("premoveText").textContent=premoveEnabled?"Select a piece and destination during Stockfish's turn.":"";
+
+ $("premoveText").textContent=premoveEnabled
+  ?"Select a piece and destination during Stockfish's turn."
+  :"";
 };
 
 $("bestBtn").onclick=()=>{
@@ -783,6 +1080,7 @@ $("playBestBtn").onclick=()=>{
 };
 
 $("analyzeBtn").onclick=()=>requestAnalysis(true);
+
 $("stopBtn").onclick=()=>{
  if(engine){
   engine.postMessage("stop");
