@@ -215,6 +215,7 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
  </div>
  <div class="board-tools">
   <button id="undoBtn" disabled="">↶ Undo</button>
+  <button id="flipBtn">⇅ Flip board</button>
   <button id="restartBtn">⟲ Restart</button>
  </div>
 </section>
@@ -225,8 +226,8 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
   <div class="setup">
    <label>Choose your side</label>
    <div class="colors">
-    <button data-color="w" class="active">White</button>
-    <button data-color="b">Black</button>
+    <button data-color="w" class="active">♔ White</button>
+    <button data-color="b">♚ Black</button>
     <button data-color="random">Random</button>
    </div>
    <label for="elo">AI strength</label>
@@ -698,6 +699,7 @@ document.querySelectorAll("[data-color]").forEach(button=>{
 
 $("startBtn").onclick=startGame;
 $("undoBtn").onclick=undo;
+$("flipBtn").onclick=()=>{orientation=orientation==="w"?"b":"w";renderBoard();};
 $("restartBtn").onclick=()=>{restart();};
 
 
