@@ -54,13 +54,13 @@ main{max-width:1320px;margin:24px auto;padding:0 20px;display:grid;grid-template
 .light .coord{color:var(--dark)}
 .dark .coord{color:var(--light)}
 .arrow-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:7;overflow:visible}
-.arrow-line{stroke:#e5a900;stroke-width:10;stroke-linecap:round;opacity:.88}
+.arrow-line{stroke:#e5a900;stroke-width:12;stroke-linecap:round;opacity:.88}
 .arrow-head{fill:#e5a900;opacity:.95}
 .arrow-start{display:none}
 
 /* The dragged piece follows the pointer. */
 .drag-ghost{position:fixed;z-index:1000;width:70px;height:70px;object-fit:contain;pointer-events:none;transform:translate(-50%,-50%) scale(1.43);filter:none}
-.arrow-preview{stroke:#e5a900;stroke-width:10;stroke-linecap:round;stroke-dasharray:14 8;opacity:.7}
+.arrow-preview{stroke:#e5a900;stroke-width:12;stroke-linecap:round;stroke-dasharray:14 8;opacity:.7}
 .collection-row{display:flex;align-items:center;gap:7px;min-height:25px;margin-left:38px;color:var(--muted);font-size:12px}
 .collection-icons{display:flex;align-items:center;gap:2px;flex-wrap:wrap}
 .collection-icons img{width:19px;height:19px;object-fit:contain}
@@ -191,11 +191,11 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
    </div>
    <label for="elo">AI strength</label>
    <div class="range-row">
-    <span>400</span>
+    <span>1</span>
     <span class="elo-number" id="eloValue">1500 ELO</span>
     <span>3200</span>
    </div>
-   <input id="elo" type="range" min="400" max="3200" step="50" value="1500">
+   <input id="elo" type="range" min="1" max="3200" step="1" value="1500">
    <button class="primary" id="startBtn" style="width:100%;margin-top:13px">Play game</button>
   </div>
   <div class="status" id="status">Engine startup failed: Failed to construct 'Worker': Script at 'file:///C:/Users/KChu1/Downloads/engine/stockfish-19-lite-single.js' cannot be accessed from origin 'null'.</div>
@@ -204,7 +204,7 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
   <div class="opening-panel"><span>OPENING PLAYED</span><strong id="openingName">Starting position</strong></div>
   <label>Move history</label>
   <div class="moves" id="moves"><div class="small">No moves yet.</div></div>
-  <div class="small">The AI thinks for about 3 seconds before each reply. Shift+drag or right-click and drag to draw arrows. Shift+click or right-click a piece to clear arrows from it.</div>
+  <div class="small">The AI thinks for about 3 seconds before each reply. Beginner AI levels deliberately make more mistakes. Hold Shift and drag, or right-click and drag, to draw arrows. Shift+click or right-click a piece to clear arrows touching it.</div>
  </div>
 </aside>
 </main>
@@ -234,6 +234,7 @@ let game=new Chess();
 let engine=null;
 let engineReady=false;
 let engineBusy=false;
+let engineCandidates=[];
 
 let humanColor="w";
 let orientation="w";
@@ -261,8 +262,9 @@ let clockRunning=false;
 let clockLastTick=0;
 let clockInterval=null;
 let activePage="hub";
-let selectedTheme="classic";
-let colorMode="light";
+function readPreference(key,fallback){try{return localStorage.getItem(key)||fallback;}catch{return fallback;}}
+let selectedTheme=readPreference("chesson-board-theme","classic");
+let colorMode=readPreference("chesson-color-mode","light");
 
 function setStatus(message){$("status").textContent=message}
 function sideName(color){return color==="w"?"White":"Black"}
@@ -327,10 +329,10 @@ function renderArrows(){
   const from=coordinatesForSquare(arrow.from),to=coordinatesForSquare(arrow.to);
   const dx=to.x-from.x,dy=to.y-from.y,length=Math.hypot(dx,dy);
   if(!length)continue;
-  const ux=dx/length,uy=dy/length,endX=to.x-ux*18,endY=to.y-uy*18;
+  const ux=dx/length,uy=dy/length,endX=to.x-ux*20,endY=to.y-uy*20;
   const line=document.createElementNS(ns,"line");
   line.setAttribute("x1",from.x);line.setAttribute("y1",from.y);line.setAttribute("x2",endX);line.setAttribute("y2",endY);line.setAttribute("class","arrow-line");svg.appendChild(line);
-  const head=document.createElementNS(ns,"polygon");const px=-uy*13,py=ux*13;
+  const head=document.createElementNS(ns,"polygon");const px=-uy*15,py=ux*15;
   head.setAttribute("points",`${to.x},${to.y} ${endX+px},${endY+py} ${endX-px},${endY-py}`);head.setAttribute("class","arrow-head");svg.appendChild(head);
  }
  if(arrowDrag&&arrowDrag.to){
@@ -432,15 +434,15 @@ function buildBoardOnce(){
 function onPointerDown(event){
  const squareElement=event.target.closest(".square");if(!squareElement)return;
  const square=squareFromElement(squareElement);if(!square)return;
- if(event.button===2){
-  arrowDrag={from:square,to:square,startedOnPiece:!!game.get(square),moved:false};pointerDrag=null;
-  event.preventDefault();return;
- }
- if(event.shiftKey){
-  if(game.get(square)){
-   arrows=arrows.filter(a=>a.from!==square&&a.to!==square);shiftArrowOrigin=null;renderArrows();
-  }else{arrowDrag={from:square,to:square,startedOnPiece:false,moved:false,shift:true};pointerDrag=null;}
-  event.preventDefault();return;
+ const isRightClick=event.button===2;
+ const isShiftDrag=event.shiftKey&&event.button===0;
+ if(isRightClick||isShiftDrag){
+  // Both gestures start an arrow drag. A click without movement is handled
+  // on pointerup: it clears arrows on a piece, or keeps Shift+click chaining.
+  arrowDrag={from:square,to:square,startedOnPiece:!!game.get(square),moved:false,shift:isShiftDrag,right:isRightClick,startX:event.clientX,startY:event.clientY};
+  pointerDrag=null;
+  event.preventDefault();
+  return;
  }
  const piece=game.get(square);
  pointerDrag={from:square,startX:event.clientX,startY:event.clientY,moved:false,button:event.button};
@@ -449,8 +451,11 @@ function onPointerDown(event){
 }
 function onPointerMove(event){
  if(arrowDrag){
+  const dx=event.clientX-(arrowDrag.startX??event.clientX),dy=event.clientY-(arrowDrag.startY??event.clientY);
   const target=document.elementFromPoint(event.clientX,event.clientY);
-  const to=squareFromElement(target);if(to){if(to!==arrowDrag.from)arrowDrag.moved=true;arrowDrag.to=to;renderArrows();}return;
+  const to=squareFromElement(target);
+  if(to){if(to!==arrowDrag.from)arrowDrag.moved=true;arrowDrag.to=to;renderArrows();}
+  return;
  }
  if(!pointerDrag)return;
  const dx=event.clientX-pointerDrag.startX,dy=event.clientY-pointerDrag.startY;
@@ -463,9 +468,17 @@ function onPointerUp(event){
  const target=document.elementFromPoint(event.clientX,event.clientY);const destination=squareFromElement(target);
  if(arrowDrag){
   const dragArrow=arrowDrag;arrowDrag=null;
-  if(dragArrow.moved&&destination&&destination!==dragArrow.from){addArrow(dragArrow.from,destination);shiftArrowOrigin=null;}
-  else if(dragArrow.startedOnPiece){arrows=arrows.filter(a=>a.from!==dragArrow.from&&a.to!==dragArrow.from);shiftArrowOrigin=null;renderArrows();}
-  else if(dragArrow.shift&&destination===dragArrow.from){
+  const didDrag=dragArrow.moved&&destination&&destination!==dragArrow.from;
+  if(didDrag){
+   addArrow(dragArrow.from,destination);
+   shiftArrowOrigin=null;
+  }else if(dragArrow.startedOnPiece){
+   // Right-click or Shift+click a piece to clear arrows touching that square.
+   arrows=arrows.filter(a=>a.from!==dragArrow.from&&a.to!==dragArrow.from);
+   shiftArrowOrigin=null;
+   renderArrows();
+  }else if(dragArrow.shift&&destination===dragArrow.from){
+   // Keep the original Shift+click, click-to-connect arrow gesture too.
    if(shiftArrowOrigin&&shiftArrowOrigin!==dragArrow.from){addArrow(shiftArrowOrigin,dragArrow.from);shiftArrowOrigin=null;}
    else{shiftArrowOrigin=dragArrow.from;renderArrows();}
   }else renderArrows();
@@ -700,9 +713,16 @@ const THEMES=[
  {id:"sand",name:"Sand",light:"#f3e8c9",dark:"#b6a06a"},
  {id:"monochrome",name:"Black & White",light:"#ffffff",dark:"#222222"}
 ];
-function setColorMode(mode){colorMode=mode;document.body.classList.toggle("dark-mode",mode==="dark");$("lightModeBtn")?.classList.toggle("active",mode==="light");$("darkModeBtn")?.classList.toggle("active",mode==="dark");}
+function setColorMode(mode){
+ colorMode=mode==="dark"?"dark":"light";
+ document.body.classList.toggle("dark-mode",colorMode==="dark");
+ $("lightModeBtn")?.classList.toggle("active",colorMode==="light");
+ $("darkModeBtn")?.classList.toggle("active",colorMode==="dark");
+ try{localStorage.setItem("chesson-color-mode",colorMode);}catch{}
+}
 function applyTheme(id){
  const theme=THEMES.find(t=>t.id===id)||THEMES[0];selectedTheme=theme.id;
+ try{localStorage.setItem("chesson-board-theme",selectedTheme);}catch{}
  document.documentElement.style.setProperty("--light",theme.light);
  document.documentElement.style.setProperty("--dark",theme.dark);
  document.querySelectorAll(".theme-card").forEach(card=>card.classList.toggle("active",card.dataset.theme===id));
@@ -774,34 +794,60 @@ function initEngine(){
 
 function configureStrength(){
  if(!engine)return;
- const levels=[[400,0],[700,3],[900,7],[1200,10],[1600,13],[2000,16],[2400,18],[2800,20],[3200,20]];
+ // Stockfish's Skill Level alone cannot reach the very low strengths requested,
+ // so lower ratings also deliberately choose weaker legal moves below.
  let skill=0;
- for(let i=1;i<levels.length;i++){
-  if(elo<=levels[i][0]){const [x0,y0]=levels[i-1],[x1,y1]=levels[i];skill=Math.round(y0+(elo-x0)*(y1-y0)/(x1-x0));break;}
-  skill=20;
- }
+ if(elo>=1201)skill=Math.min(20,Math.round(3+(elo-1200)*17/2000));
+ else if(elo>=1000)skill=Math.round((elo-1000)*3/200);
+ else if(elo>=600)skill=Math.round((elo-600)*1/400);
  engine.postMessage("setoption name UCI_LimitStrength value false");
- engine.postMessage("setoption name Skill Level value "+skill);
- engine.postMessage("setoption name MultiPV value 1");
+ engine.postMessage("setoption name Skill Level value "+Math.max(0,Math.min(20,skill)));
+ engine.postMessage("setoption name MultiPV value 4");
 }
 
 function beginBotSearch(){
- if(!engineReady||!engine){
-  setStatus("AI is still loading.");
-  return;
- }
-
+ if(!engineReady||!engine){setStatus("AI is still loading.");return;}
  engineBusy=true;
+ engineCandidates=[];
  botReplyDueAt=Date.now()+3000;
-
  configureStrength();
  engine.postMessage("position fen "+game.fen());
  engine.postMessage("go movetime 3000");
-
  setStatus("AI is thinking…");
 }
 
-function chooseBotMove(topMove){return topMove;}
+function blunderChanceForElo(){
+ if(elo<=200)return .98;
+ if(elo<=299)return .88;
+ if(elo<=500)return .70;
+ if(elo<=599)return .48;
+ if(elo<=900)return .22;
+ if(elo<=999)return .17;
+ if(elo<=1099)return .13;
+ if(elo<=1200)return .09;
+ if(elo<=1600)return .045;
+ if(elo<=2000)return .02;
+ return .005;
+}
+
+function chooseBotMove(topMove){
+ const legal=game.moves({verbose:true});
+ if(!legal.length)return topMove;
+ // At beginner levels, intentionally make frequent poor moves. Every move is
+ // still legal, but it may hang material, miss a tactic, or ignore a threat.
+ if(Math.random()<blunderChanceForElo()){
+  const random=legal[Math.floor(Math.random()*legal.length)];
+  return uci(random);
+ }
+ const candidates=engineCandidates.filter(c=>c&&c.uci&&legal.some(m=>uci(m)===c.uci));
+ if(!candidates.length)return topMove;
+ candidates.sort((a,b)=>(b.score??-99999)-(a.score??-99999));
+ // Keep 1000–1200 noticeably stronger than beginner settings, while still
+ // occasionally selecting a lower-ranked engine candidate.
+ const roll=Math.random();
+ const index=elo<=500?Math.floor(Math.random()*4):elo<=900?(roll<.55?0:roll<.8?1:roll<.93?2:3):elo<=1200?(roll<.72?0:roll<.9?1:roll<.97?2:3):roll<.88?0:roll<.97?1:2;
+ return candidates[Math.min(index,candidates.length-1)].uci;
+}
 
 function onEngineMessage(line){
  if(line==="uciok"){
@@ -819,17 +865,17 @@ function onEngineMessage(line){
 
  if(line.startsWith("info ")){
   const depth=+(line.match(/\bdepth (\d+)/)||[])[1]||0;
+  const multipv=+(line.match(/\bmultipv (\d+)/)||[])[1]||1;
   const cp=line.match(/\bscore cp (-?\d+)/);
   const mate=line.match(/\bscore mate (-?\d+)/);
   const score=cp?Number(cp[1])/100:mate?(Number(mate[1])>0?99:-99):null;
-
+  const pv=(line.match(/\bpv (.+)$/)||[])[1];
+  if(pv){const first=pv.trim().split(/\s+/)[0];if(first)engineCandidates[multipv-1]={uci:first,score,depth};}
   if(depth)$("depth").textContent=depth;
-
-  if(score!==null){
+  if(score!==null&&multipv===1){
    $("evalSide").textContent=(score>0?"+":"")+score.toFixed(2);
    updateEval(score);
   }
-
   return;
  }
 
@@ -949,7 +995,7 @@ $("navPlay").onclick=()=>showPage("hub");
 $("navThemes").onclick=()=>showPage("themes");
 $("onlineChoice").onclick=()=>{$("onlineNotice").style.display="block";};
 $("aiChoice").onclick=()=>{showPage("game");applyNewGame();};
-buildThemes();setColorMode("light");
+buildThemes();setColorMode(colorMode);
 resetClock();updateOpening();
 if(!clockInterval)clockInterval=setInterval(clockTick,250);
 initEngine();
