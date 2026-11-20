@@ -122,6 +122,17 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
 .sidebar-nav{display:grid;gap:8px}.sidebar-nav button{text-align:left;background:transparent;color:#555149;padding:13px 14px;border-radius:8px}.sidebar-nav button.active{background:#fff4c7;outline:0;color:#5b4700}.sidebar-note{margin-top:auto;font-size:11px;color:#999187;padding:10px 12px}
 .page{display:none;max-width:1000px;margin:48px auto;padding:0 24px}.page.visible{display:block}.hub-title{font-size:34px;margin:0 0 8px}.hub-sub{color:var(--muted);margin:0 0 26px}.choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.choice-card{background:#fff;border:1px solid #e5e1d8;border-radius:14px;padding:26px;min-height:170px;text-align:left}.choice-card strong{display:block;font-size:22px;margin-bottom:8px}.choice-card span{color:var(--muted);font-weight:400}.theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}.theme-card{background:#fff;border:2px solid #e5e1d8;border-radius:12px;padding:12px;text-align:left}.theme-card.active{border-color:var(--accent);outline:0}.theme-preview{height:90px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);border-radius:7px;overflow:hidden;margin-bottom:10px}.theme-preview i:nth-child(odd){background:var(--preview-light)}.theme-preview i:nth-child(even){background:var(--preview-dark)}.theme-card strong{display:block}
 .clock{margin-left:auto;background:#242321;color:#fff;padding:7px 12px;border-radius:6px;font:800 19px ui-monospace,monospace;min-width:78px;text-align:center}.clock.active-clock{background:#e5b400;color:#242321}.game-hidden{display:none!important}
+
+/* Next Move analysis editor */
+.next-layout{max-width:1320px;margin:24px auto;padding:0 20px;display:grid;grid-template-columns:minmax(320px,min(66vw,720px)) minmax(300px,390px);gap:24px;align-items:start}
+.next-board-area{min-width:0}.next-board{width:100%;aspect-ratio:1;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));position:relative;overflow:hidden;border:1px solid var(--board-border);box-shadow:0 5px 24px #0005;touch-action:manipulation}
+.next-square{border:0;border-radius:0;padding:0;min-width:0;min-height:0;display:grid;place-items:center;position:relative;overflow:visible;background:var(--dark)}
+.next-square.light{background:var(--light)}.next-square.dark{background:var(--dark)}
+.next-square img,.piece-tray img{width:78%;height:78%;object-fit:contain;pointer-events:none;user-select:none}.next-square img{cursor:grab}.next-square .next-coord{position:absolute;font-size:clamp(8px,1vw,12px);font-weight:800;pointer-events:none;left:3px;top:2px;color:#242321;z-index:2}.next-square.light .next-coord{color:var(--dark)}.next-square.dark .next-coord{color:var(--light)}
+.next-arrow-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4}.next-arrow-line{stroke:#e0a400;stroke-width:10;stroke-linecap:round;opacity:.88}.next-arrow-head{fill:#e0a400}.next-arrow-number{font:900 25px Inter,system-ui,sans-serif;fill:#fff;stroke:#4b3900;stroke-width:4px;paint-order:stroke;text-anchor:middle;dominant-baseline:middle}
+.piece-tray{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin-top:14px;padding:12px;background:var(--panel);border:1px solid var(--line);border-radius:10px}.tray-piece{height:66px;display:grid;place-items:center;border:1px solid var(--line);border-radius:7px;background:var(--soft);cursor:grab}.tray-piece img{width:70%;height:70%}.next-side{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}.next-side-content{padding:16px}.next-choice{display:grid;grid-template-columns:1fr 1fr;gap:8px}.next-choice button.active{background:var(--accent);color:#24200f;outline:0}.next-move-list{display:grid;gap:9px;margin-top:12px}.next-move-item{display:flex;align-items:center;gap:10px;padding:10px;background:var(--soft);border-radius:8px}.next-move-number{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#d9a400;color:#211a00;font-weight:900}.next-move-san{font-size:18px;font-weight:850}.next-move-desc{font-size:11px;color:var(--muted);margin-left:auto}.next-hint{font-size:12px;color:var(--muted);line-height:1.5;margin-top:12px}.next-status{padding:11px;background:var(--soft);border-radius:8px;color:var(--muted);font-size:13px;margin-top:12px;min-height:42px}.next-board-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;color:var(--muted);font-size:13px}
+@media(max-width:850px){.next-layout{grid-template-columns:1fr;max-width:700px;gap:16px}.piece-tray{grid-template-columns:repeat(6,minmax(0,1fr))}.tray-piece{height:56px}}
+
 @media(max-width:850px){body{padding-left:0;padding-bottom:70px}.left-sidebar{top:auto;right:0;bottom:0;width:100%;height:64px;border-right:0;border-top:1px solid #e5e1d8;padding:6px 10px;flex-direction:row;align-items:center}.sidebar-logo{display:none}.sidebar-nav{width:100%;grid-template-columns:repeat(2,1fr)}.sidebar-nav button{text-align:center;padding:10px}.sidebar-note{display:none}main{grid-template-columns:1fr;max-width:700px;gap:16px}.side{width:100%}.choice-grid{grid-template-columns:1fr}.page{margin:28px auto}.board-tools button{min-width:calc(50% - 8px)}}
 </style>
 </head>
@@ -131,6 +142,7 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
  <nav class="sidebar-nav">
   <button id="navPlay" class="active">♟ &nbsp; Play</button>
   <button id="navThemes">▦ &nbsp; Themes</button>
+  <button id="navNextMove">➜ &nbsp; Next Move</button>
  </nav>
  <div class="sidebar-note">Your chess. Your moves.</div>
 </aside>
@@ -149,6 +161,30 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
  <div class="theme-options"><strong>App appearance</strong><button id="lightModeBtn" class="active">Light mode</button><button id="darkModeBtn">Dark mode</button></div>
  <div class="theme-grid" id="themeGrid"><button class="theme-card active" data-theme="classic"><div class="theme-preview" style="--preview-light: #f0d9a5; --preview-dark: #b58863;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Classic</strong></button><button class="theme-card" data-theme="green"><div class="theme-preview" style="--preview-light: #eeeed2; --preview-dark: #769656;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Tournament Green</strong></button><button class="theme-card" data-theme="blue"><div class="theme-preview" style="--preview-light: #dce8f2; --preview-dark: #6689a8;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Ocean Blue</strong></button><button class="theme-card" data-theme="purple"><div class="theme-preview" style="--preview-light: #eee2f4; --preview-dark: #9270a8;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Royal Purple</strong></button><button class="theme-card" data-theme="rose"><div class="theme-preview" style="--preview-light: #f3d7d8; --preview-dark: #b66f78;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Rosewood</strong></button><button class="theme-card" data-theme="slate"><div class="theme-preview" style="--preview-light: #dce0e5; --preview-dark: #788493;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Slate</strong></button><button class="theme-card" data-theme="wood"><div class="theme-preview" style="--preview-light: #f1dfbd; --preview-dark: #9b6b43;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Warm Wood</strong></button><button class="theme-card" data-theme="midnight"><div class="theme-preview" style="--preview-light: #aeb7c8; --preview-dark: #46536d;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Midnight</strong></button><button class="theme-card" data-theme="mint"><div class="theme-preview" style="--preview-light: #e1f0e5; --preview-dark: #72a98b;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Mint</strong></button><button class="theme-card" data-theme="sand"><div class="theme-preview" style="--preview-light: #f3e8c9; --preview-dark: #b6a06a;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Sand</strong></button><button class="theme-card" data-theme="monochrome"><div class="theme-preview" style="--preview-light: #ffffff; --preview-dark: #222222;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Black &amp; White</strong></button></div>
 </section>
+
+<section class="page" id="nextMovePage">
+ <h1 class="hub-title">Next Move</h1>
+ <p class="hub-sub">Build any position, then see the three strongest moves for the side you choose.</p>
+ <div class="next-layout">
+  <section class="next-board-area">
+   <div class="next-board-title"><span id="nextTurnLabel">White to move</span><span>Drag pieces to arrange the position</span></div>
+   <div class="next-board" id="nextBoard" aria-label="Next Move analysis board"><div class="next-square light" data-square="a8"><img src="./BRook.png" alt="br" draggable="true" data-piece="br" data-source="a8"><span class="next-coord">8</span></div><div class="next-square dark" data-square="b8"><img src="./BHorse.png" alt="bn" draggable="true" data-piece="bn" data-source="b8"></div><div class="next-square light" data-square="c8"><img src="./BBishop.png" alt="bb" draggable="true" data-piece="bb" data-source="c8"></div><div class="next-square dark" data-square="d8"><img src="./BQueen.png" alt="bq" draggable="true" data-piece="bq" data-source="d8"></div><div class="next-square light" data-square="e8"><img src="./Bking.png" alt="bk" draggable="true" data-piece="bk" data-source="e8"></div><div class="next-square dark" data-square="f8"><img src="./BBishop.png" alt="bb" draggable="true" data-piece="bb" data-source="f8"></div><div class="next-square light" data-square="g8"><img src="./BHorse.png" alt="bn" draggable="true" data-piece="bn" data-source="g8"></div><div class="next-square dark" data-square="h8"><img src="./BRook.png" alt="br" draggable="true" data-piece="br" data-source="h8"></div><div class="next-square dark" data-square="a7"><img src="./BPawn.png" alt="bp" draggable="true" data-piece="bp" data-source="a7"><span class="next-coord">7</span></div><div class="next-square light" data-square="b7"><img src="./BPawn.png" alt="bp" draggable="true" data-piece="bp" data-source="b7"></div><div class="next-square dark" data-square="c7"><img src="./BPawn.png" alt="bp" draggable="true" data-piece="bp" data-source="c7"></div><div class="next-square light" data-square="d7"><img src="./BPawn.png" alt="bp" draggable="true" data-piece="bp" data-source="d7"></div><div class="next-square dark" data-square="e7"><img src="./BPawn.png" alt="bp" draggable="true" data-piece="bp" data-source="e7"></div><div class="next-square light" data-square="f7"><img src="./BPawn.png" alt="bp" draggable="true" data-piece="bp" data-source="f7"></div><div class="next-square dark" data-square="g7"><img src="./BPawn.png" alt="bp" draggable="true" data-piece="bp" data-source="g7"></div><div class="next-square light" data-square="h7"><img src="./BPawn.png" alt="bp" draggable="true" data-piece="bp" data-source="h7"></div><div class="next-square light" data-square="a6"><span class="next-coord">6</span></div><div class="next-square dark" data-square="b6"></div><div class="next-square light" data-square="c6"></div><div class="next-square dark" data-square="d6"></div><div class="next-square light" data-square="e6"></div><div class="next-square dark" data-square="f6"></div><div class="next-square light" data-square="g6"></div><div class="next-square dark" data-square="h6"></div><div class="next-square dark" data-square="a5"><span class="next-coord">5</span></div><div class="next-square light" data-square="b5"></div><div class="next-square dark" data-square="c5"></div><div class="next-square light" data-square="d5"></div><div class="next-square dark" data-square="e5"></div><div class="next-square light" data-square="f5"></div><div class="next-square dark" data-square="g5"></div><div class="next-square light" data-square="h5"></div><div class="next-square light" data-square="a4"><span class="next-coord">4</span></div><div class="next-square dark" data-square="b4"></div><div class="next-square light" data-square="c4"></div><div class="next-square dark" data-square="d4"></div><div class="next-square light" data-square="e4"></div><div class="next-square dark" data-square="f4"></div><div class="next-square light" data-square="g4"></div><div class="next-square dark" data-square="h4"></div><div class="next-square dark" data-square="a3"><span class="next-coord">3</span></div><div class="next-square light" data-square="b3"></div><div class="next-square dark" data-square="c3"></div><div class="next-square light" data-square="d3"></div><div class="next-square dark" data-square="e3"></div><div class="next-square light" data-square="f3"></div><div class="next-square dark" data-square="g3"></div><div class="next-square light" data-square="h3"></div><div class="next-square light" data-square="a2"><img src="./WPawn.png" alt="wp" draggable="true" data-piece="wp" data-source="a2"><span class="next-coord">2</span></div><div class="next-square dark" data-square="b2"><img src="./WPawn.png" alt="wp" draggable="true" data-piece="wp" data-source="b2"></div><div class="next-square light" data-square="c2"><img src="./WPawn.png" alt="wp" draggable="true" data-piece="wp" data-source="c2"></div><div class="next-square dark" data-square="d2"><img src="./WPawn.png" alt="wp" draggable="true" data-piece="wp" data-source="d2"></div><div class="next-square light" data-square="e2"><img src="./WPawn.png" alt="wp" draggable="true" data-piece="wp" data-source="e2"></div><div class="next-square dark" data-square="f2"><img src="./WPawn.png" alt="wp" draggable="true" data-piece="wp" data-source="f2"></div><div class="next-square light" data-square="g2"><img src="./WPawn.png" alt="wp" draggable="true" data-piece="wp" data-source="g2"></div><div class="next-square dark" data-square="h2"><img src="./WPawn.png" alt="wp" draggable="true" data-piece="wp" data-source="h2"></div><div class="next-square dark" data-square="a1"><img src="./WRook.png" alt="wr" draggable="true" data-piece="wr" data-source="a1"><span class="next-coord">1</span><span class="next-coord" style="inset: auto 3px 2px auto;">a</span></div><div class="next-square light" data-square="b1"><img src="./WHorse.png" alt="wn" draggable="true" data-piece="wn" data-source="b1"><span class="next-coord" style="inset: auto 3px 2px auto;">b</span></div><div class="next-square dark" data-square="c1"><img src="./WBishop.png" alt="wb" draggable="true" data-piece="wb" data-source="c1"><span class="next-coord" style="inset: auto 3px 2px auto;">c</span></div><div class="next-square light" data-square="d1"><img src="./WQueen.png" alt="wq" draggable="true" data-piece="wq" data-source="d1"><span class="next-coord" style="inset: auto 3px 2px auto;">d</span></div><div class="next-square dark" data-square="e1"><img src="./Wking.png" alt="wk" draggable="true" data-piece="wk" data-source="e1"><span class="next-coord" style="inset: auto 3px 2px auto;">e</span></div><div class="next-square light" data-square="f1"><img src="./WBishop.png" alt="wb" draggable="true" data-piece="wb" data-source="f1"><span class="next-coord" style="inset: auto 3px 2px auto;">f</span></div><div class="next-square dark" data-square="g1"><img src="./WHorse.png" alt="wn" draggable="true" data-piece="wn" data-source="g1"><span class="next-coord" style="inset: auto 3px 2px auto;">g</span></div><div class="next-square light" data-square="h1"><img src="./WRook.png" alt="wr" draggable="true" data-piece="wr" data-source="h1"><span class="next-coord" style="inset: auto 3px 2px auto;">h</span></div><svg class="next-arrow-layer" viewBox="0 0 800 800" preserveAspectRatio="none" id="nextArrowLayer"></svg></div>
+   <div class="piece-tray" id="pieceTray" aria-label="Piece tray"><div class="tray-piece" draggable="true" title="White King"><img src="./Wking.png" alt="White King"></div><div class="tray-piece" draggable="true" title="White Queen"><img src="./WQueen.png" alt="White Queen"></div><div class="tray-piece" draggable="true" title="White Rook"><img src="./WRook.png" alt="White Rook"></div><div class="tray-piece" draggable="true" title="White Bishop"><img src="./WBishop.png" alt="White Bishop"></div><div class="tray-piece" draggable="true" title="White Horse"><img src="./WHorse.png" alt="White Horse"></div><div class="tray-piece" draggable="true" title="White Pawn"><img src="./WPawn.png" alt="White Pawn"></div><div class="tray-piece" draggable="true" title="Black King"><img src="./Bking.png" alt="Black King"></div><div class="tray-piece" draggable="true" title="Black Queen"><img src="./BQueen.png" alt="Black Queen"></div><div class="tray-piece" draggable="true" title="Black Rook"><img src="./BRook.png" alt="Black Rook"></div><div class="tray-piece" draggable="true" title="Black Horse"><img src="./BHorse.png" alt="Black Horse"></div><div class="tray-piece" draggable="true" title="Black Bishop"><img src="./BBishop.png" alt="Black Bishop"></div><div class="tray-piece" draggable="true" title="Black Pawn"><img src="./BPawn.png" alt="Black Pawn"></div></div>
+   <div class="next-hint">Drag any piece from the tray onto the board. Drag pieces around to reposition them. Drag a piece off the board to remove it. The tray always keeps every white and black piece available.</div>
+  </section>
+  <aside class="next-side"><div class="next-side-content">
+   <h2 class="section-title">Analysis settings</h2>
+   <label>Analyze for</label>
+   <div class="next-choice"><button id="nextWhite" class="active">♔ White</button><button id="nextBlack">♚ Black</button></div>
+   <div class="next-status" id="nextStatus">Loading Stockfish…</div>
+   <label>Top 3 best moves</label>
+   <div class="next-move-list" id="nextMoveList"><div class="next-move-item"><span class="next-move-number">1</span><strong>—</strong></div><div class="next-move-item"><span class="next-move-number">2</span><strong>—</strong></div><div class="next-move-item"><span class="next-move-number">3</span><strong>—</strong></div></div>
+   <div class="next-hint">Arrows are numbered in order: 1 is best, then 2, then 3. Move notation uses standard chess notation (SAN).</div>
+   <button id="nextReset" style="width:100%;margin-top:15px">Reset starting position</button>
+  </div></aside>
+ </div>
+</section>
+
 <main id="gamePage" class="game-hidden">
 <section class="board-column">
  <div class="game-top">
@@ -265,6 +301,13 @@ let activePage="hub";
 function readPreference(key,fallback){try{return localStorage.getItem(key)||fallback;}catch{return fallback;}}
 let selectedTheme=readPreference("chesson-board-theme","classic");
 let colorMode=readPreference("chesson-color-mode","light");
+
+// Separate editable analysis position and Stockfish worker for Next Move.
+let nextSide="w", nextBoardState={}, nextWorker=null, nextWorkerReady=false;
+let nextAnalysisToken=0, nextAnalysisTimer=null, nextCandidates=[];
+let nextDragSource=null, nextDropCompleted=false, nextPositionFen="";
+const NEXT_PIECES=["wk","wq","wr","wb","wn","wp","bk","bq","br","bn","bb","bp"];
+
 
 function setStatus(message){$("status").textContent=message}
 function sideName(color){return color==="w"?"White":"Black"}
@@ -742,10 +785,101 @@ function showPage(page){
  activePage=page;
  $("playHub").classList.toggle("visible",page==="hub");
  $("themesPage").classList.toggle("visible",page==="themes");
+ $("nextMovePage").classList.toggle("visible",page==="next");
  $("gamePage").classList.toggle("game-hidden",page!=="game");
  $("navPlay").classList.toggle("active",page==="hub"||page==="game");
  $("navThemes").classList.toggle("active",page==="themes");
+ $("navNextMove").classList.toggle("active",page==="next");
+ if(page==="next")analyzeNextPosition();
 }
+
+function nextInitialPosition(){
+ nextBoardState={};
+ const back="rnbqkbnr";
+ for(let file=0;file<8;file++){
+  const f="abcdefgh"[file];
+  const black=back[file],white=black.toUpperCase();
+  nextBoardState[f+"8"]="b"+black;nextBoardState[f+"7"]="bp";
+  nextBoardState[f+"2"]="wp";nextBoardState[f+"1"]="w"+({R:"r",N:"n",B:"b",Q:"q",K:"k"}[white]);
+ }
+}
+function nextSquareOrder(){
+ const out=[];
+ for(let row=0;row<8;row++)for(let col=0;col<8;col++){
+  const file=nextSide==="w"?col:7-col;
+  const rank=nextSide==="w"?8-row:row+1;
+  out.push("abcdefgh"[file]+rank);
+ }
+ return out;
+}
+function renderNextBoard(){
+ const board=$("nextBoard");if(!board)return;
+ board.innerHTML="";
+ const squares=nextSquareOrder();
+ squares.forEach((square,index)=>{
+  const row=Math.floor(index/8),col=index%8,file="abcdefgh".indexOf(square[0]),rank=Number(square[1]);
+  const cell=document.createElement("div");cell.className="next-square "+((file+(rank-1))%2===1?"light":"dark");cell.dataset.square=square;
+  const piece=nextBoardState[square];
+  if(piece){const img=document.createElement("img");img.src=PIECE_IMAGES[piece];img.alt=piece;img.draggable=true;img.dataset.piece=piece;img.dataset.source=square;img.addEventListener("dragstart",event=>{nextDragSource={kind:"board",square,piece};nextDropCompleted=false;event.dataTransfer.setData("text/plain",piece);event.dataTransfer.effectAllowed="move";});img.addEventListener("dragend",()=>{if(nextDragSource?.kind==="board"&&!nextDropCompleted){delete nextBoardState[nextDragSource.square];renderNextBoard();analyzeNextPosition();}nextDragSource=null;});cell.append(img);}
+  if(col===0){const coord=document.createElement("span");coord.className="next-coord";coord.textContent=rank;cell.append(coord);}
+  if(row===7){const coord=document.createElement("span");coord.className="next-coord";coord.style.left="auto";coord.style.right="3px";coord.style.top="auto";coord.style.bottom="2px";coord.textContent=square[0];cell.append(coord);}
+  cell.addEventListener("dragover",event=>{event.preventDefault();event.dataTransfer.dropEffect="move";});
+  cell.addEventListener("drop",event=>{event.preventDefault();if(!nextDragSource)return;const piece=nextDragSource.piece;if(nextDragSource.kind==="board"&&nextDragSource.square!==square)delete nextBoardState[nextDragSource.square];nextBoardState[square]=piece;nextDropCompleted=true;nextDragSource=null;renderNextBoard();analyzeNextPosition();});
+  board.append(cell);
+ });
+ const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");svg.setAttribute("class","next-arrow-layer");svg.setAttribute("viewBox","0 0 800 800");svg.setAttribute("preserveAspectRatio","none");svg.id="nextArrowLayer";board.append(svg);
+}
+function renderPieceTray(){
+ const tray=$("pieceTray");tray.innerHTML="";
+ NEXT_PIECES.forEach(piece=>{const item=document.createElement("div");item.className="tray-piece";item.draggable=true;item.title=(piece[0]==="w"?"White ":"Black ")+({k:"King",q:"Queen",r:"Rook",b:"Bishop",n:"Horse",p:"Pawn"}[piece[1]]);const img=document.createElement("img");img.src=PIECE_IMAGES[piece];img.alt=item.title;item.append(img);item.addEventListener("dragstart",event=>{nextDragSource={kind:"tray",piece};event.dataTransfer.setData("text/plain",piece);event.dataTransfer.effectAllowed="copy";});item.addEventListener("dragend",()=>{nextDragSource=null;});tray.append(item);});
+}
+function nextFen(){
+ const ranks=[];
+ for(let rank=8;rank>=1;rank--){let row="",empty=0;for(const file of "abcdefgh"){const piece=nextBoardState[file+rank];if(piece){if(empty){row+=empty;empty=0;}const letter=piece[1];row+=piece[0]==="w"?letter.toUpperCase():letter;}else empty++;}if(empty)row+=empty;ranks.push(row);}
+ return ranks.join("/")+" "+nextSide+" - - 0 1";
+}
+function nextCoords(square){const file="abcdefgh".indexOf(square[0]),rank=Number(square[1]);const col=nextSide==="w"?file:7-file;const row=nextSide==="w"?8-rank:rank-1;return{x:(col+.5)*100,y:(row+.5)*100};}
+function drawNextArrows(){
+ const svg=$("nextArrowLayer");if(!svg)return;svg.innerHTML="";const ns="http://www.w3.org/2000/svg";
+ nextCandidates.slice(0,3).forEach((candidate,index)=>{const from=nextCoords(candidate.from),to=nextCoords(candidate.to),dx=to.x-from.x,dy=to.y-from.y,len=Math.hypot(dx,dy);if(!len)return;const ux=dx/len,uy=dy/len,endX=to.x-ux*22,endY=to.y-uy*22;
+  const line=document.createElementNS(ns,"line");line.setAttribute("x1",from.x);line.setAttribute("y1",from.y);line.setAttribute("x2",endX);line.setAttribute("y2",endY);line.setAttribute("class","next-arrow-line");line.style.opacity=String(.95-index*.18);svg.append(line);
+  const head=document.createElementNS(ns,"polygon"),px=-uy*15,py=ux*15;head.setAttribute("points",`${to.x},${to.y} ${endX+px},${endY+py} ${endX-px},${endY-py}`);head.setAttribute("class","next-arrow-head");svg.append(head);
+  const label=document.createElementNS(ns,"text");label.setAttribute("x",(from.x+to.x)/2);label.setAttribute("y",(from.y+to.y)/2-12);label.setAttribute("class","next-arrow-number");label.textContent=String(index+1);svg.append(label);
+ });
+}
+function showNextMoves(){
+ const list=$("nextMoveList");list.innerHTML="";
+ for(let i=0;i<3;i++){const candidate=nextCandidates[i];const row=document.createElement("div");row.className="next-move-item";const number=document.createElement("span");number.className="next-move-number";number.textContent=i+1;row.append(number);const san=document.createElement("strong");san.className="next-move-san";san.textContent=candidate?.san||"—";row.append(san);const desc=document.createElement("span");desc.className="next-move-desc";desc.textContent=candidate?candidate.from+" → "+candidate.to:"No move";row.append(desc);list.append(row);}
+ drawNextArrows();
+}
+function setNextSide(side){nextSide=side;$("nextWhite").classList.toggle("active",side==="w");$("nextBlack").classList.toggle("active",side==="b");$("nextTurnLabel").textContent=sideName(side)+" to move";renderNextBoard();analyzeNextPosition();}
+function initNextWorker(){
+ if(nextWorker)return;
+ try{nextWorker=new Worker("./engine/stockfish-19-lite-single.js");nextWorker.onmessage=event=>onNextEngineMessage(String(event.data||"").trim());nextWorker.onerror=()=>{$("nextStatus").textContent="Stockfish could not load. Check the engine folder.";};nextWorker.postMessage("uci");}
+ catch(error){$("nextStatus").textContent="Stockfish could not start: "+error.message;}
+}
+function onNextEngineMessage(line){
+ if(line==="uciok"){nextWorker.postMessage("setoption name Threads value 1");nextWorker.postMessage("setoption name MultiPV value 3");nextWorker.postMessage("isready");return;}
+ if(line==="readyok"){nextWorkerReady=true;$("nextStatus").textContent="Stockfish ready. Analyzing the current position…";analyzeNextPosition();return;}
+ if(line.startsWith("info ")){
+  const multipv=+(line.match(/\bmultipv (\d+)/)||[])[1]||1;const pv=(line.match(/\bpv (.+)$/)||[])[1];if(!pv||multipv>3)return;
+  const token=nextAnalysisToken,uci=pv.trim().split(/\s+/)[0];if(!uci||uci.length<4)return;
+  try{const chess=new Chess(nextPositionFen);const move=chess.move({from:uci.slice(0,2),to:uci.slice(2,4),promotion:uci[4]||"q"});if(move){nextCandidates[multipv-1]={from:move.from,to:move.to,san:move.san,uci};showNextMoves();}}catch{}
+  return;
+ }
+ if(line.startsWith("bestmove ")){$("nextStatus").textContent=nextCandidates.length?"Showing Stockfish’s top moves for "+sideName(nextSide)+".":"No legal moves in this position.";showNextMoves();}
+}
+function analyzeNextPosition(){
+ if(activePage!=="next")return;
+ nextAnalysisToken++;const token=nextAnalysisToken;nextCandidates=[];showNextMoves();
+ if(nextAnalysisTimer)clearTimeout(nextAnalysisTimer);
+ if(!nextWorkerReady){$("nextStatus").textContent="Loading Stockfish…";initNextWorker();return;}
+ let fen;try{fen=nextFen();const test=new Chess(fen);if(test.moves().length===0){$("nextStatus").textContent="This position has no legal moves.";return;}}catch{$("nextStatus").textContent="Add one white king and one black king to create a valid position.";return;}
+ nextPositionFen=fen;$("nextStatus").textContent="Analyzing the best 3 moves for "+sideName(nextSide)+"…";
+ nextAnalysisTimer=setTimeout(()=>{if(token!==nextAnalysisToken||!nextWorkerReady)return;nextWorker.postMessage("stop");nextWorker.postMessage("setoption name MultiPV value 3");nextWorker.postMessage("position fen "+fen);nextWorker.postMessage("go movetime 2200");},180);
+}
+function resetNextPosition(){nextInitialPosition();setNextSide("w");}
+
 function formatClock(seconds){const s=Math.max(0,seconds);return Math.floor(s/60).toString().padStart(2,"0")+":"+(s%60).toString().padStart(2,"0")}
 function renderClocks(){
  const topColor=humanColor==="w"?"b":"w",bottomColor=humanColor;
@@ -993,9 +1127,14 @@ $("playAgainBtn").onclick=()=>{restart();startGame();};
 $("goBackBtn").onclick=()=>{restart();showPage("hub");};
 $("navPlay").onclick=()=>showPage("hub");
 $("navThemes").onclick=()=>showPage("themes");
+$("navNextMove").onclick=()=>{showPage("next");initNextWorker();};
+$("nextWhite").onclick=()=>setNextSide("w");
+$("nextBlack").onclick=()=>setNextSide("b");
+$("nextReset").onclick=resetNextPosition;
 $("onlineChoice").onclick=()=>{$("onlineNotice").style.display="block";};
 $("aiChoice").onclick=()=>{showPage("game");applyNewGame();};
 buildThemes();setColorMode(colorMode);
+nextInitialPosition();renderPieceTray();renderNextBoard();
 resetClock();updateOpening();
 if(!clockInterval)clockInterval=setInterval(clockTick,250);
 initEngine();
