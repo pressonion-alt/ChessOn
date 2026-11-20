@@ -1,28 +1,25 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en" style="--light: #f0d9a5; --dark: #b58863;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ChessOn</title>
 <style>
-:root{--bg:#161512;--panel:#262421;--panel2:#302e2b;--text:#e8e6e3;--muted:#aaa69f;--green:#81b64c;--green2:#a3d160;--light:#ebecd0;--dark:#779556}
+:root{--bg:#f5f5f2;--panel:#ffffff;--panel2:#f0eee8;--text:#242321;--muted:#77736b;--accent:#e5b400;--accent2:#f4d35e;--light:#f0d9a5;--dark:#b58863;--board-border:#d8d2c5}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:15px Inter,system-ui,Segoe UI,Arial,sans-serif}
+body{margin:0;background:var(--bg);color:var(--text);font:15px Inter,system-ui,Segoe UI,Arial,sans-serif;padding-left:230px}
 button,input{font:inherit}
 button{border:0;border-radius:7px;padding:10px 14px;background:var(--panel2);color:var(--text);cursor:pointer;font-weight:650}
 button:hover{filter:brightness(1.15)}
 button:disabled{opacity:.4;cursor:not-allowed}
-.primary{background:var(--green);color:#172012}
-.active{outline:2px solid var(--green)}
-header{height:58px;background:#1f1e1b;display:flex;align-items:center;padding:0 24px;gap:30px;border-bottom:1px solid #34312d}
+.primary{background:var(--accent);color:#24200f}
+.active{outline:2px solid var(--accent)}
+header{display:none}
 .brand{font-size:24px;font-weight:850;letter-spacing:-1px;color:white}
-.brand span{color:var(--green)}
+.brand span{color:var(--accent)}
 .header-right{margin-left:auto;color:var(--muted);font-size:13px}
 main{max-width:1320px;margin:24px auto;padding:0 20px;display:grid;grid-template-columns:minmax(320px,min(66vw,720px)) minmax(300px,390px);gap:24px;align-items:start}
 .board-column{min-width:0}
 .game-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:var(--muted);font-size:13px}
-.player-strip{height:48px;background:var(--panel);border-radius:8px;margin:8px 0;display:flex;align-items:center;padding:0 13px;gap:10px}
+.player-strip{height:54px;background:var(--panel);border:1px solid #e5e1d8;border-radius:8px;margin:8px 0;display:flex;align-items:center;padding:0 13px;gap:10px}
 .avatar{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#45423d;font-size:17px}
 .player-name{font-weight:700}
 .player-sub{margin-left:auto;color:var(--muted);font-size:12px}
@@ -30,94 +27,117 @@ main{max-width:1320px;margin:24px auto;padding:0 20px;display:grid;grid-template
 .evalbar{width:15px;min-width:15px;background:#333;border-radius:4px;overflow:hidden;position:relative}
 .eval-black{position:absolute;top:0;left:0;right:0;height:50%;background:#252321;transition:height .35s}
 .eval-label{position:absolute;bottom:5px;left:0;right:0;text-align:center;color:white;font-size:9px;font-weight:800;writing-mode:vertical-rl;transform:rotate(180deg)}
-.board{width:100%;aspect-ratio:1;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));border-radius:3px;overflow:hidden;box-shadow:0 5px 24px #0006;touch-action:none;position:relative;min-width:0;user-select:none}
+.board{width:100%;aspect-ratio:1;border:1px solid var(--board-border);display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));border-radius:3px;overflow:hidden;box-shadow:0 5px 24px #0006;touch-action:none;position:relative;min-width:0;user-select:none}
 .square{position:relative;display:grid;place-items:center;width:100%;height:100%;min-width:0;min-height:0;border-radius:0;padding:0;color:#111;cursor:pointer;user-select:none;overflow:visible;touch-action:none}
 .square.light{background:var(--light)}
 .square.dark{background:var(--dark)}
-.square.selected{background:#baca44;z-index:4}
+.square.selected{background:#e9c84a;z-index:4}
 .square.last{box-shadow:inset 0 0 0 999px #f6f66955}
 .square.hint-from{box-shadow:inset 0 0 0 999px #a7c94a66}
-.square.legal:after{content:"";position:absolute;width:27%;height:27%;border-radius:50%;background:#25351b77;pointer-events:none;z-index:2}
-.square.legal.capture:after{width:88%;height:88%;background:transparent;border:6px solid #25351b77}
+.square.legal:after{content:"";position:absolute;width:27%;height:27%;border-radius:50%;background:#51452b55;pointer-events:none;z-index:2}
+.square.legal.capture:after{width:88%;height:88%;background:transparent;border:6px solid #51452b66}
 .square.check{background:#e56b5d}
 .piece-image{display:block;width:77%;height:77%;object-fit:contain;pointer-events:none;user-select:none;z-index:3;transform:scale(1.3);transition:none}
 .piece-image[hidden]{display:none}
-.square.selected .piece-image{transform:translateY(-13%) scale(1.3);filter:drop-shadow(0 9px 5px #0008);z-index:8}
+.square.selected .piece-image{transform:translateY(-13%) scale(1.3);filter:none;z-index:8}
 .coord{position:absolute;font-size:clamp(8px,1.1vw,12px);font-weight:750;z-index:9;pointer-events:none}
 .coord.file{right:4px;bottom:2px}
 .coord.rank{left:4px;top:2px}
 .light .coord{color:var(--dark)}
 .dark .coord{color:var(--light)}
 .arrow-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:7;overflow:visible}
-.arrow-line{stroke:#e5a900;stroke-width:8;stroke-linecap:round;opacity:.85}
-.arrow-head{fill:#e5a900;opacity:.9}
-.arrow-start{fill:#e5a900;opacity:.32}
+.arrow-line{stroke:#e5a900;stroke-width:15;stroke-linecap:round;opacity:.85}
+.arrow-head{fill:#e5a900;opacity:.95}
+.arrow-start{display:none}
 
 /* The dragged piece follows the pointer. */
-.drag-ghost{position:fixed;z-index:1000;width:70px;height:70px;object-fit:contain;pointer-events:none;transform:translate(-50%,-50%) scale(1.3);filter:drop-shadow(0 7px 5px #0009)}
+.drag-ghost{position:fixed;z-index:1000;width:70px;height:70px;object-fit:contain;pointer-events:none;transform:translate(-50%,-50%) scale(1.3);filter:none}
 
 .board-tools{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 .board-tools button{flex:1}
-.side{background:var(--panel);border-radius:10px;overflow:hidden}
+.side{background:var(--panel);border:1px solid #e5e1d8;border-radius:10px;overflow:hidden}
 .panel-content{padding:16px}
 .section-title{font-size:16px;font-weight:800;margin:0 0 12px}
-.status{background:#211f1c;padding:12px;border-radius:7px;color:var(--muted);font-size:13px;margin-bottom:14px;min-height:42px}
-.moves{height:230px;overflow:auto;background:#211f1c;border-radius:7px;padding:8px;margin-top:12px;font-variant-numeric:tabular-nums}
+.status{background:#f5f3ed;padding:12px;border-radius:7px;color:var(--muted);font-size:13px;margin-bottom:14px;min-height:42px}
+.moves{height:230px;overflow:auto;background:#f5f3ed;border-radius:7px;padding:8px;margin-top:12px;font-variant-numeric:tabular-nums}
 .move-row{display:grid;grid-template-columns:35px 1fr 1fr;gap:5px;padding:5px 6px;border-radius:4px}
-.move-row:nth-child(even){background:#292723}
+.move-row:nth-child(even){background:#ebe8df}
 .move-no{color:#89847b}
 .move{padding:2px 5px;border-radius:4px}
-.move.current{background:#6f9941;color:white}
+.move.current{background:var(--accent);color:#24200f}
 label{display:block;color:var(--muted);font-size:12px;font-weight:700;margin:13px 0 6px}
-input[type=range]{width:100%;accent-color:var(--green)}
+input[type=range]{width:100%;accent-color:var(--accent)}
 .range-row{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px}
-.elo-number{color:var(--green2);font-weight:800;font-size:17px}
-.setup{background:#211f1c;border-radius:8px;padding:12px;margin-bottom:14px}
+.elo-number{color:#9a7600;font-weight:800;font-size:17px}
+.setup{background:#f5f3ed;border-radius:8px;padding:12px;margin-bottom:14px}
 .colors{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
 .colors button{padding:9px 5px}
-.engine-line{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:12px;padding:7px 0;border-bottom:1px solid #3b3833}
+.engine-line{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:12px;padding:7px 0;border-bottom:1px solid #e5e1d8}
 .engine-line strong{color:var(--text)}
-.pv{font-family:ui-monospace,monospace;line-height:1.6;color:#d5d1c9;font-size:12px;word-break:break-word;margin-top:10px}
+.pv{font-family:ui-monospace,monospace;line-height:1.6;color:#555149;font-size:12px;word-break:break-word;margin-top:10px}
 .small{font-size:11px;color:var(--muted);line-height:1.5;margin-top:10px}
-.premove-indicator{color:var(--green2);font-weight:700;font-size:12px;margin-top:8px;min-height:18px}
+.premove-indicator{color:#927000;font-weight:700;font-size:12px;margin-top:8px;min-height:18px}
 .promo-overlay{position:fixed;inset:0;background:#0009;display:none;place-items:center;z-index:10}
 .promo-box{background:var(--panel);padding:20px;border-radius:10px;display:flex;gap:10px}
 .promo-box button{font-size:34px;padding:10px}
 footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-size:11px}
-@media(max-width:850px){main{grid-template-columns:1fr;max-width:700px;gap:16px}.side{width:100%}header{padding:0 14px}.header-right{display:none}}
+.left-sidebar{position:fixed;left:0;top:0;bottom:0;width:210px;background:#fff;border-right:1px solid #e5e1d8;padding:22px 14px;z-index:50;display:flex;flex-direction:column;gap:12px}
+.sidebar-logo{font-size:27px;font-weight:900;letter-spacing:-1.5px;color:#242321;padding:4px 12px 24px}.sidebar-logo span{color:#d4a400}
+.sidebar-nav{display:grid;gap:8px}.sidebar-nav button{text-align:left;background:transparent;color:#555149;padding:13px 14px;border-radius:8px}.sidebar-nav button.active{background:#fff4c7;outline:0;color:#5b4700}.sidebar-note{margin-top:auto;font-size:11px;color:#999187;padding:10px 12px}
+.page{display:none;max-width:1000px;margin:48px auto;padding:0 24px}.page.visible{display:block}.hub-title{font-size:34px;margin:0 0 8px}.hub-sub{color:var(--muted);margin:0 0 26px}.choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.choice-card{background:#fff;border:1px solid #e5e1d8;border-radius:14px;padding:26px;min-height:170px;text-align:left}.choice-card strong{display:block;font-size:22px;margin-bottom:8px}.choice-card span{color:var(--muted);font-weight:400}.theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}.theme-card{background:#fff;border:2px solid #e5e1d8;border-radius:12px;padding:12px;text-align:left}.theme-card.active{border-color:var(--accent);outline:0}.theme-preview{height:90px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);border-radius:7px;overflow:hidden;margin-bottom:10px}.theme-preview i:nth-child(odd){background:var(--preview-light)}.theme-preview i:nth-child(even){background:var(--preview-dark)}.theme-card strong{display:block}
+.clock{margin-left:auto;background:#242321;color:#fff;padding:7px 12px;border-radius:6px;font:800 19px ui-monospace,monospace;min-width:78px;text-align:center}.clock.active-clock{background:#e5b400;color:#242321}.opening-bar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px;color:#77736b;font-size:12px}.opening-bar strong{color:#34312b}.game-hidden{display:none!important}
+@media(max-width:850px){body{padding-left:0;padding-bottom:70px}.left-sidebar{top:auto;right:0;bottom:0;width:100%;height:64px;border-right:0;border-top:1px solid #e5e1d8;padding:6px 10px;flex-direction:row;align-items:center}.sidebar-logo{display:none}.sidebar-nav{width:100%;grid-template-columns:repeat(2,1fr)}.sidebar-nav button{text-align:center;padding:10px}.sidebar-note{display:none}main{grid-template-columns:1fr;max-width:700px;gap:16px}.side{width:100%}.choice-grid{grid-template-columns:1fr}.page{margin:28px auto}.board-tools button{min-width:calc(50% - 8px)}}
 </style>
 </head>
 <body>
-<header>
- <div class="brand">Chess<span>On</span></div>
- <div class="header-right">Your chess. Your moves.</div>
-</header>
-
-<main>
+<aside class="left-sidebar">
+ <div class="sidebar-logo">Chess<span>On</span></div>
+ <nav class="sidebar-nav">
+  <button id="navPlay" class="active">♟ &nbsp; Play</button>
+  <button id="navThemes" class="">▦ &nbsp; Themes</button>
+ </nav>
+ <div class="sidebar-note">Your chess. Your moves.</div>
+</aside>
+<section class="page visible" id="playHub">
+ <h1 class="hub-title">Play ChessOn</h1>
+ <p class="hub-sub">Choose how you want to play.</p>
+ <div class="choice-grid">
+  <button class="choice-card" id="onlineChoice"><strong>Online</strong><span>Play against other people. Not working yet.</span></button>
+  <button class="choice-card" id="aiChoice"><strong>Play vs AI</strong><span>Start a game against the ChessOn AI.</span></button>
+ </div>
+ <div class="status" id="onlineNotice" style="display:none;margin-top:18px">Online play is not working yet. Please check back later.</div>
+</section>
+<section class="page" id="themesPage">
+ <h1 class="hub-title">Board themes</h1>
+ <p class="hub-sub">Choose a board style. Your choice applies to the game board.</p>
+ <div class="theme-grid" id="themeGrid"><button class="theme-card active" data-theme="classic"><div class="theme-preview" style="--preview-light: #f0d9a5; --preview-dark: #b58863;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Classic</strong></button><button class="theme-card" data-theme="green"><div class="theme-preview" style="--preview-light: #eeeed2; --preview-dark: #769656;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Tournament Green</strong></button><button class="theme-card" data-theme="blue"><div class="theme-preview" style="--preview-light: #dce8f2; --preview-dark: #6689a8;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Ocean Blue</strong></button><button class="theme-card" data-theme="purple"><div class="theme-preview" style="--preview-light: #eee2f4; --preview-dark: #9270a8;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Royal Purple</strong></button><button class="theme-card" data-theme="rose"><div class="theme-preview" style="--preview-light: #f3d7d8; --preview-dark: #b66f78;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Rosewood</strong></button><button class="theme-card" data-theme="slate"><div class="theme-preview" style="--preview-light: #dce0e5; --preview-dark: #788493;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Slate</strong></button><button class="theme-card" data-theme="wood"><div class="theme-preview" style="--preview-light: #f1dfbd; --preview-dark: #9b6b43;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Warm Wood</strong></button><button class="theme-card" data-theme="midnight"><div class="theme-preview" style="--preview-light: #aeb7c8; --preview-dark: #46536d;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Midnight</strong></button><button class="theme-card" data-theme="mint"><div class="theme-preview" style="--preview-light: #e1f0e5; --preview-dark: #72a98b;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Mint</strong></button><button class="theme-card" data-theme="sand"><div class="theme-preview" style="--preview-light: #f3e8c9; --preview-dark: #b6a06a;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Sand</strong></button></div>
+</section>
+<main id="gamePage" class="game-hidden">
 <section class="board-column">
  <div class="game-top">
-  <span>PLAY AGAINST STOCKFISH</span>
+  <span>PLAY AGAINST AI</span>
   <span id="turnLabel">White to move</span>
  </div>
  <div class="player-strip">
   <div class="avatar" id="topAvatar">♟</div>
-  <div class="player-name" id="topName">Stockfish 19</div>
-  <div class="player-sub" id="topRating">ELO 1500</div>
+  <div class="player-name" id="topName">AI</div>
+  <div class="player-sub" id="topRating">ELO 1500</div><div class="clock" id="topClock">10:00</div>
  </div>
  <div class="board-wrap">
   <div class="evalbar">
    <div class="eval-black" id="evalBlack"></div>
    <div class="eval-label" id="evalText">0.0</div>
   </div>
-  <div class="board" id="board" aria-label="Chessboard"></div>
+  <div class="board" id="board" aria-label="Chessboard"><button type="button" class="square light" data-row="0" data-col="0"><img class="piece-image" alt="Black Rook" draggable="false" src="./BRook.png"><span class="coord rank">8</span><span class="coord file"></span></button><button type="button" class="square dark" data-row="0" data-col="1"><img class="piece-image" alt="Black Horse" draggable="false" src="./BHorse.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="0" data-col="2"><img class="piece-image" alt="Black Bishop" draggable="false" src="./BBishop.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="0" data-col="3"><img class="piece-image" alt="Black Queen" draggable="false" src="./BQueen.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="0" data-col="4"><img class="piece-image" alt="Black King" draggable="false" src="./Bking.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="0" data-col="5"><img class="piece-image" alt="Black Bishop" draggable="false" src="./BBishop.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="0" data-col="6"><img class="piece-image" alt="Black Horse" draggable="false" src="./BHorse.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="0" data-col="7"><img class="piece-image" alt="Black Rook" draggable="false" src="./BRook.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="1" data-col="0"><img class="piece-image" alt="Black Pawn" draggable="false" src="./BPawn.png"><span class="coord rank">7</span><span class="coord file"></span></button><button type="button" class="square light" data-row="1" data-col="1"><img class="piece-image" alt="Black Pawn" draggable="false" src="./BPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="1" data-col="2"><img class="piece-image" alt="Black Pawn" draggable="false" src="./BPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="1" data-col="3"><img class="piece-image" alt="Black Pawn" draggable="false" src="./BPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="1" data-col="4"><img class="piece-image" alt="Black Pawn" draggable="false" src="./BPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="1" data-col="5"><img class="piece-image" alt="Black Pawn" draggable="false" src="./BPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="1" data-col="6"><img class="piece-image" alt="Black Pawn" draggable="false" src="./BPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="1" data-col="7"><img class="piece-image" alt="Black Pawn" draggable="false" src="./BPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="2" data-col="0"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank">6</span><span class="coord file"></span></button><button type="button" class="square dark" data-row="2" data-col="1"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="2" data-col="2"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="2" data-col="3"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="2" data-col="4"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="2" data-col="5"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="2" data-col="6"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="2" data-col="7"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="3" data-col="0"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank">5</span><span class="coord file"></span></button><button type="button" class="square light" data-row="3" data-col="1"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="3" data-col="2"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="3" data-col="3"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="3" data-col="4"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="3" data-col="5"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="3" data-col="6"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="3" data-col="7"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="4" data-col="0"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank">4</span><span class="coord file"></span></button><button type="button" class="square dark" data-row="4" data-col="1"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="4" data-col="2"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="4" data-col="3"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="4" data-col="4"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="4" data-col="5"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="4" data-col="6"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="4" data-col="7"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="5" data-col="0"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank">3</span><span class="coord file"></span></button><button type="button" class="square light" data-row="5" data-col="1"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="5" data-col="2"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="5" data-col="3"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="5" data-col="4"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="5" data-col="5"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="5" data-col="6"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="5" data-col="7"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="6" data-col="0"><img class="piece-image" alt="White Pawn" draggable="false" src="./WPawn.png"><span class="coord rank">2</span><span class="coord file"></span></button><button type="button" class="square dark" data-row="6" data-col="1"><img class="piece-image" alt="White Pawn" draggable="false" src="./WPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="6" data-col="2"><img class="piece-image" alt="White Pawn" draggable="false" src="./WPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="6" data-col="3"><img class="piece-image" alt="White Pawn" draggable="false" src="./WPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="6" data-col="4"><img class="piece-image" alt="White Pawn" draggable="false" src="./WPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="6" data-col="5"><img class="piece-image" alt="White Pawn" draggable="false" src="./WPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="6" data-col="6"><img class="piece-image" alt="White Pawn" draggable="false" src="./WPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="6" data-col="7"><img class="piece-image" alt="White Pawn" draggable="false" src="./WPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="7" data-col="0"><img class="piece-image" alt="White Rook" draggable="false" src="./WRook.png"><span class="coord rank">1</span><span class="coord file">a</span></button><button type="button" class="square light" data-row="7" data-col="1"><img class="piece-image" alt="White Horse" draggable="false" src="./WHorse.png"><span class="coord rank"></span><span class="coord file">b</span></button><button type="button" class="square dark" data-row="7" data-col="2"><img class="piece-image" alt="White Bishop" draggable="false" src="./WBishop.png"><span class="coord rank"></span><span class="coord file">c</span></button><button type="button" class="square light" data-row="7" data-col="3"><img class="piece-image" alt="White Queen" draggable="false" src="./WQueen.png"><span class="coord rank"></span><span class="coord file">d</span></button><button type="button" class="square dark" data-row="7" data-col="4"><img class="piece-image" alt="White King" draggable="false" src="./Wking.png"><span class="coord rank"></span><span class="coord file">e</span></button><button type="button" class="square light" data-row="7" data-col="5"><img class="piece-image" alt="White Bishop" draggable="false" src="./WBishop.png"><span class="coord rank"></span><span class="coord file">f</span></button><button type="button" class="square dark" data-row="7" data-col="6"><img class="piece-image" alt="White Horse" draggable="false" src="./WHorse.png"><span class="coord rank"></span><span class="coord file">g</span></button><button type="button" class="square light" data-row="7" data-col="7"><img class="piece-image" alt="White Rook" draggable="false" src="./WRook.png"><span class="coord rank"></span><span class="coord file">h</span></button><svg id="arrowLayer" class="arrow-layer" viewBox="0 0 800 800" preserveAspectRatio="none"></svg></div>
  </div>
  <div class="player-strip">
   <div class="avatar" id="bottomAvatar">♙</div>
   <div class="player-name" id="bottomName">You</div>
-  <div class="player-sub" id="bottomRating">White</div>
+  <div class="player-sub" id="bottomRating">White</div><div class="clock" id="bottomClock">10:00</div>
  </div>
- <div class="board-tools">
-  <button id="undoBtn">↶ Undo</button>
+ <div class="opening-bar"><span>Opening:</span><strong id="openingName">Starting position</strong><span>· Castling and en passant supported</span></div>
+  <div class="board-tools">
+  <button id="undoBtn" disabled="">↶ Undo</button>
   <button id="flipBtn">⇅ Flip</button>
   <button id="restartBtn">⟲ Restart</button>
   <button id="premoveBtn">Premove: Off</button>
@@ -126,7 +146,7 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
 
 <aside class="side">
  <div class="panel-content">
-  <h2 class="section-title">Play Stockfish 19</h2>
+  <h2 class="section-title">Play vs AI</h2>
   <div class="setup">
    <label>Choose your side</label>
    <div class="colors">
@@ -134,7 +154,7 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
     <button data-color="b">♚ Black</button>
     <button data-color="random">Random</button>
    </div>
-   <label for="elo">Opponent strength</label>
+   <label for="elo">AI strength</label>
    <div class="range-row">
     <span>400</span>
     <span class="elo-number" id="eloValue">1500 ELO</span>
@@ -143,19 +163,19 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
    <input id="elo" type="range" min="400" max="3200" step="50" value="1500">
    <button class="primary" id="startBtn" style="width:100%;margin-top:13px">Start game</button>
   </div>
-  <div class="status" id="status">Loading Stockfish 19 engine…</div>
+  <div class="status" id="status">Engine startup failed: Failed to construct 'Worker': Script at 'file:///C:/Users/KChu1/Downloads/engine/stockfish-19-lite-single.js' cannot be accessed from origin 'null'.</div>
   <div class="engine-line"><span>Evaluation</span><strong id="evalSide">0.00</strong></div>
   <div class="engine-line"><span>Depth</span><strong id="depth">—</strong></div>
-  <div class="pv" id="pv">Stockfish's thinking line will appear here.</div>
+  <div class="pv" id="pv">AI's thinking line will appear here.</div>
   <div class="premove-indicator" id="premoveText"></div>
   <label>Move history</label>
-  <div class="moves" id="moves"></div>
-  <div class="small">Stockfish is set to think for 3 seconds before each reply. Hold Shift and drag between squares to draw arrows.</div>
+  <div class="moves" id="moves"><div class="small">No moves yet.</div></div>
+  <div class="small">The AI thinks for about 3 seconds before each reply. Shift+drag or right-click and drag to draw arrows. Shift+click or right-click a piece to clear arrows from it.</div>
  </div>
 </aside>
 </main>
 
-<footer>ChessOn is an independent chess interface. Stockfish is free software; see the Stockfish and chess.js license notices before redistributing.</footer>
+<footer>ChessOn is an independent chess interface powered by the Stockfish chess engine and chess.js.</footer>
 <div class="promo-overlay" id="promoOverlay"><div class="promo-box" id="promoChoices"></div></div>
 
 <script type="module">
@@ -200,6 +220,12 @@ let dragGhost=null;
 
 let botReplyDueAt=0;
 let botMoveTimer=null;
+let clockSeconds={w:600,b:600};
+let clockRunning=false;
+let clockLastTick=0;
+let clockInterval=null;
+let activePage="hub";
+let selectedTheme="classic";
 
 function setStatus(message){$("status").textContent=message}
 function sideName(color){return color==="w"?"White":"Black"}
@@ -271,7 +297,7 @@ function renderArrows(){
   if(!length)continue;
 
   const ux=dx/length,uy=dy/length;
-  const endX=to.x-ux*15,endY=to.y-uy*15;
+  const endX=to.x-ux*22,endY=to.y-uy*22;
 
   const line=document.createElementNS(ns,"line");
   line.setAttribute("x1",from.x);
@@ -282,28 +308,13 @@ function renderArrows(){
   svg.appendChild(line);
 
   const head=document.createElementNS(ns,"polygon");
-  const px=-uy*10,py=ux*10;
+  const px=-uy*18,py=ux*18;
   head.setAttribute("points",`${to.x},${to.y} ${endX+px},${endY+py} ${endX-px},${endY-py}`);
   head.setAttribute("class","arrow-head");
   svg.appendChild(head);
 
-  const start=document.createElementNS(ns,"circle");
-  start.setAttribute("cx",from.x);
-  start.setAttribute("cy",from.y);
-  start.setAttribute("r",15);
-  start.setAttribute("class","arrow-start");
-  svg.appendChild(start);
  }
 
- if(arrowDrag){
-  const from=coordinatesForSquare(arrowDrag.from);
-  const circle=document.createElementNS(ns,"circle");
-  circle.setAttribute("cx",from.x);
-  circle.setAttribute("cy",from.y);
-  circle.setAttribute("r",17);
-  circle.setAttribute("class","arrow-start");
-  svg.appendChild(circle);
- }
 }
 
 function addArrow(from,to){
@@ -384,6 +395,7 @@ function buildBoardOnce(){
  board.appendChild(svg);
 
  board.addEventListener("pointerdown",onPointerDown);
+ board.addEventListener("contextmenu",event=>event.preventDefault());
  document.addEventListener("pointermove",onPointerMove);
  document.addEventListener("pointerup",onPointerUp);
  document.addEventListener("pointercancel",cancelPointer);
@@ -397,9 +409,27 @@ function onPointerDown(event){
  if(!square)return;
 
  if(event.shiftKey){
-  arrowDrag={from:square};
+  const fromPiece=game.get(square);
+  if(fromPiece){
+   arrows=arrows.filter(a=>a.from!==square);
+   renderArrows();
+  }else{
+   arrowDrag={from:square};
+   pointerDrag=null;
+  }
+  event.preventDefault();
+  return;
+ }
+ if(event.button===2){
+  const fromPiece=game.get(square);
+  if(fromPiece){
+   arrows=arrows.filter(a=>a.from!==square);
+   arrowDrag=null;
+   renderArrows();
+  }else{
+   arrowDrag={from:square};
+  }
   pointerDrag=null;
-  renderArrows();
   event.preventDefault();
   return;
  }
@@ -608,8 +638,8 @@ function updateLabels(){
   ?(game.isCheckmate()?sideName(turn==="w"?"b":"w")+" wins by checkmate":"Game drawn")
   :sideName(turn)+" to move"+(game.isCheck()?" · Check":"");
 
- $("topName").textContent=humanColor==="w"?"Stockfish 19":"You";
- $("bottomName").textContent=humanColor==="w"?"You":"Stockfish 19";
+ $("topName").textContent=humanColor==="w"?"AI":"You";
+ $("bottomName").textContent=humanColor==="w"?"You":"AI";
  $("topRating").textContent=humanColor==="w"?"ELO "+elo:"Black";
  $("bottomRating").textContent=humanColor==="w"?"White":"ELO "+elo;
  $("topAvatar").textContent=humanColor==="w"?"♟":"♙";
@@ -722,6 +752,8 @@ function makeMove(move,preservePremove=false){
  if(!made)return;
 
  lastMove={from:made.from,to:made.to};
+ startClockIfNeeded();
+ updateOpening();
  clearSelection();
  clearArrows();
  queuedPremove=savedPremove;
@@ -792,6 +824,75 @@ function tryPremove(){
  }
 }
 
+
+const THEMES=[
+ {id:"classic",name:"Classic",light:"#f0d9a5",dark:"#b58863"},
+ {id:"green",name:"Tournament Green",light:"#eeeed2",dark:"#769656"},
+ {id:"blue",name:"Ocean Blue",light:"#dce8f2",dark:"#6689a8"},
+ {id:"purple",name:"Royal Purple",light:"#eee2f4",dark:"#9270a8"},
+ {id:"rose",name:"Rosewood",light:"#f3d7d8",dark:"#b66f78"},
+ {id:"slate",name:"Slate",light:"#dce0e5",dark:"#788493"},
+ {id:"wood",name:"Warm Wood",light:"#f1dfbd",dark:"#9b6b43"},
+ {id:"midnight",name:"Midnight",light:"#aeb7c8",dark:"#46536d"},
+ {id:"mint",name:"Mint",light:"#e1f0e5",dark:"#72a98b"},
+ {id:"sand",name:"Sand",light:"#f3e8c9",dark:"#b6a06a"}
+];
+function applyTheme(id){
+ const theme=THEMES.find(t=>t.id===id)||THEMES[0];selectedTheme=theme.id;
+ document.documentElement.style.setProperty("--light",theme.light);
+ document.documentElement.style.setProperty("--dark",theme.dark);
+ document.querySelectorAll(".theme-card").forEach(card=>card.classList.toggle("active",card.dataset.theme===id));
+}
+function buildThemes(){
+ const grid=$("themeGrid");if(!grid)return;grid.innerHTML="";
+ for(const theme of THEMES){
+  const card=document.createElement("button");card.className="theme-card";card.dataset.theme=theme.id;
+  const preview=document.createElement("div");preview.className="theme-preview";preview.style.setProperty("--preview-light",theme.light);preview.style.setProperty("--preview-dark",theme.dark);
+  for(let i=0;i<8;i++)preview.append(document.createElement("i"));
+  const name=document.createElement("strong");name.textContent=theme.name;
+  card.append(preview,name);card.onclick=()=>applyTheme(theme.id);grid.append(card);
+ }
+ applyTheme(selectedTheme);
+}
+function showPage(page){
+ activePage=page;
+ $("playHub").classList.toggle("visible",page==="hub");
+ $("themesPage").classList.toggle("visible",page==="themes");
+ $("gamePage").classList.toggle("game-hidden",page!=="game");
+ $("navPlay").classList.toggle("active",page==="hub"||page==="game");
+ $("navThemes").classList.toggle("active",page==="themes");
+}
+function formatClock(seconds){const s=Math.max(0,seconds);return Math.floor(s/60).toString().padStart(2,"0")+":"+(s%60).toString().padStart(2,"0")}
+function renderClocks(){
+ const topColor=humanColor==="w"?"b":"w",bottomColor=humanColor;
+ $("topClock").textContent=formatClock(clockSeconds[topColor]);
+ $("bottomClock").textContent=formatClock(clockSeconds[bottomColor]);
+ $("topClock").classList.toggle("active-clock",clockRunning&&game.turn()===topColor);
+ $("bottomClock").classList.toggle("active-clock",clockRunning&&game.turn()===bottomColor);
+}
+function resetClock(){clockSeconds={w:600,b:600};clockRunning=false;clockLastTick=0;renderClocks();}
+function startClockIfNeeded(){if(!clockRunning){clockRunning=true;clockLastTick=Date.now();}renderClocks();}
+function clockTick(){
+ if(!clockRunning||game.isGameOver())return;
+ const now=Date.now();if(!clockLastTick)clockLastTick=now;
+ const elapsed=Math.floor((now-clockLastTick)/1000);if(elapsed<1)return;
+ clockLastTick+=elapsed*1000;const side=game.turn();clockSeconds[side]=Math.max(0,clockSeconds[side]-elapsed);renderClocks();
+ if(clockSeconds[side]===0){clockRunning=false;setStatus(sideName(side)+" ran out of time. Game over.");}
+}
+function openingLabel(){
+ const sans=game.history();const seq=sans.slice(0,8).join(" ");
+ if(!sans.length)return "Starting position";
+ const patterns=[
+  [/^e4 e5 Nf3 Nc6 Bb5/,"Ruy Lopez"],[/^e4 e5 Nf3 Nc6 Bc4/,"Italian Game"],[/^e4 e5 Nf3 Nc6 d4/,"Scotch Game"],
+  [/^e4 c5/,"Sicilian Defence"],[/^e4 e6/,"French Defence"],[/^e4 c6/,"Caro-Kann Defence"],[/^e4 d5/,"Scandinavian Defence"],
+  [/^d4 d5 c4/,"Queen’s Gambit"],[/^d4 Nf6 c4 g6/,"King’s Indian Defence"],[/^d4 Nf6 c4 e6/,"Indian Defence"],
+  [/^Nf3 d5/,"Réti Opening"],[/^c4/,"English Opening"],[/^e4/,"King’s Pawn Opening"],[/^d4/,"Queen’s Pawn Opening"]
+ ];
+ for(const [pattern,name] of patterns)if(pattern.test(seq))return name;
+ return "Unclassified opening";
+}
+function updateOpening(){$("openingName").textContent=openingLabel();}
+
 function initEngine(){
  try{
   engine=new Worker("./engine/stockfish-19-lite-single.js");
@@ -799,7 +900,7 @@ function initEngine(){
 
   engine.onerror=()=>{
    engineReady=false;
-   setStatus("Could not load Stockfish. Check your engine folder and reload.");
+   setStatus("Could not load AI. Check your engine folder and reload.");
   };
 
   engine.postMessage("uci");
@@ -820,7 +921,7 @@ function configureStrength(){
 
 function beginBotSearch(){
  if(!engineReady||!engine){
-  setStatus("Stockfish is still loading.");
+  setStatus("AI is still loading.");
   return;
  }
 
@@ -833,7 +934,7 @@ function beginBotSearch(){
  engine.postMessage("position fen "+game.fen());
  engine.postMessage("go movetime 3000");
 
- setStatus("Stockfish is thinking…");
+ setStatus("AI is thinking…");
 }
 
 function chooseBotMove(topMove){
@@ -883,7 +984,7 @@ function onEngineMessage(line){
 
  if(line==="readyok"){
   engineReady=true;
-  setStatus("Stockfish 19 ready.");
+  setStatus("AI ready.");
 
   if(game.turn()!==humanColor&&!game.isGameOver()){
    engineMove();
@@ -950,7 +1051,7 @@ function playEngineMove(code){
  if(!move)return;
 
  makeMove(move,true);
- setStatus("Stockfish played "+move.san+".");
+ setStatus("AI played "+move.san+".");
 
  if(queuedPremove){
   tryPremove();
@@ -976,6 +1077,8 @@ function restart(){
 
  engineBusy=false;
  game.reset();
+ resetClock();
+ updateOpening();
  clearSelection();
  clearArrows();
  lastMove=null;
@@ -983,7 +1086,7 @@ function restart(){
  $("premoveText").textContent="";
 
  renderAll();
- setStatus(engineReady?"New game.":"Waiting for Stockfish…");
+ setStatus(engineReady?"New game.":"Waiting for AI…");
 
  if(humanColor==="b"&&engineReady){
   engineMove();
@@ -1010,6 +1113,8 @@ function undo(){
 
  clearSelection();
  clearArrows();
+ resetClock();
+ updateOpening();
  queuedPremove=null;
  lastMove=null;
  $("premoveText").textContent="";
@@ -1026,7 +1131,7 @@ function applyNewGame(){
 
  restart();
  renderAll();
- setStatus(engineReady?"New game. Stockfish is ready.":"Loading Stockfish 19…");
+ setStatus(engineReady?"New game. AI is ready.":"Loading AI…");
 }
 
 $("elo").addEventListener("input",event=>{
@@ -1064,7 +1169,7 @@ $("premoveBtn").onclick=()=>{
   legalTargets=[];
   $("premoveText").textContent="";
  }else{
-  $("premoveText").textContent="Select and move one of your pieces during Stockfish's turn.";
+  $("premoveText").textContent="Select and move one of your pieces during AI's turn.";
  }
 
  renderBoard();
@@ -1076,8 +1181,15 @@ $("promoOverlay").addEventListener("click",event=>{
  }
 });
 
+$("navPlay").onclick=()=>showPage("hub");
+$("navThemes").onclick=()=>showPage("themes");
+$("onlineChoice").onclick=()=>{$("onlineNotice").style.display="block";};
+$("aiChoice").onclick=()=>{showPage("game");applyNewGame();};
+buildThemes();
+resetClock();
+if(!clockInterval)clockInterval=setInterval(clockTick,250);
 initEngine();
 renderAll();
 </script>
-</body>
-</html>
+
+</body></html>
