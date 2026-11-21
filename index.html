@@ -131,12 +131,6 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
 .next-arrow-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:7;overflow:visible}.next-arrow-line{stroke:#e5a900;stroke-width:12;stroke-linecap:round;opacity:.88}.next-arrow-head{fill:#e5a900;opacity:.95}.next-arrow-number{font:900 27px Inter,system-ui,sans-serif;fill:#fff;stroke:#4b3900;stroke-width:4px;paint-order:stroke;text-anchor:middle;dominant-baseline:middle}
 .next-side{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}.next-side-content{padding:16px}.next-move-list{display:grid;gap:9px;margin-top:12px}.next-move-item{display:flex;align-items:center;gap:10px;padding:10px;background:var(--soft);border-radius:8px}.next-move-number{width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:#d9a400;color:#211a00;font-weight:900;flex:0 0 27px}.next-move-san{font-size:18px;font-weight:850}.next-move-desc{font-size:11px;color:var(--muted);margin-left:auto}.next-hint{font-size:12px;color:var(--muted);line-height:1.5;margin-top:12px}.next-status{padding:11px;background:var(--soft);border-radius:8px;color:var(--muted);font-size:13px;margin-top:12px;min-height:42px}.next-board-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;color:var(--muted);font-size:13px}.next-tools{display:flex;gap:8px;margin-top:12px}.next-tools button{flex:1}
 .next-drag-ghost{position:fixed;z-index:1000;width:70px;height:70px;object-fit:contain;pointer-events:none;transform:translate(-50%,-50%) scale(1.43)}
-.piece-tray-wrap{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
-.piece-tray-title{font-size:13px;color:var(--muted);font-weight:750;margin-bottom:10px}
-.piece-tray{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px}
-.tray-piece{height:64px;min-width:0;padding:5px;background:var(--soft);border:1px solid var(--line);border-radius:7px;display:grid;place-items:center;cursor:grab;touch-action:none;user-select:none}
-.tray-piece:active{cursor:grabbing}.tray-piece img{width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none;transform:scale(1.18)}
-.next-square.drag-over{box-shadow:inset 0 0 0 5px #e5b400}
 
 @media(max-width:850px){.next-layout{grid-template-columns:1fr;max-width:700px;gap:16px}.piece-tray{grid-template-columns:repeat(6,minmax(0,1fr))}.tray-piece{height:56px}}
 
@@ -147,13 +141,13 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
 <aside class="left-sidebar">
  <div class="sidebar-logo">Chess<span>On</span></div>
  <nav class="sidebar-nav">
-  <button id="navPlay" class="active">♟ &nbsp; Play</button>
+  <button id="navPlay" class="">♟ &nbsp; Play</button>
   <button id="navThemes">▦ &nbsp; Themes</button>
-  <button id="navNextMove">➜ &nbsp; Next Move</button>
+  <button id="navNextMove" class="active">➜ &nbsp; Next Move</button>
  </nav>
  <div class="sidebar-note">Your chess. Your moves.</div>
 </aside>
-<section class="page visible" id="playHub">
+<section class="page" id="playHub">
  <h1 class="hub-title">Play ChessOn</h1>
  <p class="hub-sub">Choose how you want to play.</p>
  <div class="choice-grid">
@@ -166,24 +160,23 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
  <h1 class="hub-title">Board themes</h1>
  <p class="hub-sub">Choose a board style and switch between light and dark ChessOn.</p>
  <div class="theme-options"><strong>App appearance</strong><button id="lightModeBtn" class="active">Light mode</button><button id="darkModeBtn">Dark mode</button></div>
- <div class="theme-grid" id="themeGrid"><button class="theme-card active" data-theme="classic"><div class="theme-preview" style="--preview-light: #f0d9a5; --preview-dark: #b58863;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Classic</strong></button><button class="theme-card" data-theme="green"><div class="theme-preview" style="--preview-light: #eeeed2; --preview-dark: #769656;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Tournament Green</strong></button><button class="theme-card" data-theme="blue"><div class="theme-preview" style="--preview-light: #dceaf4; --preview-dark: #6387a8;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Ocean Blue</strong></button><button class="theme-card" data-theme="purple"><div class="theme-preview" style="--preview-light: #e7ddf2; --preview-dark: #8873a8;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Royal Purple</strong></button><button class="theme-card" data-theme="rose"><div class="theme-preview" style="--preview-light: #f1d5d8; --preview-dark: #b66f7d;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Rosewood</strong></button><button class="theme-card" data-theme="slate"><div class="theme-preview" style="--preview-light: #d7dce2; --preview-dark: #687585;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Slate</strong></button><button class="theme-card" data-theme="wood"><div class="theme-preview" style="--preview-light: #f0d6ad; --preview-dark: #a56d43;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Warm Wood</strong></button><button class="theme-card" data-theme="midnight"><div class="theme-preview" style="--preview-light: #b8c2d6; --preview-dark: #4a5670;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Midnight</strong></button><button class="theme-card" data-theme="mint"><div class="theme-preview" style="--preview-light: #d8eee0; --preview-dark: #6c9b83;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Mint</strong></button><button class="theme-card" data-theme="sand"><div class="theme-preview" style="--preview-light: #f1e3c5; --preview-dark: #b79a6d;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Sand</strong></button><button class="theme-card" data-theme="mono"><div class="theme-preview" style="--preview-light: #eeeeee; --preview-dark: #777777;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Black &amp; White</strong></button></div>
+ <div class="theme-grid" id="themeGrid"><button class="theme-card active" data-theme="classic"><div class="theme-preview" style="--preview-light: #f0d9a5; --preview-dark: #b58863;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Classic</strong></button><button class="theme-card" data-theme="green"><div class="theme-preview" style="--preview-light: #eeeed2; --preview-dark: #769656;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Tournament Green</strong></button><button class="theme-card" data-theme="blue"><div class="theme-preview" style="--preview-light: #dce8f2; --preview-dark: #6689a8;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Ocean Blue</strong></button><button class="theme-card" data-theme="purple"><div class="theme-preview" style="--preview-light: #eee2f4; --preview-dark: #9270a8;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Royal Purple</strong></button><button class="theme-card" data-theme="rose"><div class="theme-preview" style="--preview-light: #f3d7d8; --preview-dark: #b66f78;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Rosewood</strong></button><button class="theme-card" data-theme="slate"><div class="theme-preview" style="--preview-light: #dce0e5; --preview-dark: #788493;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Slate</strong></button><button class="theme-card" data-theme="wood"><div class="theme-preview" style="--preview-light: #f1dfbd; --preview-dark: #9b6b43;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Warm Wood</strong></button><button class="theme-card" data-theme="midnight"><div class="theme-preview" style="--preview-light: #aeb7c8; --preview-dark: #46536d;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Midnight</strong></button><button class="theme-card" data-theme="mint"><div class="theme-preview" style="--preview-light: #e1f0e5; --preview-dark: #72a98b;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Mint</strong></button><button class="theme-card" data-theme="sand"><div class="theme-preview" style="--preview-light: #f3e8c9; --preview-dark: #b6a06a;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Sand</strong></button><button class="theme-card" data-theme="monochrome"><div class="theme-preview" style="--preview-light: #ffffff; --preview-dark: #222222;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Black &amp; White</strong></button></div>
 </section>
 
-<section class="page" id="nextMovePage">
+<section class="page visible" id="nextMovePage">
  <h1 class="hub-title">Next Move</h1>
  <p class="hub-sub">Play a normal chess game and see Stockfish’s top three moves for whoever’s turn it is.</p>
  <div class="next-layout">
   <section class="next-board-area">
-   <div class="next-board-title"><span id="nextTurnLabel">White to move</span><span>Free movement · no move restrictions</span></div>
-   <div class="next-board-wrap"><div class="next-board" id="nextBoard" aria-label="Next Move chessboard"><button type="button" class="next-square light" data-square="a8"><img class="piece-image" src="./BRook.png" alt="Black Rook" draggable="false"><span class="coord rank">8</span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="b8"><img class="piece-image" src="./BHorse.png" alt="Black Horse" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="c8"><img class="piece-image" src="./BBishop.png" alt="Black Bishop" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="d8"><img class="piece-image" src="./BQueen.png" alt="Black Queen" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="e8"><img class="piece-image" src="./Bking.png" alt="Black King" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="f8"><img class="piece-image" src="./BBishop.png" alt="Black Bishop" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="g8"><img class="piece-image" src="./BHorse.png" alt="Black Horse" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="h8"><img class="piece-image" src="./BRook.png" alt="Black Rook" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="a7"><img class="piece-image" src="./BPawn.png" alt="Black Pawn" draggable="false"><span class="coord rank">7</span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="b7"><img class="piece-image" src="./BPawn.png" alt="Black Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="c7"><img class="piece-image" src="./BPawn.png" alt="Black Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="d7"><img class="piece-image" src="./BPawn.png" alt="Black Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="e7"><img class="piece-image" src="./BPawn.png" alt="Black Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="f7"><img class="piece-image" src="./BPawn.png" alt="Black Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="g7"><img class="piece-image" src="./BPawn.png" alt="Black Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="h7"><img class="piece-image" src="./BPawn.png" alt="Black Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="a6"><span class="coord rank">6</span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="b6"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="c6"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="d6"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="e6"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="f6"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="g6"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="h6"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="a5"><span class="coord rank">5</span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="b5"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="c5"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="d5"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="e5"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="f5"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="g5"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="h5"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="a4"><span class="coord rank">4</span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="b4"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="c4"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="d4"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="e4"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="f4"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="g4"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="h4"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="a3"><span class="coord rank">3</span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="b3"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="c3"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="d3"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="e3"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="f3"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="g3"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="h3"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="a2"><img class="piece-image" src="./WPawn.png" alt="White Pawn" draggable="false"><span class="coord rank">2</span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="b2"><img class="piece-image" src="./WPawn.png" alt="White Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="c2"><img class="piece-image" src="./WPawn.png" alt="White Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="d2"><img class="piece-image" src="./WPawn.png" alt="White Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="e2"><img class="piece-image" src="./WPawn.png" alt="White Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="f2"><img class="piece-image" src="./WPawn.png" alt="White Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="g2"><img class="piece-image" src="./WPawn.png" alt="White Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="h2"><img class="piece-image" src="./WPawn.png" alt="White Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="a1"><img class="piece-image" src="./WRook.png" alt="White Rook" draggable="false"><span class="coord rank">1</span><span class="coord file">a</span></button><button type="button" class="next-square light" data-square="b1"><img class="piece-image" src="./WHorse.png" alt="White Horse" draggable="false"><span class="coord rank"></span><span class="coord file">b</span></button><button type="button" class="next-square dark" data-square="c1"><img class="piece-image" src="./WBishop.png" alt="White Bishop" draggable="false"><span class="coord rank"></span><span class="coord file">c</span></button><button type="button" class="next-square light" data-square="d1"><img class="piece-image" src="./WQueen.png" alt="White Queen" draggable="false"><span class="coord rank"></span><span class="coord file">d</span></button><button type="button" class="next-square dark" data-square="e1"><img class="piece-image" src="./Wking.png" alt="White King" draggable="false"><span class="coord rank"></span><span class="coord file">e</span></button><button type="button" class="next-square light" data-square="f1"><img class="piece-image" src="./WBishop.png" alt="White Bishop" draggable="false"><span class="coord rank"></span><span class="coord file">f</span></button><button type="button" class="next-square dark" data-square="g1"><img class="piece-image" src="./WHorse.png" alt="White Horse" draggable="false"><span class="coord rank"></span><span class="coord file">g</span></button><button type="button" class="next-square light" data-square="h1"><img class="piece-image" src="./WRook.png" alt="White Rook" draggable="false"><span class="coord rank"></span><span class="coord file">h</span></button><svg class="next-arrow-layer" viewBox="0 0 800 800" preserveAspectRatio="none" id="nextArrowLayer"></svg></div></div>
-   <div class="next-tools"><button id="nextUndo" disabled="">↶ Undo</button><button id="nextFlip">⇅ Flip board</button><button id="nextReset">⟲ Reset board</button></div>
-   <div class="piece-tray-wrap"><div class="piece-tray-title">Add pieces — drag any piece onto the board</div><div class="piece-tray" id="nextPieceTray"><button type="button" class="tray-piece" data-code="wk" title="Drag to add White King" aria-label="Drag to add White King"><img src="./Wking.png" alt="White King" draggable="false"></button><button type="button" class="tray-piece" data-code="wq" title="Drag to add White Queen" aria-label="Drag to add White Queen"><img src="./WQueen.png" alt="White Queen" draggable="false"></button><button type="button" class="tray-piece" data-code="wr" title="Drag to add White Rook" aria-label="Drag to add White Rook"><img src="./WRook.png" alt="White Rook" draggable="false"></button><button type="button" class="tray-piece" data-code="wb" title="Drag to add White Bishop" aria-label="Drag to add White Bishop"><img src="./WBishop.png" alt="White Bishop" draggable="false"></button><button type="button" class="tray-piece" data-code="wn" title="Drag to add White Horse" aria-label="Drag to add White Horse"><img src="./WHorse.png" alt="White Horse" draggable="false"></button><button type="button" class="tray-piece" data-code="wp" title="Drag to add White Pawn" aria-label="Drag to add White Pawn"><img src="./WPawn.png" alt="White Pawn" draggable="false"></button><button type="button" class="tray-piece" data-code="bk" title="Drag to add Black King" aria-label="Drag to add Black King"><img src="./Bking.png" alt="Black King" draggable="false"></button><button type="button" class="tray-piece" data-code="bq" title="Drag to add Black Queen" aria-label="Drag to add Black Queen"><img src="./BQueen.png" alt="Black Queen" draggable="false"></button><button type="button" class="tray-piece" data-code="br" title="Drag to add Black Rook" aria-label="Drag to add Black Rook"><img src="./BRook.png" alt="Black Rook" draggable="false"></button><button type="button" class="tray-piece" data-code="bb" title="Drag to add Black Bishop" aria-label="Drag to add Black Bishop"><img src="./BBishop.png" alt="Black Bishop" draggable="false"></button><button type="button" class="tray-piece" data-code="bn" title="Drag to add Black Horse" aria-label="Drag to add Black Horse"><img src="./BHorse.png" alt="Black Horse" draggable="false"></button><button type="button" class="tray-piece" data-code="bp" title="Drag to add Black Pawn" aria-label="Drag to add Black Pawn"><img src="./BPawn.png" alt="Black Pawn" draggable="false"></button></div></div>
+   <div class="next-board-title"><span id="nextTurnLabel">White to move</span><span>Move pieces normally</span></div>
+   <div class="next-board-wrap"><div class="next-board" id="nextBoard" aria-label="Next Move chessboard"><button type="button" class="next-square light" data-square="a8"><img class="piece-image" src="./BRook.png" alt="Black Rook" draggable="false"><span class="coord rank">8</span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="b8"><img class="piece-image" src="./BHorse.png" alt="Black Horse" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="c8"><img class="piece-image" src="./BBishop.png" alt="Black Bishop" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="d8"><img class="piece-image" src="./BQueen.png" alt="Black Queen" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="e8"><img class="piece-image" src="./Bking.png" alt="Black King" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="f8"><img class="piece-image" src="./BBishop.png" alt="Black Bishop" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="g8"><img class="piece-image" src="./BHorse.png" alt="Black Horse" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="h8"><img class="piece-image" src="./BRook.png" alt="Black Rook" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="a7"><img class="piece-image" src="./BPawn.png" alt="Black Pawn" draggable="false"><span class="coord rank">7</span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="b7"><img class="piece-image" src="./BPawn.png" alt="Black Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="c7"><img class="piece-image" src="./BPawn.png" alt="Black Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="d7"><img class="piece-image" src="./BPawn.png" alt="Black Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark last" data-square="e7"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="f7"><img class="piece-image" src="./BPawn.png" alt="Black Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="g7"><img class="piece-image" src="./BPawn.png" alt="Black Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="h7"><img class="piece-image" src="./BPawn.png" alt="Black Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="a6"><span class="coord rank">6</span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="b6"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="c6"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="d6"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="e6"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="f6"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="g6"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="h6"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="a5"><span class="coord rank">5</span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="b5"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="c5"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="d5"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark last" data-square="e5"><img class="piece-image" src="./BPawn.png" alt="Black Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="f5"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="g5"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light legal" data-square="h5"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="a4"><span class="coord rank">4</span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="b4"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="c4"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="d4"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="e4"><img class="piece-image" src="./WPawn.png" alt="White Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="f4"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light legal" data-square="g4"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="h4"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="a3"><span class="coord rank">3</span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="b3"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="c3"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="d3"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="e3"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light legal" data-square="f3"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="g3"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="h3"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="a2"><img class="piece-image" src="./WPawn.png" alt="White Pawn" draggable="false"><span class="coord rank">2</span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="b2"><img class="piece-image" src="./WPawn.png" alt="White Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="c2"><img class="piece-image" src="./WPawn.png" alt="White Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="d2"><img class="piece-image" src="./WPawn.png" alt="White Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light legal" data-square="e2"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="f2"><img class="piece-image" src="./WPawn.png" alt="White Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square light" data-square="g2"><img class="piece-image" src="./WPawn.png" alt="White Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="h2"><img class="piece-image" src="./WPawn.png" alt="White Pawn" draggable="false"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="next-square dark" data-square="a1"><img class="piece-image" src="./WRook.png" alt="White Rook" draggable="false"><span class="coord rank">1</span><span class="coord file">a</span></button><button type="button" class="next-square light" data-square="b1"><img class="piece-image" src="./WHorse.png" alt="White Horse" draggable="false"><span class="coord rank"></span><span class="coord file">b</span></button><button type="button" class="next-square dark" data-square="c1"><img class="piece-image" src="./WBishop.png" alt="White Bishop" draggable="false"><span class="coord rank"></span><span class="coord file">c</span></button><button type="button" class="next-square light selected" data-square="d1"><img class="piece-image" src="./WQueen.png" alt="White Queen" draggable="false"><span class="coord rank"></span><span class="coord file">d</span></button><button type="button" class="next-square dark" data-square="e1"><img class="piece-image" src="./Wking.png" alt="White King" draggable="false"><span class="coord rank"></span><span class="coord file">e</span></button><button type="button" class="next-square light" data-square="f1"><img class="piece-image" src="./WBishop.png" alt="White Bishop" draggable="false"><span class="coord rank"></span><span class="coord file">f</span></button><button type="button" class="next-square dark" data-square="g1"><img class="piece-image" src="./WHorse.png" alt="White Horse" draggable="false"><span class="coord rank"></span><span class="coord file">g</span></button><button type="button" class="next-square light" data-square="h1"><img class="piece-image" src="./WRook.png" alt="White Rook" draggable="false"><span class="coord rank"></span><span class="coord file">h</span></button><svg class="next-arrow-layer" viewBox="0 0 800 800" preserveAspectRatio="none" id="nextArrowLayer"></svg></div></div>
+   <div class="next-tools"><button id="nextUndo">↶ Undo</button><button id="nextFlip">⇅ Flip board</button><button id="nextReset">⟲ Restart</button></div>
   </section>
   <aside class="next-side"><div class="next-side-content">
    <h2 class="section-title">Best moves</h2>
-   <div class="next-status" id="nextStatus">Loading Stockfish…</div>
-   <div class="next-move-list" id="nextMoveList"><div class="next-move-item"><span class="next-move-number">1</span><strong>—</strong></div><div class="next-move-item"><span class="next-move-number">2</span><strong>—</strong></div><div class="next-move-item"><span class="next-move-number">3</span><strong>—</strong></div></div>
-   <div class="next-hint">Move any piece to any square, even if the move is not legal in a normal chess game. Drag a piece off the board to remove it. Drag pieces from the tray to add unlimited new pieces. Each edit switches whose turn Stockfish analyzes. The numbered arrows show the top 3 suggestions.</div>
+   <div class="next-status" id="nextStatus">Stockfish could not start: Failed to construct 'Worker': Script at 'file:///C:/Users/KChu1/Downloads/engine/stockfish-19-lite-single.js' cannot be accessed from origin 'null'.</div>
+   <div class="next-move-list" id="nextMoveList"><div class="next-move-item"><span class="next-move-number">1</span><strong class="next-move-san">—</strong><span class="next-move-desc"></span></div><div class="next-move-item"><span class="next-move-number">2</span><strong class="next-move-san">—</strong><span class="next-move-desc"></span></div><div class="next-move-item"><span class="next-move-number">3</span><strong class="next-move-san">—</strong><span class="next-move-desc"></span></div></div>
+   <div class="next-hint">The numbered arrows show Stockfish’s top 3 moves for the side whose turn it is. 1 is the best move. Make a move and the suggestions automatically switch to the other side.</div>
   </div></aside>
  </div>
 </section>
@@ -196,7 +189,7 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
  </div>
  <div class="player-strip">
   <div class="avatar" id="topAvatar">♟</div>
-  <div><div class="player-name" id="topName">ChessOn AI</div><div class="collection-row"><span>Captured</span><span class="collection-icons" id="topCaptured"></span><strong class="material-edge" id="topEdge"></strong></div></div>
+  <div><div class="player-name" id="topName">AI</div><div class="collection-row"><span>Captured</span><span class="collection-icons" id="topCaptured"></span><strong class="material-edge" id="topEdge"></strong></div></div>
   <div class="player-sub" id="topRating">ELO 1500</div><div class="clock" id="topClock">10:00</div>
  </div>
  <div class="board-wrap">
@@ -204,9 +197,7 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
    <div class="eval-black" id="evalBlack"></div>
    <div class="eval-label" id="evalText">0.0</div>
   </div>
-  <div class="board" id="board" aria-label="Chessboard"><button type="button" class="square dark" data-square="a1"><img class="piece-image" src="./WRook.png" alt="White r" draggable="true"><span class="coord rank">8</span></button><button type="button" class="square light" data-square="b1"><img class="piece-image" src="./WHorse.png" alt="White n" draggable="true"></button><button type="button" class="square dark" data-square="c1"><img class="piece-image" src="./WBishop.png" alt="White b" draggable="true"></button><button type="button" class="square light" data-square="d1"><img class="piece-image" src="./WQueen.png" alt="White q" draggable="true"></button><button type="button" class="square dark" data-square="e1"><img class="piece-image" src="./Wking.png" alt="White k" draggable="true"></button><button type="button" class="square light" data-square="f1"><img class="piece-image" src="./WBishop.png" alt="White b" draggable="true"></button><button type="button" class="square dark" data-square="g1"><img class="piece-image" src="./WHorse.png" alt="White n" draggable="true"></button><button type="button" class="square light" data-square="h1"><img class="piece-image" src="./WRook.png" alt="White r" draggable="true"></button><button type="button" class="square light" data-square="a2"><img class="piece-image" src="./WPawn.png" alt="White p" draggable="true"><span class="coord rank">7</span></button><button type="button" class="square dark" data-square="b2"><img class="piece-image" src="./WPawn.png" alt="White p" draggable="true"></button><button type="button" class="square light" data-square="c2"><img class="piece-image" src="./WPawn.png" alt="White p" draggable="true"></button><button type="button" class="square dark" data-square="d2"><img class="piece-image" src="./WPawn.png" alt="White p" draggable="true"></button><button type="button" class="square light" data-square="e2"><img class="piece-image" src="./WPawn.png" alt="White p" draggable="true"></button><button type="button" class="square dark" data-square="f2"><img class="piece-image" src="./WPawn.png" alt="White p" draggable="true"></button><button type="button" class="square light" data-square="g2"><img class="piece-image" src="./WPawn.png" alt="White p" draggable="true"></button><button type="button" class="square dark" data-square="h2"><img class="piece-image" src="./WPawn.png" alt="White p" draggable="true"></button><button type="button" class="square dark" data-square="a3"><span class="coord rank">6</span></button><button type="button" class="square light" data-square="b3"></button><button type="button" class="square dark" data-square="c3"></button><button type="button" class="square light" data-square="d3"></button><button type="button" class="square dark" data-square="e3"></button><button type="button" class="square light" data-square="f3"></button><button type="button" class="square dark" data-square="g3"></button><button type="button" class="square light" data-square="h3"></button><button type="button" class="square light" data-square="a4"><span class="coord rank">5</span></button><button type="button" class="square dark" data-square="b4"></button><button type="button" class="square light" data-square="c4"></button><button type="button" class="square dark" data-square="d4"></button><button type="button" class="square light" data-square="e4"></button><button type="button" class="square dark" data-square="f4"></button><button type="button" class="square light" data-square="g4"></button><button type="button" class="square dark" data-square="h4"></button><button type="button" class="square dark" data-square="a5"><span class="coord rank">4</span></button><button type="button" class="square light" data-square="b5"></button><button type="button" class="square dark" data-square="c5"></button><button type="button" class="square light" data-square="d5"></button><button type="button" class="square dark" data-square="e5"></button><button type="button" class="square light" data-square="f5"></button><button type="button" class="square dark" data-square="g5"></button><button type="button" class="square light" data-square="h5"></button><button type="button" class="square light" data-square="a6"><span class="coord rank">3</span></button><button type="button" class="square dark" data-square="b6"></button><button type="button" class="square light" data-square="c6"></button><button type="button" class="square dark" data-square="d6"></button><button type="button" class="square light" data-square="e6"></button><button type="button" class="square dark" data-square="f6"></button><button type="button" class="square light" data-square="g6"></button><button type="button" class="square dark" data-square="h6"></button><button type="button" class="square dark" data-square="a7"><img class="piece-image" src="./BPawn.png" alt="Black p" draggable="true"><span class="coord rank">2</span></button><button type="button" class="square light" data-square="b7"><img class="piece-image" src="./BPawn.png" alt="Black p" draggable="true"></button><button type="button" class="square dark" data-square="c7"><img class="piece-image" src="./BPawn.png" alt="Black p" draggable="true"></button><button type="button" class="square light" data-square="d7"><img class="piece-image" src="./BPawn.png" alt="Black p" draggable="true"></button><button type="button" class="square dark" data-square="e7"><img class="piece-image" src="./BPawn.png" alt="Black p" draggable="true"></button><button type="button" class="square light" data-square="f7"><img class="piece-image" src="./BPawn.png" alt="Black p" draggable="true"></button><button type="button" class="square dark" data-square="g7"><img class="piece-image" src="./BPawn.png" alt="Black p" draggable="true"></button><button type="button" class="square light" data-square="h7"><img class="piece-image" src="./BPawn.png" alt="Black p" draggable="true"></button><button type="button" class="square light" data-square="a8"><img class="piece-image" src="./BRook.png" alt="Black r" draggable="true"><span class="coord rank">1</span><span class="coord file">a</span></button><button type="button" class="square dark" data-square="b8"><img class="piece-image" src="./BHorse.png" alt="Black n" draggable="true"><span class="coord file">b</span></button><button type="button" class="square light" data-square="c8"><img class="piece-image" src="./BBishop.png" alt="Black b" draggable="true"><span class="coord file">c</span></button><button type="button" class="square dark" data-square="d8"><img class="piece-image" src="./BQueen.png" alt="Black q" draggable="true"><span class="coord file">d</span></button><button type="button" class="square light" data-square="e8"><img class="piece-image" src="./Bking.png" alt="Black k" draggable="true"><span class="coord file">e</span></button><button type="button" class="square dark" data-square="f8"><img class="piece-image" src="./BBishop.png" alt="Black b" draggable="true"><span class="coord file">f</span></button><button type="button" class="square light" data-square="g8"><img class="piece-image" src="./BHorse.png" alt="Black n" draggable="true"><span class="coord file">g</span></button><button type="button" class="square dark" data-square="h8"><img class="piece-image" src="./BRook.png" alt="Black r" draggable="true"><span class="coord file">h</span></button><svg id="arrowLayer" class="arrow-layer" viewBox="0 0 800 800" preserveAspectRatio="none"></svg></div>
-  <div class="game-overlay" id="startOverlay"><div class="game-overlay-card"><strong id="startCountdown">3</strong><span>Get ready</span></div></div>
-  <div class="clock-start-overlay" id="clockStartOverlay"><strong id="clockStartText">GO!</strong></div>
+  <div class="board" id="board" aria-label="Chessboard"><button type="button" class="square light" data-row="0" data-col="0"><img class="piece-image" alt="Black Rook" draggable="false" src="./BRook.png"><span class="coord rank">8</span><span class="coord file"></span></button><button type="button" class="square dark" data-row="0" data-col="1"><img class="piece-image" alt="Black Horse" draggable="false" src="./BHorse.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="0" data-col="2"><img class="piece-image" alt="Black Bishop" draggable="false" src="./BBishop.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="0" data-col="3"><img class="piece-image" alt="Black Queen" draggable="false" src="./BQueen.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="0" data-col="4"><img class="piece-image" alt="Black King" draggable="false" src="./Bking.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="0" data-col="5"><img class="piece-image" alt="Black Bishop" draggable="false" src="./BBishop.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="0" data-col="6"><img class="piece-image" alt="Black Horse" draggable="false" src="./BHorse.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="0" data-col="7"><img class="piece-image" alt="Black Rook" draggable="false" src="./BRook.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="1" data-col="0"><img class="piece-image" alt="Black Pawn" draggable="false" src="./BPawn.png"><span class="coord rank">7</span><span class="coord file"></span></button><button type="button" class="square light" data-row="1" data-col="1"><img class="piece-image" alt="Black Pawn" draggable="false" src="./BPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="1" data-col="2"><img class="piece-image" alt="Black Pawn" draggable="false" src="./BPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="1" data-col="3"><img class="piece-image" alt="Black Pawn" draggable="false" src="./BPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="1" data-col="4"><img class="piece-image" alt="Black Pawn" draggable="false" src="./BPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="1" data-col="5"><img class="piece-image" alt="Black Pawn" draggable="false" src="./BPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="1" data-col="6"><img class="piece-image" alt="Black Pawn" draggable="false" src="./BPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="1" data-col="7"><img class="piece-image" alt="Black Pawn" draggable="false" src="./BPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="2" data-col="0"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank">6</span><span class="coord file"></span></button><button type="button" class="square dark" data-row="2" data-col="1"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="2" data-col="2"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="2" data-col="3"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="2" data-col="4"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="2" data-col="5"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="2" data-col="6"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="2" data-col="7"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="3" data-col="0"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank">5</span><span class="coord file"></span></button><button type="button" class="square light" data-row="3" data-col="1"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="3" data-col="2"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="3" data-col="3"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="3" data-col="4"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="3" data-col="5"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="3" data-col="6"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="3" data-col="7"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="4" data-col="0"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank">4</span><span class="coord file"></span></button><button type="button" class="square dark" data-row="4" data-col="1"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="4" data-col="2"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="4" data-col="3"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="4" data-col="4"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="4" data-col="5"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="4" data-col="6"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="4" data-col="7"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="5" data-col="0"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank">3</span><span class="coord file"></span></button><button type="button" class="square light" data-row="5" data-col="1"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="5" data-col="2"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="5" data-col="3"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="5" data-col="4"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="5" data-col="5"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="5" data-col="6"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="5" data-col="7"><img class="piece-image" alt="" draggable="false" hidden=""><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="6" data-col="0"><img class="piece-image" alt="White Pawn" draggable="false" src="./WPawn.png"><span class="coord rank">2</span><span class="coord file"></span></button><button type="button" class="square dark" data-row="6" data-col="1"><img class="piece-image" alt="White Pawn" draggable="false" src="./WPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="6" data-col="2"><img class="piece-image" alt="White Pawn" draggable="false" src="./WPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="6" data-col="3"><img class="piece-image" alt="White Pawn" draggable="false" src="./WPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="6" data-col="4"><img class="piece-image" alt="White Pawn" draggable="false" src="./WPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="6" data-col="5"><img class="piece-image" alt="White Pawn" draggable="false" src="./WPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square light" data-row="6" data-col="6"><img class="piece-image" alt="White Pawn" draggable="false" src="./WPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="6" data-col="7"><img class="piece-image" alt="White Pawn" draggable="false" src="./WPawn.png"><span class="coord rank"></span><span class="coord file"></span></button><button type="button" class="square dark" data-row="7" data-col="0"><img class="piece-image" alt="White Rook" draggable="false" src="./WRook.png"><span class="coord rank">1</span><span class="coord file">a</span></button><button type="button" class="square light" data-row="7" data-col="1"><img class="piece-image" alt="White Horse" draggable="false" src="./WHorse.png"><span class="coord rank"></span><span class="coord file">b</span></button><button type="button" class="square dark" data-row="7" data-col="2"><img class="piece-image" alt="White Bishop" draggable="false" src="./WBishop.png"><span class="coord rank"></span><span class="coord file">c</span></button><button type="button" class="square light" data-row="7" data-col="3"><img class="piece-image" alt="White Queen" draggable="false" src="./WQueen.png"><span class="coord rank"></span><span class="coord file">d</span></button><button type="button" class="square dark" data-row="7" data-col="4"><img class="piece-image" alt="White King" draggable="false" src="./Wking.png"><span class="coord rank"></span><span class="coord file">e</span></button><button type="button" class="square light" data-row="7" data-col="5"><img class="piece-image" alt="White Bishop" draggable="false" src="./WBishop.png"><span class="coord rank"></span><span class="coord file">f</span></button><button type="button" class="square dark" data-row="7" data-col="6"><img class="piece-image" alt="White Horse" draggable="false" src="./WHorse.png"><span class="coord rank"></span><span class="coord file">g</span></button><button type="button" class="square light" data-row="7" data-col="7"><img class="piece-image" alt="White Rook" draggable="false" src="./WRook.png"><span class="coord rank"></span><span class="coord file">h</span></button><svg id="arrowLayer" class="arrow-layer" viewBox="0 0 800 800" preserveAspectRatio="none"></svg><div class="game-overlay" id="startOverlay"><div class="game-overlay-card"><strong id="startCountdown">3</strong><span>GET READY</span></div></div><div class="clock-start-overlay" id="clockStartOverlay"><strong id="clockStartText">GO!</strong></div></div>
  </div>
  <div class="player-strip">
   <div class="avatar" id="bottomAvatar">♙</div>
@@ -215,7 +206,7 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
  </div>
  <div class="board-tools">
   <button id="undoBtn" disabled="">↶ Undo</button>
-  <button id="flipBtn">⇅ Flip board</button>
+  <button id="flipBtn">⇅ Flip</button>
   <button id="restartBtn">⟲ Restart</button>
  </div>
 </section>
@@ -307,166 +298,534 @@ function readPreference(key,fallback){try{return localStorage.getItem(key)||fall
 let selectedTheme=readPreference("chesson-board-theme","classic");
 let colorMode=readPreference("chesson-color-mode","light");
 
-function setStatus(message){const el=$("status");if(el)el.textContent=message;}
-function sideName(color){return color==="w"?"White":"Black";}
-function squareName(file,rank){return "abcdefgh"[file]+(8-rank);}
-function pieceAt(square){return game.get(square);}
-function legalFrom(square){return game.moves({square,verbose:true});}
-function uci(move){return move.from+move.to+(move.promotion||"");}
-function getMoveFromUci(code){return game.moves({verbose:true}).find(move=>uci(move)===code);}
-function clearSelection(){selected=null;legalTargets=[];}
-function isGameOver(){return game.isGameOver();}
-function findKing(color){for(let rank=1;rank<=8;rank++)for(const file of "abcdefgh"){const square=file+rank,p=game.get(square);if(p&&p.type==="k"&&p.color===color)return square;}return null;}
-function squareFromElement(element){return element?.closest?.(".square")?.dataset?.square||null;}
-function coordinatesForSquare(square){const file="abcdefgh".indexOf(square[0]),rank=Number(square[1]);const col=orientation==="w"?file:7-file;const row=orientation==="w"?8-rank:rank-1;return{x:(col+.5)*100,y:(row+.5)*100};}
-function clearArrows(){arrows=[];arrowDrag=null;shiftArrowOrigin=null;renderArrows();}
-function renderArrows(){const svg=$("arrowLayer");if(!svg)return;svg.innerHTML="";const ns="http://www.w3.org/2000/svg";arrows.forEach((arrow,index)=>{const from=coordinatesForSquare(arrow.from),to=coordinatesForSquare(arrow.to),dx=to.x-from.x,dy=to.y-from.y,len=Math.hypot(dx,dy);if(!len)return;const ux=dx/len,uy=dy/len,endX=to.x-ux*20,endY=to.y-uy*20;const line=document.createElementNS(ns,"line");line.setAttribute("x1",from.x);line.setAttribute("y1",from.y);line.setAttribute("x2",endX);line.setAttribute("y2",endY);line.setAttribute("class","arrow-line");svg.append(line);const head=document.createElementNS(ns,"polygon"),px=-uy*15,py=ux*15;head.setAttribute("points",`${to.x},${to.y} ${endX+px},${endY+py} ${endX-px},${endY-py}`);head.setAttribute("class","arrow-head");svg.append(head);const label=document.createElementNS(ns,"text");label.setAttribute("x",(from.x+to.x)/2);label.setAttribute("y",(from.y+to.y)/2-10);label.setAttribute("class","next-arrow-number");label.textContent=String(index+1);svg.append(label);});}
-function renderBoard(){
- const board=$("board");if(!board)return;board.innerHTML="";
- const files=orientation==="w"?[0,1,2,3,4,5,6,7]:[7,6,5,4,3,2,1,0];
- const ranks=orientation==="w"?[7,6,5,4,3,2,1,0]:[0,1,2,3,4,5,6,7];
- const checkSquare=game.isCheck()?findKing(game.turn()):null;
- for(let row=0;row<8;row++)for(let col=0;col<8;col++){
-  const file=files[col],rank=ranks[row],square=squareName(file,rank),piece=game.get(square),cell=document.createElement("button");
-  cell.type="button";cell.className="square "+((file+rank)%2===0?"light":"dark");cell.dataset.square=square;
-  if(selected===square)cell.classList.add("selected");if(lastMove&&(lastMove.from===square||lastMove.to===square))cell.classList.add("last");if(checkSquare===square)cell.classList.add("check");if(legalTargets.includes(square))cell.classList.add("legal",piece?"capture":"");
-  if(piece){const img=document.createElement("img");img.className="piece-image";img.src=PIECE_IMAGES[piece.color+piece.type];img.alt=sideName(piece.color)+" "+piece.type;img.draggable=true;img.addEventListener("dragstart",event=>{if(piece.color!==humanColor||game.turn()!==humanColor||!gameStarted){event.preventDefault();return;}dragFrom=square;event.dataTransfer.setData("text/plain",square);event.dataTransfer.effectAllowed="move";});cell.append(img);}
-  if(col===0){const coord=document.createElement("span");coord.className="coord rank";coord.textContent=String(rank+1);cell.append(coord);}if(row===7){const coord=document.createElement("span");coord.className="coord file";coord.textContent="abcdefgh"[file];cell.append(coord);}
-  cell.addEventListener("click",()=>onSquare(square));cell.addEventListener("dragover",event=>{if(gameStarted&&game.turn()===humanColor)event.preventDefault();});cell.addEventListener("drop",event=>{event.preventDefault();if(!gameStarted||game.turn()!==humanColor)return;const from=event.dataTransfer.getData("text/plain")||dragFrom;if(from)attemptMove(from,square);});
-  board.append(cell);
- }
- const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");svg.setAttribute("id","arrowLayer");svg.setAttribute("class","arrow-layer");svg.setAttribute("viewBox","0 0 800 800");svg.setAttribute("preserveAspectRatio","none");board.append(svg);
- board.oncontextmenu=event=>event.preventDefault();
- board.onpointerdown=event=>{if(event.button===2||event.shiftKey){const square=squareFromElement(event.target);if(square){arrowDrag={from:square};event.preventDefault();}}};
- updateLabels();renderArrows();
-}
-function onSquare(square){if(!gameStarted||game.isGameOver()||game.turn()!==humanColor)return;const piece=game.get(square);if(selected){if(square===selected){clearSelection();renderBoard();return;}if(legalTargets.includes(square)){attemptMove(selected,square);return;}if(piece&&piece.color===humanColor){selectSquare(square);return;}clearSelection();renderBoard();return;}if(piece&&piece.color===humanColor)selectSquare(square);}
-function selectSquare(square){selected=square;legalTargets=legalFrom(square).map(move=>move.to);renderBoard();}
-function attemptMove(from,to,promotion){if(!gameStarted||game.turn()!==humanColor)return;const moves=game.moves({square:from,verbose:true}).filter(move=>move.to===to);if(!moves.length){clearSelection();renderBoard();return;}if(moves.length>1&&!promotion){showPromotion(from,to,moves);return;}const move=moves.find(item=>!item.promotion||item.promotion===promotion)||moves[0];makeMove(move);}
-function showPromotion(from,to,moves){const choices=$("promoChoices");choices.innerHTML="";for(const type of ["q","r","b","n"]){const button=document.createElement("button"),code=game.turn()+type,img=document.createElement("img");img.src=PIECE_IMAGES[code];img.alt=type;img.style.width="54px";img.style.height="54px";button.append(img);button.onclick=()=>{$("promoOverlay").style.display="none";attemptMove(from,to,type);};choices.append(button);}$("promoOverlay").style.display="grid";}
-function capturedPieces(){const captured={w:[],b:[]};for(const move of game.history({verbose:true})){if(move.captured)captured[move.color].push(move.captured);}return captured;}
-function materialValue(type){return({p:1,n:3,b:3,r:5,q:9,k:0})[type]||0;}
-function renderCaptured(){const captured=capturedPieces();for(const color of ["w","b"]){const strip=$(color==="w"?"bottomCaptured":"topCaptured");if(!strip)continue;strip.innerHTML="";for(const type of captured[color]){const img=document.createElement("img");img.src=PIECE_IMAGES[(color==="w"?"b":"w")+type];img.alt=type;strip.append(img);}}const white=captured.w.reduce((sum,type)=>sum+materialValue(type),0),black=captured.b.reduce((sum,type)=>sum+materialValue(type),0),edge=white-black;$("bottomEdge").textContent=edge>0?"+"+edge:edge<0?String(edge):"";$("topEdge").textContent=edge<0?"+"+(-edge):"";}
-function updateLabels(){const turn=game.turn();$("turnLabel").textContent=game.isGameOver()?gameOverText():sideName(turn)+" to move"+(game.isCheck()?" · Check":"");$("topName").textContent="ChessOn AI";$("bottomName").textContent="You";$("topRating").textContent="ELO "+elo;$("bottomRating").textContent=sideName(humanColor);$("topAvatar").textContent=humanColor==="w"?"♟":"♙";$("bottomAvatar").textContent=humanColor==="w"?"♙":"♟";renderClocks();}
-function renderMoves(){const history=game.history({verbose:true}),container=$("moves");if(!container)return;container.innerHTML="";for(let i=0;i<history.length;i+=2){const row=document.createElement("div"),number=document.createElement("span"),white=document.createElement("span"),black=document.createElement("span");row.className="move-row";number.className="move-no";number.textContent=(Math.floor(i/2)+1)+".";white.className="move";white.textContent=history[i].san;black.className="move";black.textContent=history[i+1]?.san||"";row.append(number,white,black);container.append(row);}if(!history.length)container.innerHTML='<div class="small">No moves yet.</div>';container.scrollTop=container.scrollHeight;}
-function renderAll(){renderBoard();renderMoves();renderCaptured();updateOpening();$("undoBtn").disabled=game.history().length===0;}
-function gameOverText(){if(game.isCheckmate())return "Checkmate — "+sideName(game.turn()==="w"?"b":"w")+" wins.";if(game.isStalemate())return "Draw by stalemate.";if(game.isThreefoldRepetition())return "Draw by threefold repetition.";if(game.isInsufficientMaterial())return "Draw — insufficient material.";return "Game drawn.";}
-function makeMove(move){const made=game.move({from:move.from,to:move.to,promotion:move.promotion||"q"});if(!made)return;lastMove={from:made.from,to:made.to};clearSelection();clearArrows();engineCandidates=[];renderAll();if(game.isGameOver()){gameStarted=false;clockRunning=false;$("endTitle").textContent=game.isCheckmate()?"Checkmate":"Game over";$("endMessage").textContent=gameOverText();$("endOverlay").classList.add("visible");setStatus(gameOverText());return;}setStatus(made.color===humanColor?"Your move played.":"AI played "+made.san+".");if(game.turn()!==humanColor){setTimeout(engineMove,120);} }
-function jumpToPly(ply){const moves=game.history();game.reset();for(let i=0;i<Math.min(ply,moves.length);i++)game.move(moves[i]);clearSelection();lastMove=null;renderAll();if(gameStarted&&game.turn()!==humanColor)engineMove();}
-function setColorMode(mode){colorMode=mode;document.body.classList.toggle("dark-mode",mode==="dark");$("lightModeBtn")?.classList.toggle("active",mode==="light");$("darkModeBtn")?.classList.toggle("active",mode==="dark");try{localStorage.setItem("chesson-color-mode",mode);}catch{}}
-const THEMES=[{id:"classic",name:"Classic",light:"#f0d9a5",dark:"#b58863"},{id:"green",name:"Tournament Green",light:"#eeeed2",dark:"#769656"},{id:"blue",name:"Ocean Blue",light:"#dceaf4",dark:"#6387a8"},{id:"purple",name:"Royal Purple",light:"#e7ddf2",dark:"#8873a8"},{id:"rose",name:"Rosewood",light:"#f1d5d8",dark:"#b66f7d"},{id:"slate",name:"Slate",light:"#d7dce2",dark:"#687585"},{id:"wood",name:"Warm Wood",light:"#f0d6ad",dark:"#a56d43"},{id:"midnight",name:"Midnight",light:"#b8c2d6",dark:"#4a5670"},{id:"mint",name:"Mint",light:"#d8eee0",dark:"#6c9b83"},{id:"sand",name:"Sand",light:"#f1e3c5",dark:"#b79a6d"},{id:"mono",name:"Black & White",light:"#eeeeee",dark:"#777777"}];
-function applyTheme(id){const theme=THEMES.find(item=>item.id===id)||THEMES[0];selectedTheme=theme.id;document.documentElement.style.setProperty("--light",theme.light);document.documentElement.style.setProperty("--dark",theme.dark);document.querySelectorAll(".theme-card").forEach(card=>card.classList.toggle("active",card.dataset.theme===id));try{localStorage.setItem("chesson-board-theme",selectedTheme);}catch{}}
-function buildThemes(){const grid=$("themeGrid");if(!grid)return;grid.innerHTML="";for(const theme of THEMES){const card=document.createElement("button");card.className="theme-card";card.dataset.theme=theme.id;const preview=document.createElement("div");preview.className="theme-preview";preview.style.setProperty("--preview-light",theme.light);preview.style.setProperty("--preview-dark",theme.dark);for(let i=0;i<8;i++)preview.append(document.createElement("i"));const name=document.createElement("strong");name.textContent=theme.name;card.append(preview,name);card.onclick=()=>applyTheme(theme.id);grid.append(card);}applyTheme(selectedTheme);}
-function showPage(page){activePage=page;$("playHub").classList.toggle("visible",page==="hub");$("themesPage").classList.toggle("visible",page==="themes");$("nextMovePage").classList.toggle("visible",page==="next");$("gamePage").classList.toggle("game-hidden",page!=="game");$("navPlay").classList.toggle("active",page==="hub"||page==="game");$("navThemes").classList.toggle("active",page==="themes");$("navNextMove").classList.toggle("active",page==="next");}
-function onBoardPointerMove(event){if(arrowDrag){const square=squareFromElement(document.elementFromPoint(event.clientX,event.clientY));if(square)arrowDrag.to=square;}}
-function onBoardPointerUp(event){if(!arrowDrag)return;const square=squareFromElement(document.elementFromPoint(event.clientX,event.clientY));if(square&&square!==arrowDrag.from){const existing=arrows.findIndex(item=>item.from===arrowDrag.from&&item.to===square);if(existing>=0)arrows.splice(existing,1);else arrows.push({from:arrowDrag.from,to:square});}arrowDrag=null;renderArrows();}
-
-// Next Move is a free-position editor with Stockfish suggestions.
-// Pieces can be moved anywhere, removed by dragging off the board, or added from the unlimited tray.
-let nextViewSide="w", nextPieces={}, nextTurn="w", nextCastling="KQkq", nextWorker=null, nextWorkerReady=false;
+// Next Move is a regular legal chess game with a separate Stockfish analysis worker.
+let nextViewSide="w", nextGame=null, nextWorker=null, nextWorkerReady=false;
 let nextAnalysisToken=0, nextAnalysisTimer=null, nextCandidates=[], nextPositionFen="";
-let nextSelected=null, nextTraySelected=null, nextLastMove=null, nextPointerDrag=null, nextDragGhost=null;
-let nextHistory=[];
+let nextSelected=null, nextLegalTargets=[], nextLastMove=null, nextPointerDrag=null, nextDragGhost=null, nextPromotion=null;
 
-function nextCopyPieces(pieces=nextPieces){const copy={};for(const [sq,piece] of Object.entries(pieces))copy[sq]={color:piece.color,type:piece.type};return copy;}
-function nextSnapshot(){nextHistory.push({pieces:nextCopyPieces(),turn:nextTurn,castling:nextCastling});}
-function nextUpdateCastling(square,piece){if(!piece)return;if(piece.type==="k"){nextCastling=nextCastling.replace(piece.color==="w"?/[KQ]/g:/[kq]/g,"");return;}if(piece.type!=="r")return;const right={h1:"K",a1:"Q",h8:"k",a8:"q"}[square];if(right)nextCastling=nextCastling.replace(right,"");}
-function nextInitialPosition(){
- nextPieces={};const initial=new Chess();
- for(let rank=1;rank<=8;rank++)for(const file of "abcdefgh"){const square=file+rank,piece=initial.get(square);if(piece)nextPieces[square]={color:piece.color,type:piece.type};}
- nextTurn="w";nextCastling="KQkq";nextHistory=[];nextSelected=null;nextTraySelected=null;nextLastMove=null;renderNextBoard();analyzeNextPosition();
+function setStatus(message){$("status").textContent=message}
+function sideName(color){return color==="w"?"White":"Black"}
+function pieceAt(square){return game.get(square)}
+function legalFrom(square){return game.moves({square,verbose:true})}
+function uci(move){return move.from+move.to+(move.promotion||"")}
+
+function getMoveFromUci(code){
+ return game.moves({verbose:true}).find(move=>uci(move)===code);
 }
+
+function clearSelection(){
+ selected=null;
+ legalTargets=[];
+}
+
+function isHumanPiece(square){
+ const piece=game.get(square);
+ return piece&&piece.color===humanColor;
+}
+
+function isHumanTurn(){
+ return game.turn()===humanColor&&!game.isGameOver();
+}
+
+function squareFromElement(element){
+ const square=element?.closest?.(".square");
+ if(!square||!$("board").contains(square))return null;
+
+ const row=Number(square.dataset.row);
+ const col=Number(square.dataset.col);
+
+ // White orientation: rank 8 is the top row, rank 1 is bottom.
+ const file=orientation==="w"?col:7-col;
+ const rank=orientation==="w"?8-row:row+1;
+
+ return "abcdefgh"[file]+rank;
+}
+
+function coordinatesForSquare(square){
+ const file="abcdefgh".indexOf(square[0]);
+ const rank=Number(square[1]);
+
+ const col=orientation==="w"?file:7-file;
+ const row=orientation==="w"?8-rank:rank-1;
+
+ return {x:(col+.5)*100,y:(row+.5)*100};
+}
+
+function clearArrows(){
+ arrows=[];
+ arrowDrag=null;
+ renderArrows();
+}
+
+function renderArrows(){
+ const svg=$("arrowLayer");
+ if(!svg)return;
+ svg.innerHTML="";
+ const ns="http://www.w3.org/2000/svg";
+ for(const arrow of arrows){
+  const from=coordinatesForSquare(arrow.from),to=coordinatesForSquare(arrow.to);
+  const dx=to.x-from.x,dy=to.y-from.y,length=Math.hypot(dx,dy);
+  if(!length)continue;
+  const ux=dx/length,uy=dy/length,endX=to.x-ux*20,endY=to.y-uy*20;
+  const line=document.createElementNS(ns,"line");
+  line.setAttribute("x1",from.x);line.setAttribute("y1",from.y);line.setAttribute("x2",endX);line.setAttribute("y2",endY);line.setAttribute("class","arrow-line");svg.appendChild(line);
+  const head=document.createElementNS(ns,"polygon");const px=-uy*15,py=ux*15;
+  head.setAttribute("points",`${to.x},${to.y} ${endX+px},${endY+py} ${endX-px},${endY-py}`);head.setAttribute("class","arrow-head");svg.appendChild(head);
+ }
+ if(arrowDrag&&arrowDrag.to){
+  const from=coordinatesForSquare(arrowDrag.from),to=coordinatesForSquare(arrowDrag.to);
+  const line=document.createElementNS(ns,"line");line.setAttribute("x1",from.x);line.setAttribute("y1",from.y);line.setAttribute("x2",to.x);line.setAttribute("y2",to.y);line.setAttribute("class","arrow-preview");svg.appendChild(line);
+ }
+}
+
+function addArrow(from,to){
+ const index=arrows.findIndex(a=>a.from===from&&a.to===to);
+ if(index>=0)arrows.splice(index,1);
+ else arrows.push({from,to});
+ renderArrows();
+}
+
+function createDragGhost(square,x,y){
+ removeDragGhost();
+
+ const piece=game.get(square);
+ if(!piece)return;
+
+ const imagePath=PIECE_IMAGES[piece.color+piece.type];
+ dragGhost=document.createElement("img");
+ dragGhost.className="drag-ghost";
+ dragGhost.src=imagePath;
+ dragGhost.alt="";
+ dragGhost.draggable=false;
+ document.body.appendChild(dragGhost);
+ moveDragGhost(x,y);
+}
+
+function moveDragGhost(x,y){
+ if(!dragGhost)return;
+ dragGhost.style.left=x+"px";
+ dragGhost.style.top=y+"px";
+}
+
+function removeDragGhost(){
+ if(dragGhost){
+  dragGhost.remove();
+  dragGhost=null;
+ }
+}
+
+function buildBoardOnce(){
+ if(boardSquares.length)return;
+
+ const board=$("board");
+ board.innerHTML="";
+
+ for(let row=0;row<8;row++){
+  for(let col=0;col<8;col++){
+   const square=document.createElement("button");
+   square.type="button";
+   square.className="square";
+   square.dataset.row=row;
+   square.dataset.col=col;
+
+   const image=document.createElement("img");
+   image.className="piece-image";
+   image.alt="";
+   image.draggable=false;
+   image.hidden=true;
+   square.appendChild(image);
+
+   const rankCoord=document.createElement("span");
+   rankCoord.className="coord rank";
+   square.appendChild(rankCoord);
+
+   const fileCoord=document.createElement("span");
+   fileCoord.className="coord file";
+   square.appendChild(fileCoord);
+
+   board.appendChild(square);
+   boardSquares.push(square);
+  }
+ }
+
+ const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
+ svg.id="arrowLayer";
+ svg.setAttribute("class","arrow-layer");
+ svg.setAttribute("viewBox","0 0 800 800");
+ svg.setAttribute("preserveAspectRatio","none");
+ board.appendChild(svg);
+ const startOverlay=document.createElement("div");startOverlay.className="game-overlay";startOverlay.id="startOverlay";
+ const startCard=document.createElement("div");startCard.className="game-overlay-card";
+ const countdown=document.createElement("strong");countdown.id="startCountdown";countdown.textContent="3";
+ const ready=document.createElement("span");ready.textContent="GET READY";startCard.append(countdown,ready);startOverlay.append(startCard);board.append(startOverlay);
+ const clockOverlay=document.createElement("div");clockOverlay.className="clock-start-overlay";clockOverlay.id="clockStartOverlay";
+ const clockText=document.createElement("strong");clockText.id="clockStartText";clockText.textContent="GO!";clockOverlay.append(clockText);board.append(clockOverlay);
+
+ board.addEventListener("pointerdown",onPointerDown);
+ board.addEventListener("contextmenu",event=>event.preventDefault());
+ document.addEventListener("pointermove",onPointerMove);
+ document.addEventListener("pointerup",onPointerUp);
+ document.addEventListener("pointercancel",cancelPointer);
+}
+
+function onPointerDown(event){
+ const squareElement=event.target.closest(".square");if(!squareElement)return;
+ const square=squareFromElement(squareElement);if(!square)return;
+ const isRightClick=event.button===2;
+ const isShiftDrag=event.shiftKey&&event.button===0;
+ if(isRightClick||isShiftDrag){
+  // Both gestures start an arrow drag. A click without movement is handled
+  // on pointerup: it clears arrows on a piece, or keeps Shift+click chaining.
+  arrowDrag={from:square,to:square,startedOnPiece:!!game.get(square),moved:false,shift:isShiftDrag,right:isRightClick,startX:event.clientX,startY:event.clientY};
+  pointerDrag=null;
+  event.preventDefault();
+  return;
+ }
+ const piece=game.get(square);
+ pointerDrag={from:square,startX:event.clientX,startY:event.clientY,moved:false,button:event.button};
+ if(piece&&piece.color===humanColor&&gameStarted&&!game.isGameOver())selectSquare(square);
+ event.preventDefault();
+}
+function onPointerMove(event){
+ if(arrowDrag){
+  const dx=event.clientX-(arrowDrag.startX??event.clientX),dy=event.clientY-(arrowDrag.startY??event.clientY);
+  const target=document.elementFromPoint(event.clientX,event.clientY);
+  const to=squareFromElement(target);
+  if(to){if(to!==arrowDrag.from)arrowDrag.moved=true;arrowDrag.to=to;renderArrows();}
+  return;
+ }
+ if(!pointerDrag)return;
+ const dx=event.clientX-pointerDrag.startX,dy=event.clientY-pointerDrag.startY;
+ if(Math.abs(dx)>4||Math.abs(dy)>4){
+  if(!pointerDrag.moved){pointerDrag.moved=true;if(isHumanPiece(pointerDrag.from)&&gameStarted)createDragGhost(pointerDrag.from,event.clientX,event.clientY);}
+ }
+ if(pointerDrag.moved)moveDragGhost(event.clientX,event.clientY);
+}
+function onPointerUp(event){
+ const target=document.elementFromPoint(event.clientX,event.clientY);const destination=squareFromElement(target);
+ if(arrowDrag){
+  const dragArrow=arrowDrag;arrowDrag=null;
+  const didDrag=dragArrow.moved&&destination&&destination!==dragArrow.from;
+  if(didDrag){
+   addArrow(dragArrow.from,destination);
+   shiftArrowOrigin=null;
+  }else if(dragArrow.startedOnPiece){
+   // Right-click or Shift+click a piece to clear arrows touching that square.
+   arrows=arrows.filter(a=>a.from!==dragArrow.from&&a.to!==dragArrow.from);
+   shiftArrowOrigin=null;
+   renderArrows();
+  }else if(dragArrow.shift&&destination===dragArrow.from){
+   // Keep the original Shift+click, click-to-connect arrow gesture too.
+   if(shiftArrowOrigin&&shiftArrowOrigin!==dragArrow.from){addArrow(shiftArrowOrigin,dragArrow.from);shiftArrowOrigin=null;}
+   else{shiftArrowOrigin=dragArrow.from;renderArrows();}
+  }else renderArrows();
+  return;
+ }
+ if(!pointerDrag)return;
+ const drag=pointerDrag;pointerDrag=null;removeDragGhost();if(!destination)return;
+ if(!gameStarted)return;
+ if(drag.moved&&drag.from!==destination){if(isHumanPiece(drag.from)&&game.turn()===humanColor)attemptMove(drag.from,destination);return;}
+ if(drag.from===destination){if(isHumanPiece(destination)){selectSquare(destination);return;}onSquare(destination);return;}
+ onSquare(destination);
+}
+function cancelPointer(){pointerDrag=null;arrowDrag=null;removeDragGhost();renderArrows();}
+
+function renderBoard(){
+ buildBoardOnce();
+
+ for(let row=0;row<8;row++){
+  for(let col=0;col<8;col++){
+   // Correct square mapping: White's pieces are always at the bottom
+   // when orientation is "w".
+   const file=orientation==="w"?col:7-col;
+   const rank=orientation==="w"?8-row:row+1;
+   const square="abcdefgh"[file]+rank;
+
+   const piece=pieceAt(square);
+   const element=boardSquares[row*8+col];
+
+   element.className="square "+(
+    (file+(rank-1))%2===1?"light":"dark"
+   );
+
+   if(selected===square)element.classList.add("selected");
+   if(lastMove&&(lastMove.from===square||lastMove.to===square)){
+    element.classList.add("last");
+   }
+
+   if(legalTargets.includes(square)){
+    element.classList.add("legal");
+    if(piece)element.classList.add("capture");
+   }
+
+   const image=element.querySelector(".piece-image");
+
+   if(piece){
+    const path=PIECE_IMAGES[piece.color+piece.type];
+    if(image.getAttribute("src")!==path)image.src=path;
+
+    const names={p:"Pawn",r:"Rook",n:"Horse",b:"Bishop",q:"Queen",k:"King"};
+    image.alt=sideName(piece.color)+" "+names[piece.type];
+    image.hidden=false;
+   }else{
+    image.hidden=true;
+    image.removeAttribute("src");
+    image.alt="";
+   }
+
+   element.querySelector(".coord.rank").textContent=col===0?String(rank):"";
+   element.querySelector(".coord.file").textContent=row===7?"abcdefgh"[file]:"";
+  }
+ }
+
+ const king=game.isCheck()?findKing(game.turn()):null;
+ if(king){
+  for(let i=0;i<64;i++){
+   if(squareFromElement(boardSquares[i])===king){
+    boardSquares[i].classList.add("check");
+    break;
+   }
+  }
+ }
+
+ updateLabels();
+ renderArrows();
+}
+
+function findKing(color){
+ for(let rank=1;rank<=8;rank++){
+  for(const file of "abcdefgh"){
+   const square=file+rank;
+   const piece=game.get(square);
+   if(piece&&piece.type==="k"&&piece.color===color)return square;
+  }
+ }
+ return null;
+}
+
+function renderAll(){
+ renderBoard();
+ renderMoves();
+ $("undoBtn").disabled=game.history().length===0;
+}
+
+function updateLabels(){
+ const turn=game.turn();
+ $("turnLabel").textContent=game.isGameOver()?(game.isCheckmate()?sideName(turn==="w"?"b":"w")+" wins by checkmate":"Game drawn"):sideName(turn)+" to move"+(game.isCheck()?" · Check":"");
+ $("topName").textContent=humanColor==="w"?"AI":"You";$("bottomName").textContent=humanColor==="w"?"You":"AI";
+ $("topRating").textContent=humanColor==="w"?"ELO "+elo:"Black";$("bottomRating").textContent=humanColor==="w"?"White":"ELO "+elo;
+ $("topAvatar").textContent=humanColor==="w"?"♟":"♙";$("bottomAvatar").textContent=humanColor==="w"?"♙":"♟";
+ renderCapturedMaterial();renderClocks();
+}
+function renderCapturedMaterial(){
+ const history=game.history({verbose:true});const captured={w:[],b:[]};
+ for(const move of history){if(move.captured)captured[move.color].push(move.captured);}
+ const points={p:1,n:3,b:3,r:5,q:8,k:0};
+ const score={w:captured.w.reduce((sum,t)=>sum+points[t],0),b:captured.b.reduce((sum,t)=>sum+points[t],0)};
+ const topColor=humanColor==="w"?"b":"w",bottomColor=humanColor;
+ for(const [slot,color] of [["top",topColor],["bottom",bottomColor]]){
+  const icons=$(slot+"Captured");icons.innerHTML="";
+  for(const type of captured[color]){const img=document.createElement("img");img.src=PIECE_IMAGES[(color==="w"?"b":"w")+type];img.alt=type;img.title="Captured "+type;icons.appendChild(img);}
+  const edge=score[color]-score[color==="w"?"b":"w"];
+  $(slot+"Edge").textContent=edge>0?"+"+edge:"";
+ }
+}
+
+function renderMoves(){
+ const history=game.history({verbose:true});
+ let output="";
+
+ for(let i=0;i<history.length;i+=2){
+  const white=history[i];
+  const black=history[i+1];
+
+  output+=`<div class="move-row">
+   <span class="move-no">${Math.floor(i/2)+1}.</span>
+   <span class="move ${i===history.length-1?"current":""}">${white.san}</span>
+   <span class="move ${i+1===history.length-1?"current":""}">${black?black.san:""}</span>
+  </div>`;
+ }
+
+ $("moves").innerHTML=output||'<div class="small">No moves yet.</div>';
+ $("moves").scrollTop=$("moves").scrollHeight;
+}
+
+function selectSquare(square){
+ selected=square;
+ legalTargets=legalFrom(square).map(move=>move.to);
+ renderBoard();
+}
+
+function onSquare(square){
+ if(!gameStarted||game.turn()!==humanColor)return;
+
+ const piece=game.get(square);
+
+ if(selected){
+  if(square===selected){
+   // Keep the selected piece selected.
+   renderBoard();
+   return;
+  }
+
+  if(legalTargets.includes(square)){
+   attemptMove(selected,square);
+   return;
+  }
+
+  if(piece&&piece.color===humanColor){
+   selectSquare(square);
+   return;
+  }
+
+  clearSelection();
+  renderBoard();
+  return;
+ }
+
+ if(piece&&piece.color===humanColor){
+  selectSquare(square);
+ }
+}
+
+function attemptMove(from,to,promotion){
+ if(game.turn()!==humanColor)return;
+
+ const moves=game.moves({square:from,verbose:true}).filter(m=>m.to===to);
+
+ if(!moves.length)return;
+
+ if(moves.length>1&&!promotion){
+  showPromotion(from,to);
+  return;
+ }
+
+ const move=moves.find(m=>!m.promotion||m.promotion===promotion)||moves[0];
+ makeMove(move);
+}
+
+function showPromotion(from,to){
+ const color=game.turn();$("promoChoices").innerHTML="";
+ for(const type of ["q","r","b","n"]){
+  const button=document.createElement("button");const image=document.createElement("img");
+  image.src=PIECE_IMAGES[color+type];image.alt=({q:"Queen",r:"Rook",b:"Bishop",n:"Horse"})[type];
+  const label=document.createElement("span");label.textContent=image.alt;button.append(image,label);
+  button.onclick=()=>{$("promoOverlay").style.display="none";attemptMove(from,to,type);};$("promoChoices").append(button);
+ }
+ $("promoOverlay").style.display="grid";
+}
+
+function makeMove(move){
+ const made=game.move({from:move.from,to:move.to,promotion:move.promotion||"q"});if(!made)return;
+ lastMove={from:made.from,to:made.to};updateOpening();clearSelection();clearArrows();renderAll();
+ if(game.isGameOver()){clockRunning=false;showGameOver();return;}
+ if(game.turn()!==humanColor)engineMove();
+}
+function showGameOver(){
+ gameStarted=false;clockRunning=false;
+ const title=game.isCheckmate()?"Checkmate!":game.isStalemate()?"Stalemate": "Game over";
+ const message=game.isCheckmate()?sideName(game.turn()==="w"?"b":"w")+" wins by checkmate.":gameOverText();
+ $("endTitle").textContent=title;$("endMessage").textContent=message;$("endOverlay").classList.add("visible");
+}
+
+function gameOverText(){
+ if(game.isCheckmate())return "Checkmate — "+sideName(game.turn()==="w"?"b":"w")+" wins.";
+ if(game.isStalemate())return "Draw by stalemate.";
+ if(game.isThreefoldRepetition())return "Draw by threefold repetition.";
+ if(game.isInsufficientMaterial())return "Draw — insufficient material.";
+ return "Game drawn.";
+}
+
+
+const THEMES=[
+ {id:"classic",name:"Classic",light:"#f0d9a5",dark:"#b58863"},
+ {id:"green",name:"Tournament Green",light:"#eeeed2",dark:"#769656"},
+ {id:"blue",name:"Ocean Blue",light:"#dce8f2",dark:"#6689a8"},
+ {id:"purple",name:"Royal Purple",light:"#eee2f4",dark:"#9270a8"},
+ {id:"rose",name:"Rosewood",light:"#f3d7d8",dark:"#b66f78"},
+ {id:"slate",name:"Slate",light:"#dce0e5",dark:"#788493"},
+ {id:"wood",name:"Warm Wood",light:"#f1dfbd",dark:"#9b6b43"},
+ {id:"midnight",name:"Midnight",light:"#aeb7c8",dark:"#46536d"},
+ {id:"mint",name:"Mint",light:"#e1f0e5",dark:"#72a98b"},
+ {id:"sand",name:"Sand",light:"#f3e8c9",dark:"#b6a06a"},
+ {id:"monochrome",name:"Black & White",light:"#ffffff",dark:"#222222"}
+];
+function setColorMode(mode){
+ colorMode=mode==="dark"?"dark":"light";
+ document.body.classList.toggle("dark-mode",colorMode==="dark");
+ $("lightModeBtn")?.classList.toggle("active",colorMode==="light");
+ $("darkModeBtn")?.classList.toggle("active",colorMode==="dark");
+ try{localStorage.setItem("chesson-color-mode",colorMode);}catch{}
+}
+function applyTheme(id){
+ const theme=THEMES.find(t=>t.id===id)||THEMES[0];selectedTheme=theme.id;
+ try{localStorage.setItem("chesson-board-theme",selectedTheme);}catch{}
+ document.documentElement.style.setProperty("--light",theme.light);
+ document.documentElement.style.setProperty("--dark",theme.dark);
+ document.querySelectorAll(".theme-card").forEach(card=>card.classList.toggle("active",card.dataset.theme===id));
+}
+function buildThemes(){
+ const grid=$("themeGrid");if(!grid)return;grid.innerHTML="";
+ for(const theme of THEMES){
+  const card=document.createElement("button");card.className="theme-card";card.dataset.theme=theme.id;
+  const preview=document.createElement("div");preview.className="theme-preview";preview.style.setProperty("--preview-light",theme.light);preview.style.setProperty("--preview-dark",theme.dark);
+  for(let i=0;i<8;i++)preview.append(document.createElement("i"));
+  const name=document.createElement("strong");name.textContent=theme.name;
+  card.append(preview,name);card.onclick=()=>applyTheme(theme.id);grid.append(card);
+ }
+ applyTheme(selectedTheme);
+}
+function showPage(page){
+ activePage=page;
+ $("playHub").classList.toggle("visible",page==="hub");
+ $("themesPage").classList.toggle("visible",page==="themes");
+ $("nextMovePage").classList.toggle("visible",page==="next");
+ $("gamePage").classList.toggle("game-hidden",page!=="game");
+ $("navPlay").classList.toggle("active",page==="hub"||page==="game");
+ $("navThemes").classList.toggle("active",page==="themes");
+ $("navNextMove").classList.toggle("active",page==="next");
+ if(page==="next")analyzeNextPosition();
+}
+
+function nextInitialPosition(){nextGame=new Chess();nextSelected=null;nextLegalTargets=[];nextLastMove=null;nextPromotion=null;renderNextBoard();analyzeNextPosition();}
 function nextSquareFromElement(element){return element?.closest?.(".next-square")?.dataset?.square||null;}
 function nextCoordinates(square){const file="abcdefgh".indexOf(square[0]),rank=Number(square[1]);const col=nextViewSide==="w"?file:7-file;const row=nextViewSide==="w"?8-rank:rank-1;return{x:(col+.5)*100,y:(row+.5)*100};}
 function nextPieceName(piece){return sideName(piece.color)+" "+({p:"Pawn",r:"Rook",n:"Horse",b:"Bishop",q:"Queen",k:"King"}[piece.type]);}
-function buildNextTray(){
- const tray=$("nextPieceTray");if(!tray)return;tray.innerHTML="";
- for(const color of ["w","b"])for(const type of ["k","q","r","b","n","p"]){
-  const code=color+type,button=document.createElement("button"),img=document.createElement("img");
-  button.type="button";button.className="tray-piece";button.dataset.code=code;button.title="Drag to add "+nextPieceName({color,type});button.setAttribute("aria-label",button.title);
-  img.src=PIECE_IMAGES[code];img.alt=nextPieceName({color,type});img.draggable=false;button.append(img);tray.append(button);
- }
- tray.onpointerdown=nextTrayPointerDown;
-}
 function renderNextBoard(){
- const board=$("nextBoard");if(!board)return;board.innerHTML="";
+ const board=$("nextBoard");if(!board||!nextGame)return;board.innerHTML="";
  for(let row=0;row<8;row++)for(let col=0;col<8;col++){
-  const file=nextViewSide==="w"?col:7-col,rank=nextViewSide==="w"?8-row:row+1,square="abcdefgh"[file]+rank,piece=nextPieces[square];
+  const file=nextViewSide==="w"?col:7-col,rank=nextViewSide==="w"?8-row:row+1,square="abcdefgh"[file]+rank,piece=nextGame.get(square);
   const cell=document.createElement("button");cell.type="button";cell.className="next-square "+((file+(rank-1))%2===1?"light":"dark");cell.dataset.square=square;
   if(nextSelected===square)cell.classList.add("selected");if(nextLastMove&&(nextLastMove.from===square||nextLastMove.to===square))cell.classList.add("last");
+  if(nextLegalTargets.includes(square)){cell.classList.add("legal");if(piece)cell.classList.add("capture");}
   if(piece){const img=document.createElement("img");img.className="piece-image";img.src=PIECE_IMAGES[piece.color+piece.type];img.alt=nextPieceName(piece);img.draggable=false;cell.append(img);}
   const rankCoord=document.createElement("span");rankCoord.className="coord rank";rankCoord.textContent=col===0?String(rank):"";cell.append(rankCoord);
-  const fileCoord=document.createElement("span");fileCoord.className="coord file";fileCoord.textContent=row===7?"abcdefgh"[file]:"";cell.append(fileCoord);board.append(cell);
+  const fileCoord=document.createElement("span");fileCoord.className="coord file";fileCoord.textContent=row===7?"abcdefgh"[file]:"";cell.append(fileCoord);
+  board.append(cell);
  }
+ const king=nextGame.isCheck()?nextFindKing(nextGame.turn()):null;if(king){const cell=board.querySelector(`[data-square="${king}"]`);cell?.classList.add("check");}
  const svg=document.createElementNS("http://www.w3.org/2000/svg","svg");svg.setAttribute("class","next-arrow-layer");svg.setAttribute("viewBox","0 0 800 800");svg.setAttribute("preserveAspectRatio","none");svg.id="nextArrowLayer";board.append(svg);
- board.onpointerdown=nextBoardPointerDown;board.oncontextmenu=e=>e.preventDefault();
- updateNextTurnLabel();drawNextArrows();$("nextUndo").disabled=nextHistory.length===0;
+ board.onpointerdown=nextPointerDown;board.oncontextmenu=e=>e.preventDefault();
+ updateNextTurnLabel();drawNextArrows();$("nextUndo").disabled=nextGame.history().length===0;
 }
-function nextBoardPointerDown(event){
- if(event.button!==0||event.target.closest(".next-arrow-layer"))return;const square=nextSquareFromElement(event.target);if(!square)return;
- nextPointerDrag={source:"board",from:square,piece:nextPieces[square]?{...nextPieces[square]}:null,x:event.clientX,y:event.clientY,moved:false};event.preventDefault();
-}
-function nextTrayPointerDown(event){
- if(event.button!==0)return;const item=event.target.closest(".tray-piece");if(!item)return;const code=item.dataset.code;
- nextPointerDrag={source:"tray",code,piece:{color:code[0],type:code[1]},x:event.clientX,y:event.clientY,moved:false};event.preventDefault();
-}
-function nextPointerMove(event){
- if(!nextPointerDrag)return;const drag=nextPointerDrag;
- if(Math.abs(event.clientX-drag.x)>4||Math.abs(event.clientY-drag.y)>4){drag.moved=true;if(!nextDragGhost){nextDragGhost=document.createElement("img");nextDragGhost.className="next-drag-ghost";nextDragGhost.src=PIECE_IMAGES[drag.piece.color+drag.piece.type];document.body.append(nextDragGhost);}nextDragGhost.style.left=event.clientX+"px";nextDragGhost.style.top=event.clientY+"px";}
-}
-function nextPointerUp(event){
- if(!nextPointerDrag)return;const drag=nextPointerDrag;nextPointerDrag=null;nextDragGhost?.remove();nextDragGhost=null;
- const destination=nextSquareFromElement(document.elementFromPoint(event.clientX,event.clientY));
- if(drag.moved){
-  if(drag.source==="board"){
-   if(destination){if(destination!==drag.from)nextMoveFreely(drag.from,destination);}
-   else if(drag.piece)nextRemovePiece(drag.from);
-  }else if(destination)nextAddPiece(destination,drag.piece);
-  return;
- }
- if(drag.source==="board")nextClickSquare(drag.from);else{nextTraySelected=drag.piece;nextSelected=null;renderNextBoard();}
-}
+function nextFindKing(color){for(let rank=1;rank<=8;rank++)for(const file of "abcdefgh"){const p=nextGame.get(file+rank);if(p&&p.type==="k"&&p.color===color)return file+rank;}return null;}
+function nextClickSquare(square){if(nextPromotion)return;const piece=nextGame.get(square);if(nextSelected){if(square===nextSelected){nextSelected=null;nextLegalTargets=[];renderNextBoard();return;}if(nextLegalTargets.includes(square)){nextAttemptMove(nextSelected,square);return;}if(piece&&piece.color===nextGame.turn()){nextSelectSquare(square);return;}nextSelected=null;nextLegalTargets=[];renderNextBoard();return;}if(piece&&piece.color===nextGame.turn())nextSelectSquare(square);}
+function nextSelectSquare(square){nextSelected=square;nextLegalTargets=nextGame.moves({square,verbose:true}).map(m=>m.to);renderNextBoard();}
+function nextAttemptMove(from,to,promotion){const moves=nextGame.moves({square:from,verbose:true}).filter(m=>m.to===to);if(!moves.length)return;if(moves.length>1&&!promotion){nextShowPromotion(from,to);return;}const move=moves.find(m=>!m.promotion||m.promotion===promotion)||moves[0];const made=nextGame.move({from:move.from,to:move.to,promotion:move.promotion||"q"});if(!made)return;nextLastMove={from:made.from,to:made.to};nextSelected=null;nextLegalTargets=[];renderNextBoard();analyzeNextPosition();}
+function nextShowPromotion(from,to){nextPromotion={from,to};const color=nextGame.turn();$("promoChoices").innerHTML="";for(const type of ["q","r","b","n"]){const button=document.createElement("button"),image=document.createElement("img");image.src=PIECE_IMAGES[color+type];image.alt=({q:"Queen",r:"Rook",b:"Bishop",n:"Horse"})[type];const label=document.createElement("span");label.textContent=image.alt;button.append(image,label);button.onclick=()=>{$("promoOverlay").style.display="none";nextPromotion=null;nextAttemptMove(from,to,type);};$("promoChoices").append(button);}$("promoOverlay").style.display="grid";}
+function nextPointerDown(event){if(event.button!==0||event.target.closest(".next-arrow-layer"))return;const square=nextSquareFromElement(event.target);if(!square)return;const piece=nextGame.get(square);nextPointerDrag={from:square,x:event.clientX,y:event.clientY,moved:false,piece:piece&&piece.color===nextGame.turn()?piece:null};event.preventDefault();}
+function nextPointerMove(event){if(!nextPointerDrag)return;const d=nextPointerDrag;if(Math.abs(event.clientX-d.x)>4||Math.abs(event.clientY-d.y)>4){d.moved=true;if(d.piece){if(!nextDragGhost){nextDragGhost=document.createElement("img");nextDragGhost.className="next-drag-ghost";nextDragGhost.src=PIECE_IMAGES[d.piece.color+d.piece.type];document.body.append(nextDragGhost);}nextDragGhost.style.left=event.clientX+"px";nextDragGhost.style.top=event.clientY+"px";}}}
+function nextPointerUp(event){if(!nextPointerDrag)return;const drag=nextPointerDrag;nextPointerDrag=null;nextDragGhost?.remove();nextDragGhost=null;const destination=nextSquareFromElement(document.elementFromPoint(event.clientX,event.clientY));if(drag.moved&&drag.piece&&destination&&destination!==drag.from){if(nextGame.moves({square:drag.from,verbose:true}).some(m=>m.to===destination))nextAttemptMove(drag.from,destination);return;}if(!drag.moved)nextClickSquare(drag.from);}
 function nextPointerCancel(){nextPointerDrag=null;nextDragGhost?.remove();nextDragGhost=null;}
-function nextClickSquare(square){
- if(nextTraySelected){nextAddPiece(square,nextTraySelected);return;}
- if(nextSelected){if(square===nextSelected){nextSelected=null;renderNextBoard();return;}nextMoveFreely(nextSelected,square);return;}
- if(nextPieces[square]){nextSelected=square;renderNextBoard();}
-}
-function nextMoveFreely(from,to){
- const piece=nextPieces[from];if(!piece||from===to)return;nextSnapshot();const captured=nextPieces[to];nextUpdateCastling(from,piece);nextUpdateCastling(to,captured);delete nextPieces[from];nextPieces[to]={...piece};nextTurn=nextTurn==="w"?"b":"w";nextLastMove={from,to};nextSelected=null;nextTraySelected=null;renderNextBoard();analyzeNextPosition();
-}
-function nextRemovePiece(square){if(!nextPieces[square])return;nextSnapshot();nextUpdateCastling(square,nextPieces[square]);delete nextPieces[square];nextTurn=nextTurn==="w"?"b":"w";nextSelected=null;nextTraySelected=null;nextLastMove=null;renderNextBoard();analyzeNextPosition();}
-function nextAddPiece(square,piece){if(!piece)return;nextSnapshot();nextUpdateCastling(square,nextPieces[square]);nextPieces[square]={...piece};nextTurn=nextTurn==="w"?"b":"w";nextSelected=null;nextTraySelected=null;nextLastMove={from:square,to:square};renderNextBoard();analyzeNextPosition();}
-function nextFen(){
- const rows=[];for(let rank=8;rank>=1;rank--){let row="",empty=0;for(const file of "abcdefgh"){const piece=nextPieces[file+rank];if(!piece){empty++;continue;}if(empty){row+=empty;empty=0;}const letter=piece.type;row+=piece.color==="w"?letter.toUpperCase():letter;}if(empty)row+=empty;rows.push(row);}
- return rows.join("/")+" "+nextTurn+" "+(nextCastling||"-")+" - 0 1";
-}
-function drawNextArrows(){
- const svg=$("nextArrowLayer");if(!svg)return;svg.innerHTML="";const ns="http://www.w3.org/2000/svg";
- nextCandidates.slice(0,3).forEach((candidate,index)=>{const from=nextCoordinates(candidate.from),to=nextCoordinates(candidate.to),dx=to.x-from.x,dy=to.y-from.y,len=Math.hypot(dx,dy);if(!len)return;const ux=dx/len,uy=dy/len,endX=to.x-ux*22,endY=to.y-uy*22;const line=document.createElementNS(ns,"line");line.setAttribute("x1",from.x);line.setAttribute("y1",from.y);line.setAttribute("x2",endX);line.setAttribute("y2",endY);line.setAttribute("class","next-arrow-line");line.style.opacity=String(.95-index*.18);svg.append(line);const head=document.createElementNS(ns,"polygon"),px=-uy*15,py=ux*15;head.setAttribute("points",`${to.x},${to.y} ${endX+px},${endY+py} ${endX-px},${endY-py}`);head.setAttribute("class","next-arrow-head");svg.append(head);const label=document.createElementNS(ns,"text");label.setAttribute("x",(from.x+to.x)/2);label.setAttribute("y",(from.y+to.y)/2-12);label.setAttribute("class","next-arrow-number");label.textContent=String(index+1);svg.append(label);});
-}
+function nextFen(){return nextGame.fen();}
+function drawNextArrows(){const svg=$("nextArrowLayer");if(!svg)return;svg.innerHTML="";const ns="http://www.w3.org/2000/svg";nextCandidates.slice(0,3).forEach((candidate,index)=>{const from=nextCoordinates(candidate.from),to=nextCoordinates(candidate.to),dx=to.x-from.x,dy=to.y-from.y,len=Math.hypot(dx,dy);if(!len)return;const ux=dx/len,uy=dy/len,endX=to.x-ux*22,endY=to.y-uy*22;const line=document.createElementNS(ns,"line");line.setAttribute("x1",from.x);line.setAttribute("y1",from.y);line.setAttribute("x2",endX);line.setAttribute("y2",endY);line.setAttribute("class","next-arrow-line");line.style.opacity=String(.95-index*.18);svg.append(line);const head=document.createElementNS(ns,"polygon"),px=-uy*15,py=ux*15;head.setAttribute("points",`${to.x},${to.y} ${endX+px},${endY+py} ${endX-px},${endY-py}`);head.setAttribute("class","next-arrow-head");svg.append(head);const label=document.createElementNS(ns,"text");label.setAttribute("x",(from.x+to.x)/2);label.setAttribute("y",(from.y+to.y)/2-12);label.setAttribute("class","next-arrow-number");label.textContent=String(index+1);svg.append(label);});}
 function showNextMoves(){const list=$("nextMoveList");if(!list)return;list.innerHTML="";for(let i=0;i<3;i++){const candidate=nextCandidates[i],row=document.createElement("div"),number=document.createElement("span"),san=document.createElement("strong"),desc=document.createElement("span");row.className="next-move-item";number.className="next-move-number";number.textContent=i+1;san.className="next-move-san";san.textContent=candidate?.san||"—";desc.className="next-move-desc";desc.textContent=candidate?candidate.from+" → "+candidate.to:"";row.append(number,san,desc);list.append(row);}drawNextArrows();}
-function updateNextTurnLabel(){$("nextTurnLabel").textContent=sideName(nextTurn)+" to move";}
+function updateNextTurnLabel(){if(!nextGame)return;const turn=nextGame.turn();$("nextTurnLabel").textContent=nextGame.isGameOver()?"Game over — "+(nextGame.isCheckmate()?sideName(turn==="w"?"b":"w")+" wins":"Draw"):sideName(turn)+" to move"+(nextGame.isCheck()?" · Check":"");}
 function initNextWorker(){if(nextWorker)return;try{nextWorker=new Worker("./engine/stockfish-19-lite-single.js");nextWorker.onmessage=event=>onNextEngineMessage(String(event.data||"").trim());nextWorker.onerror=()=>{$("nextStatus").textContent="Stockfish could not load. Check the engine folder.";};nextWorker.postMessage("uci");}catch(error){$("nextStatus").textContent="Stockfish could not start: "+error.message;}}
-function onNextEngineMessage(line){
- if(line==="uciok"){nextWorker.postMessage("setoption name Threads value 1");nextWorker.postMessage("setoption name MultiPV value 3");nextWorker.postMessage("isready");return;}
- if(line==="readyok"){nextWorkerReady=true;analyzeNextPosition();return;}
- if(line.startsWith("info ")){
-  const multipv=+(line.match(/\bmultipv (\d+)/)||[])[1]||1,pv=(line.match(/\bpv (.+)$/)||[])[1];if(!pv||multipv>3)return;const uci=pv.trim().split(/\s+/)[0];if(!uci||uci.length<4)return;
-  try{let san=uci.slice(0,2)+" → "+uci.slice(2,4);try{const chess=new Chess(nextPositionFen);const move=chess.move({from:uci.slice(0,2),to:uci.slice(2,4),promotion:uci[4]||"q"});if(move)san=move.san;}catch{}nextCandidates[multipv-1]={from:uci.slice(0,2),to:uci.slice(2,4),san,uci};showNextMoves();}catch{}return;
- }
- if(line.startsWith("bestmove ")){$("nextStatus").textContent="Top moves for "+sideName(nextTurn)+" to move.";showNextMoves();}
-}
-function analyzeNextPosition(){
- if(activePage!=="next")return;nextAnalysisToken++;const token=nextAnalysisToken;nextCandidates=[];showNextMoves();if(nextAnalysisTimer)clearTimeout(nextAnalysisTimer);
- const whiteKings=Object.values(nextPieces).filter(p=>p.color==="w"&&p.type==="k").length,blackKings=Object.values(nextPieces).filter(p=>p.color==="b"&&p.type==="k").length;
- if(whiteKings!==1||blackKings!==1){$("nextStatus").textContent="Add exactly one White King and one Black King to get Stockfish suggestions.";return;}
- if(!nextWorkerReady){$("nextStatus").textContent="Loading Stockfish…";initNextWorker();return;}
- const fen=nextFen();nextPositionFen=fen;$("nextStatus").textContent="Analyzing the top 3 moves for "+sideName(nextTurn)+"…";
- nextAnalysisTimer=setTimeout(()=>{if(token!==nextAnalysisToken||!nextWorkerReady)return;nextWorker.postMessage("stop");nextWorker.postMessage("setoption name MultiPV value 3");nextWorker.postMessage("position fen "+fen);nextWorker.postMessage("go movetime 2200");},180);
-}
+function onNextEngineMessage(line){if(line==="uciok"){nextWorker.postMessage("setoption name Threads value 1");nextWorker.postMessage("setoption name MultiPV value 3");nextWorker.postMessage("isready");return;}if(line==="readyok"){nextWorkerReady=true;analyzeNextPosition();return;}if(line.startsWith("info ")){const multipv=+(line.match(/\bmultipv (\d+)/)||[])[1]||1,pv=(line.match(/\bpv (.+)$/)||[])[1];if(!pv||multipv>3)return;const uci=pv.trim().split(/\s+/)[0];if(!uci||uci.length<4)return;try{const chess=new Chess(nextPositionFen);const move=chess.move({from:uci.slice(0,2),to:uci.slice(2,4),promotion:uci[4]||"q"});if(move){nextCandidates[multipv-1]={from:move.from,to:move.to,san:move.san,uci};showNextMoves();}}catch{}return;}if(line.startsWith("bestmove ")){$("nextStatus").textContent=nextGame.isGameOver()?"Game over — no legal moves.":"Top moves for "+sideName(nextGame.turn())+" to move.";showNextMoves();}}
+function analyzeNextPosition(){if(activePage!=="next"||!nextGame)return;nextAnalysisToken++;const token=nextAnalysisToken;nextCandidates=[];showNextMoves();if(nextAnalysisTimer)clearTimeout(nextAnalysisTimer);if(nextGame.isGameOver()){$("nextStatus").textContent="Game over — no legal moves.";return;}if(!nextWorkerReady){$("nextStatus").textContent="Loading Stockfish…";initNextWorker();return;}const fen=nextFen();nextPositionFen=fen;$("nextStatus").textContent="Analyzing the top 3 moves for "+sideName(nextGame.turn())+"…";nextAnalysisTimer=setTimeout(()=>{if(token!==nextAnalysisToken||!nextWorkerReady)return;nextWorker.postMessage("stop");nextWorker.postMessage("setoption name MultiPV value 3");nextWorker.postMessage("position fen "+fen);nextWorker.postMessage("go movetime 2200");},180);}
 function resetNextPosition(){nextInitialPosition();}
-function undoNextMove(){if(!nextHistory.length)return;const previous=nextHistory.pop();nextPieces=nextCopyPieces(previous.pieces);nextTurn=previous.turn;nextCastling=previous.castling||"-";nextSelected=null;nextTraySelected=null;nextLastMove=null;renderNextBoard();analyzeNextPosition();}
+function undoNextMove(){if(!nextGame||!nextGame.undo())return;nextLastMove=null;const history=nextGame.history({verbose:true});if(history.length)nextLastMove={from:history[history.length-1].from,to:history[history.length-1].to};nextSelected=null;nextLegalTargets=[];renderNextBoard();analyzeNextPosition();}
 
 function formatClock(seconds){const s=Math.max(0,seconds);return Math.floor(s/60).toString().padStart(2,"0")+":"+(s%60).toString().padStart(2,"0")}
 function renderClocks(){
@@ -584,7 +943,7 @@ function onEngineMessage(line){
   engineReady=true;
   setStatus("AI ready.");
 
-  if(gameStarted&&game.turn()!==humanColor&&!game.isGameOver()){setTimeout(engineMove,120);}
+  if(gameStarted&&game.turn()!==humanColor&&!game.isGameOver()){engineMove();}
   return;
  }
 
@@ -628,7 +987,7 @@ function onEngineMessage(line){
 }
 
 function engineMove(){
- if(!gameStarted||!engineReady||game.isGameOver()||game.turn()===humanColor||engineBusy)return;
+ if(!gameStarted||!engineReady||game.isGameOver()||game.turn()===humanColor)return;
  beginBotSearch();
 }
 
@@ -666,7 +1025,7 @@ function undo(){
  stopClock();resetClock();updateOpening();clearSelection();clearArrows();lastMove=null;renderAll();setStatus("Move undone.");
 }
 function applyNewGame(){
- humanColor=chosenColor==="random"?(Math.random()<.5?"w":"b"):chosenColor;orientation=humanColor;restart();renderAll();
+ humanColor=chosenColor==="random"?(Math.random()<.5?"w":"b"):chosenColor;orientation="w";restart();
 }
 async function startGame(){
  if(gameStarted||gameStarting)return;
@@ -679,7 +1038,7 @@ async function startGame(){
  $("startOverlay").classList.remove("visible");
  $("clockStartText").textContent="GO!";$("clockStartOverlay").classList.add("visible");setTimeout(()=>$("clockStartOverlay").classList.remove("visible"),650);
  clockRunning=true;clockLastTick=Date.now();renderClocks();setStatus("Game started. Good luck!");
- if(game.turn()!==humanColor)setTimeout(engineMove,180);
+ if(game.turn()!==humanColor)engineMove();
 }
 
 $("elo").addEventListener("input",event=>{
@@ -699,9 +1058,12 @@ document.querySelectorAll("[data-color]").forEach(button=>{
 
 $("startBtn").onclick=startGame;
 $("undoBtn").onclick=undo;
-$("flipBtn").onclick=()=>{orientation=orientation==="w"?"b":"w";renderBoard();};
 $("restartBtn").onclick=()=>{restart();};
 
+$("flipBtn").onclick=()=>{
+ orientation=orientation==="w"?"b":"w";
+ renderBoard();
+};
 
 
 $("promoOverlay").addEventListener("click",event=>{
@@ -719,11 +1081,11 @@ $("navNextMove").onclick=()=>{showPage("next");initNextWorker();};
 $("nextFlip").onclick=()=>{nextViewSide=nextViewSide==="w"?"b":"w";renderNextBoard();};
 $("nextUndo").onclick=undoNextMove;
 $("nextReset").onclick=resetNextPosition;
-document.addEventListener("pointermove",nextPointerMove);document.addEventListener("pointerup",nextPointerUp);document.addEventListener("pointercancel",nextPointerCancel);document.addEventListener("pointermove",onBoardPointerMove);document.addEventListener("pointerup",onBoardPointerUp);
+document.addEventListener("pointermove",nextPointerMove);document.addEventListener("pointerup",nextPointerUp);document.addEventListener("pointercancel",nextPointerCancel);
 $("onlineChoice").onclick=()=>{$("onlineNotice").style.display="block";};
 $("aiChoice").onclick=()=>{showPage("game");applyNewGame();};
 buildThemes();setColorMode(colorMode);
-buildNextTray();nextInitialPosition();
+nextInitialPosition();
 resetClock();updateOpening();
 if(!clockInterval)clockInterval=setInterval(clockTick,250);
 initEngine();
