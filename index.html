@@ -1032,6 +1032,23 @@ function applyNewGame(){
 async function startGame(){
  if(gameStarted||gameStarting)return;
  if(!engineReady){setStatus("AI is still loading. Please wait a moment.");return;}
+
+ // Apply the side selection at the moment the user starts the game.
+ // The chess starting position always has White to move. If the player
+ // selected Black, the board is flipped and the White AI gets the first turn.
+ humanColor=chosenColor==="b"?"b":"w";
+ orientation=humanColor;
+ if(engine)engine.postMessage("stop");
+ if(botMoveTimer){clearTimeout(botMoveTimer);botMoveTimer=null;}
+ engineBusy=false;
+ game.reset();
+ clearSelection();
+ clearArrows();
+ lastMove=null;
+ updateOpening();
+ resetClock();
+ renderAll();
+
  gameStarting=true;$("startBtn").disabled=true;$("startBtn").textContent="Starting…";
  const token=++startSequenceToken;$("startOverlay").classList.add("visible");
  for(const count of [3,2,1]){if(token!==startSequenceToken)return;$("startCountdown").textContent=count;await new Promise(resolve=>setTimeout(resolve,700));}
@@ -1040,6 +1057,7 @@ async function startGame(){
  $("startOverlay").classList.remove("visible");
  $("clockStartText").textContent="GO!";$("clockStartOverlay").classList.add("visible");setTimeout(()=>$("clockStartOverlay").classList.remove("visible"),650);
  clockRunning=true;clockLastTick=Date.now();renderClocks();setStatus("Game started. Good luck!");
+ // chess.js starts with White. When the player chose Black, start the AI now.
  if(game.turn()!==humanColor)engineMove();
 }
 
@@ -1051,7 +1069,7 @@ $("elo").addEventListener("input",event=>{
 
 document.querySelectorAll("[data-color]").forEach(button=>{
  button.addEventListener("click",()=>{
-  chosenColor=button.dataset.color;
+  chosenColor=button.dataset.color==="b"?"b":"w";
   document.querySelectorAll("[data-color]").forEach(item=>{
    item.classList.toggle("active",item===button);
   });
