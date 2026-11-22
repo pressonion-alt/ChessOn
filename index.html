@@ -136,6 +136,13 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
 @media(max-width:850px){.next-layout{grid-template-columns:1fr;max-width:700px;gap:16px}.piece-tray{grid-template-columns:repeat(6,minmax(0,1fr))}.tray-piece{height:56px}}
 
 @media(max-width:850px){body{padding-left:0;padding-bottom:70px}.left-sidebar{top:auto;right:0;bottom:0;width:100%;height:64px;border-right:0;border-top:1px solid #e5e1d8;padding:6px 10px;flex-direction:row;align-items:center}.sidebar-logo{display:none}.sidebar-nav{width:100%;grid-template-columns:repeat(2,1fr)}.sidebar-nav button{text-align:center;padding:10px}.sidebar-note{display:none}main{grid-template-columns:1fr;max-width:700px;gap:16px}.side{width:100%}.choice-grid{grid-template-columns:1fr}.page{margin:28px auto}.board-tools button{min-width:calc(50% - 8px)}}
+.online-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.online-actions input{flex:1;min-width:0;padding:8px;border:1px solid var(--line);border-radius:7px;background:var(--panel);color:var(--text)}
+#onlineLobby{margin-top:18px}
+#onlineLobbyStatus:empty{display:none}
+#onlineControls,#onlineAnalysis,#cancelOnline{margin-top:12px}
+#inviteControls{margin-bottom:12px}
+.online-game .ai-only,.online-game [hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -152,10 +159,25 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
  <h1 class="hub-title">Play ChessOn</h1>
  <p class="hub-sub">Choose how you want to play.</p>
  <div class="choice-grid">
-  <button class="choice-card" id="onlineChoice"><strong>Online</strong><span>Play against other people. Not working yet.</span></button>
+  <button class="choice-card" id="onlineChoice" aria-controls="onlineLobby" aria-expanded="false"><strong>Online</strong><span>Invite a friend or find a random opponent.</span></button>
   <button class="choice-card" id="aiChoice"><strong>Play vs AI</strong><span>Start a game against the ChessOn AI.</span></button>
  </div>
- <div class="status" id="onlineNotice" style="display:none;margin-top:18px">Online play is not working yet. Please check back later.</div>
+ <div class="setup" id="onlineLobby" hidden>
+  <label><input type="checkbox" id="allowSuggestions"> Allow Next Move suggestions for both players in your invite room</label>
+  <div class="online-actions">
+   <button class="primary" id="createRoomBtn" type="button">Create invite room</button>
+   <button id="randomMatchBtn" type="button">Find random opponent</button>
+  </div>
+  <form id="joinRoomForm" novalidate>
+   <label for="roomCode">Room code</label>
+   <div class="online-actions">
+    <input id="roomCode" type="text" maxlength="12" autocomplete="off" spellcheck="false">
+    <button id="joinRoomBtn" type="submit">Join invite room</button>
+   </div>
+  </form>
+  <button id="cancelOnline" type="button" hidden>Cancel</button>
+  <p class="small" id="onlineLobbyStatus" role="status"></p>
+ </div>
 </section>
 <section class="page" id="themesPage">
  <h1 class="hub-title">Board themes</h1>
@@ -185,16 +207,16 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
 <main id="gamePage" class="">
 <section class="board-column">
  <div class="game-top">
-  <span>PLAY AGAINST AI</span>
+  <span id="gameModeLabel">PLAY AGAINST AI</span>
   <span id="turnLabel">White to move</span>
  </div>
  <div class="player-strip">
   <div class="avatar" id="topAvatar">♟</div>
   <div><div class="player-name" id="topName">AI</div><div class="collection-row"><span>Captured</span><span class="collection-icons" id="topCaptured"></span><strong class="material-edge" id="topEdge"></strong></div></div>
-  <div class="player-sub" id="topRating">ELO 1500</div><div class="clock" id="topClock">10:00</div>
+  <div class="player-sub" id="topRating">ELO 1500</div><div class="clock ai-only" id="topClock">10:00</div>
  </div>
  <div class="board-wrap">
-  <div class="evalbar">
+  <div class="evalbar ai-only">
    <div class="eval-black" id="evalBlack"></div>
    <div class="eval-label" id="evalText">0.0</div>
   </div>
@@ -203,19 +225,19 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
  <div class="player-strip">
   <div class="avatar" id="bottomAvatar">♙</div>
   <div><div class="player-name" id="bottomName">You</div><div class="collection-row"><span>Captured</span><span class="collection-icons" id="bottomCaptured"></span><strong class="material-edge" id="bottomEdge"></strong></div></div>
-  <div class="player-sub" id="bottomRating">White</div><div class="clock" id="bottomClock">10:00</div>
+  <div class="player-sub" id="bottomRating">White</div><div class="clock ai-only" id="bottomClock">10:00</div>
  </div>
  <div class="board-tools">
-  <button id="undoBtn" disabled="">↶ Undo</button>
+  <button class="ai-only" id="undoBtn" disabled="">↶ Undo</button>
   <button id="flipBtn">⇅ Flip</button>
-  <button id="restartBtn">⟲ Restart</button>
+  <button class="ai-only" id="restartBtn">⟲ Restart</button>
  </div>
 </section>
 
 <aside class="side">
  <div class="panel-content">
-  <h2 class="section-title">Play vs AI</h2>
-  <div class="setup">
+  <h2 class="section-title" id="gameTitle">Play vs AI</h2>
+  <div class="setup ai-only">
    <label>Choose your side</label>
    <div class="colors">
     <button data-color="w" class="active">White</button>
@@ -230,13 +252,30 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
    <input id="elo" type="range" min="1" max="3200" step="1" value="1500">
    <button class="primary" id="startBtn" style="width:100%;margin-top:13px">Play game</button>
   </div>
-  <div class="status" id="status">Engine startup failed: Failed to construct 'Worker': Script at 'file:///C:/Users/KChu1/Downloads/engine/stockfish-19-lite-single.js' cannot be accessed from origin 'null'.</div>
-  <div class="engine-line"><span>Evaluation</span><strong id="evalSide">0.00</strong></div>
-  <div class="engine-line"><span>Depth</span><strong id="depth">—</strong></div>
+  <div class="status" id="status" role="status">Loading Stockfish…</div>
+  <div id="onlineControls" hidden>
+   <div id="inviteControls" hidden>
+    <label for="inviteLink">Invite link · <span id="activeRoomCode"></span></label>
+    <div class="online-actions">
+     <input id="inviteLink" readonly>
+     <button id="copyInviteBtn" type="button">Copy link</button>
+    </div>
+   </div>
+   <div class="online-actions">
+    <button id="onlineAnalysisToggle" type="button" aria-controls="onlineAnalysis" aria-expanded="false" hidden>Show best moves</button>
+    <button id="leaveOnlineBtn" type="button">Leave game</button>
+   </div>
+   <div id="onlineAnalysis" hidden>
+    <div class="small" id="onlineAnalysisStatus" role="status"></div>
+    <div class="next-move-list" id="onlineBestMoves"></div>
+   </div>
+  </div>
+  <div class="engine-line ai-only"><span>Evaluation</span><strong id="evalSide">0.00</strong></div>
+  <div class="engine-line ai-only"><span>Depth</span><strong id="depth">—</strong></div>
   <div class="opening-panel"><span>OPENING PLAYED</span><strong id="openingName">Starting position</strong></div>
   <label>Move history</label>
   <div class="moves" id="moves"><div class="small">No moves yet.</div></div>
-  <div class="small">The AI thinks for about 3 seconds before each reply. Beginner AI levels deliberately make more mistakes. Hold Shift and drag, or right-click and drag, to draw arrows. Shift+click or right-click a piece to clear arrows touching it.</div>
+  <div class="small ai-only">The AI thinks for about 3 seconds before each reply. Beginner AI levels deliberately make more mistakes. Hold Shift and drag, or right-click and drag, to draw arrows. Shift+click or right-click a piece to clear arrows touching it.</div>
  </div>
 </aside>
 </main>
@@ -246,7 +285,14 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
 <div class="end-overlay" id="endOverlay"><div class="end-card"><h2 id="endTitle">Checkmate!</h2><p id="endMessage">The game is over.</p><div class="end-actions"><button class="primary" id="playAgainBtn">Play again</button><button id="goBackBtn">Go back</button></div></div></div>
 
 <script type="module">
-import {Chess} from "https://cdn.jsdelivr.net/npm/chess.js@1.4.0/dist/esm/chess.js";
+const SERVER_HOST = "chess-on-server.duckdns.org";
+const LOOPBACK_HOSTS = ["127.0.0.1", "localhost", "[::1]"];
+const servedByGameServer = location.hostname === SERVER_HOST || LOOPBACK_HOSTS.includes(location.hostname);
+const onlineOrigin = servedByGameServer ? location.origin : `https://${SERVER_HOST}`;
+const chessModule = "https://cdn.jsdelivr.net/npm/chess.js@1.4.0/dist/esm/chess.js";
+const { Chess } = servedByGameServer
+ ? await import("/chess.js").catch(() => import(chessModule))
+ : await import(chessModule);
 
 const $=id=>document.getElementById(id);
 
@@ -294,13 +340,14 @@ let clockRunning=false;
 let clockLastTick=0;
 let clockInterval=null;
 let activePage="hub";
+let online = null;
 function readPreference(key,fallback){try{return localStorage.getItem(key)||fallback;}catch{return fallback;}}
 let selectedTheme=readPreference("chesson-board-theme","classic");
 let colorMode=readPreference("chesson-color-mode","light");
 
 // Next Move is a regular legal chess game with a separate Stockfish analysis worker.
 let nextViewSide="w", nextGame=null, nextWorker=null, nextWorkerReady=false;
-let nextAnalysisToken=0, nextAnalysisTimer=null, nextCandidates=[], nextPositionFen="";
+let nextCandidates=[], queuedAnalysis=null, runningAnalysis=null;
 let nextSelected=null, nextLegalTargets=[], nextLastMove=null, nextPointerDrag=null, nextDragGhost=null, nextPromotion=null;
 
 function setStatus(message){$("status").textContent=message}
@@ -308,6 +355,206 @@ function sideName(color){return color==="w"?"White":"Black"}
 function pieceAt(square){return game.get(square)}
 function legalFrom(square){return game.moves({square,verbose:true})}
 function uci(move){return move.from+move.to+(move.promotion||"")}
+
+const roomCodePattern = /^[A-F0-9]{12}$/;
+const lobbyStatus = message => { $("onlineLobbyStatus").textContent = message; };
+const seatKey = code => `chesson-seat-${code}`;
+
+function showOnlineLobby() {
+ $("onlineLobby").hidden = false;
+ $("onlineChoice").setAttribute("aria-expanded", "true");
+}
+
+function setLobbyBusy(busy) {
+ for (const id of ["createRoomBtn", "randomMatchBtn", "joinRoomBtn", "roomCode", "allowSuggestions"]) {
+  $(id).disabled = busy;
+ }
+ $("cancelOnline").hidden = !busy;
+}
+
+function startOnline(type, code) {
+ if (online) return;
+ showOnlineLobby();
+ if (type === "join" && !roomCodePattern.test(code)) {
+  lobbyStatus("Enter the 12-character room code.");
+  return;
+ }
+ let savedToken;
+ if (code) {
+  try { savedToken = sessionStorage.getItem(seatKey(code)); } catch {}
+ }
+ const token = savedToken || Array.from(crypto.getRandomValues(new Uint8Array(24)),
+  byte => byte.toString(16).padStart(2, "0")).join("");
+ const session = {
+  request: { type: savedToken ? "resume" : type, token, code, analysisAllowed: $("allowSuggestions").checked },
+  socket: null, code: null, retries: 0, ready: false, moveCount: 0,
+  opponentJoined: false, opponentConnected: false, pendingMove: false, resigned: null,
+  endShown: false, showSuggestions: false, candidates: [],
+ };
+ online = session;
+ setLobbyBusy(true);
+ lobbyStatus("Connecting…");
+ connectOnline(session);
+}
+
+function connectOnline(session) {
+ const url = new URL("/multiplayer", onlineOrigin);
+ url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+ const socket = new WebSocket(url);
+ session.socket = socket;
+ socket.addEventListener("open", () => socket.send(JSON.stringify(session.request)));
+ socket.addEventListener("message", event => {
+  if (online !== session || session.socket !== socket) return;
+  const reply = JSON.parse(event.data);
+  if (reply.type === "joined") enterOnlineGame(session, reply);
+  if (reply.type === "state") receiveOnlineState(session, reply);
+  if (reply.type === "waiting") {
+   session.retries = 0;
+   lobbyStatus("Waiting for a random opponent…");
+  }
+  if (reply.type === "error") {
+   session.pendingMove = false;
+   if (session.ready) setStatus(reply.message);
+   else resetOnline(session, reply.message);
+  }
+ });
+ socket.addEventListener("close", event => {
+  if (online !== session || session.socket !== socket) return;
+  if (event.code === 4001) {
+   resetOnline(session, "This game or queue was opened in another tab.");
+   return;
+  }
+  session.ready = false;
+  session.pendingMove = false;
+  if (session.code) {
+   gameStarted = false;
+   clearSelection();
+   cancelPointer();
+   if (activePage === "game") $("promoOverlay").style.display = "none";
+   renderBoard();
+   setStatus("Connection lost. Reconnecting…");
+  } else lobbyStatus("Could not reach the server. Retrying…");
+  const delay = Math.min(8000, 1000 * 2 ** session.retries++);
+  session.retryTimer = setTimeout(() => connectOnline(session), delay);
+ });
+}
+
+function enterOnlineGame(session, reply) {
+ session.retries = 0;
+ if (session.code) return;
+ restart();
+ stopAnalysis();
+ $("promoOverlay").style.display = "none";
+ nextPromotion = null;
+ session.code = reply.code;
+ session.kind = reply.kind;
+ session.analysisAllowed = reply.kind === "private" && reply.analysisAllowed === true;
+ session.request = { type: "resume", code: reply.code, token: session.request.token };
+ try { sessionStorage.setItem(seatKey(reply.code), session.request.token); } catch {}
+ history.replaceState(null, "", `#room=${reply.code}`);
+ humanColor = orientation = reply.color;
+ displayOnlineControls(session);
+ renderAll();
+ showPage("game");
+ updateOnlineStatus(session);
+}
+
+function displayOnlineControls(session) {
+ const inGame = Boolean(session?.code);
+ $("gamePage").classList.toggle("online-game", inGame);
+ $("onlineControls").hidden = !inGame;
+ $("inviteControls").hidden = session?.kind !== "private";
+ $("onlineAnalysisToggle").hidden = !session?.analysisAllowed;
+ $("onlineAnalysisToggle").textContent = "Show best moves";
+ $("onlineAnalysisToggle").setAttribute("aria-expanded", "false");
+ $("onlineAnalysis").hidden = true;
+ $("navNextMove").hidden = inGame && !session.analysisAllowed;
+ $("gameModeLabel").textContent = inGame ? "PLAY ONLINE" : "PLAY AGAINST AI";
+ $("gameTitle").textContent = inGame ? (session.kind === "private" ? "Invite room" : "Random match") : "Play vs AI";
+ $("playAgainBtn").textContent = inGame ? "Review board" : "Play again";
+ $("goBackBtn").textContent = inGame ? "Leave game" : "Go back";
+ if (session?.kind === "private") {
+  const link = new URL("/", onlineOrigin);
+  link.hash = `room=${session.code}`;
+  $("inviteLink").value = link.href;
+  $("activeRoomCode").textContent = session.code;
+  $("copyInviteBtn").textContent = "Copy link";
+ }
+}
+
+function receiveOnlineState(session, reply) {
+ const boardChanged = reply.moves.length !== session.moveCount;
+ const reanalyze = boardChanged || reply.opponentJoined !== session.opponentJoined || reply.resigned !== session.resigned;
+ session.ready = true;
+ session.opponentJoined = reply.opponentJoined;
+ session.opponentConnected = reply.opponentConnected;
+ session.resigned = reply.resigned;
+ for (const code of reply.moves.slice(session.moveCount)) {
+  const move = game.move({ from: code.slice(0, 2), to: code.slice(2, 4), promotion: code[4] });
+  lastMove = { from: move.from, to: move.to };
+ }
+ session.moveCount = reply.moves.length;
+ gameStarted = session.opponentConnected && !session.resigned && !game.isGameOver();
+ if (boardChanged || !gameStarted) {
+  session.pendingMove = false;
+  clearSelection();
+  cancelPointer();
+  clearArrows();
+  if (activePage === "game") $("promoOverlay").style.display = "none";
+ }
+ if (reanalyze) session.candidates = [];
+ updateOpening();
+ renderAll();
+ updateOnlineStatus(session);
+ if (reanalyze) analyzeOnlinePosition();
+}
+
+function updateOnlineStatus(session) {
+ if (!session.ready) setStatus("Connecting to the room…");
+ else if (session.resigned || game.isGameOver()) {
+  setStatus(session.resigned ? `${sideName(session.resigned)} resigned.` : gameOverText());
+  if (activePage === "game" && !session.endShown) {
+   session.endShown = true;
+   showGameOver();
+  }
+ } else if (!session.opponentJoined) setStatus("Share the invite link to start the game.");
+ else if (!session.opponentConnected) setStatus("Opponent disconnected. Waiting for them to reconnect…");
+ else setStatus(game.turn() === humanColor ? "Your move." : "Waiting for your opponent’s move…");
+}
+
+function resetOnline(session, message = "") {
+ online = null;
+ clearTimeout(session.retryTimer);
+ session.socket?.close();
+ const code = session.code || session.request.code;
+ if (code) {
+  try { sessionStorage.removeItem(seatKey(code)); } catch {}
+  if (location.hash.startsWith("#room=")) history.replaceState(null, "", location.href.split("#", 1)[0]);
+ }
+ if (session.code) {
+  displayOnlineControls(null);
+  stopAnalysis();
+  restart();
+ }
+ setLobbyBusy(false);
+ lobbyStatus(message);
+ showPage("hub");
+}
+
+function leaveOnline() {
+ if (!online) return;
+ if (online.socket?.readyState === WebSocket.OPEN) online.socket.send(JSON.stringify({ type: "leave" }));
+ resetOnline(online);
+}
+
+function joinFromInvite() {
+ if (online) return;
+ const code = new URLSearchParams(location.hash.slice(1)).get("room");
+ if (code) {
+  $("roomCode").value = code.toUpperCase();
+  startOnline("join", code.toUpperCase());
+ }
+}
 
 function getMoveFromUci(code){
  return game.moves({verbose:true}).find(move=>uci(move)===code);
@@ -376,6 +623,7 @@ function renderArrows(){
   const from=coordinatesForSquare(arrowDrag.from),to=coordinatesForSquare(arrowDrag.to);
   const line=document.createElementNS(ns,"line");line.setAttribute("x1",from.x);line.setAttribute("y1",from.y);line.setAttribute("x2",to.x);line.setAttribute("y2",to.y);line.setAttribute("class","arrow-preview");svg.appendChild(line);
  }
+ if (online?.showSuggestions) drawAnalysisArrows(svg, online.candidates, coordinatesForSquare);
 }
 
 function addArrow(from,to){
@@ -481,6 +729,7 @@ function onPointerDown(event){
   event.preventDefault();
   return;
  }
+ if (!gameStarted || !isHumanTurn() || online?.pendingMove) return;
  const piece=game.get(square);
  pointerDrag={from:square,startX:event.clientX,startY:event.clientY,moved:false,button:event.button};
  if(piece&&piece.color===humanColor&&gameStarted&&!game.isGameOver())selectSquare(square);
@@ -612,6 +861,17 @@ function renderAll(){
 function updateLabels(){
  const turn=game.turn();
  $("turnLabel").textContent=game.isGameOver()?(game.isCheckmate()?sideName(turn==="w"?"b":"w")+" wins by checkmate":"Game drawn"):sideName(turn)+" to move"+(game.isCheck()?" · Check":"");
+ if (online?.code) {
+  if (online.resigned) $("turnLabel").textContent = `${sideName(online.resigned === "w" ? "b" : "w")} wins by resignation`;
+  const topColor = orientation === "w" ? "b" : "w";
+  for (const [slot, color] of [["top", topColor], ["bottom", orientation]]) {
+   $(slot + "Name").textContent = color === humanColor ? "You" : "Opponent";
+   $(slot + "Rating").textContent = sideName(color);
+   $(slot + "Avatar").textContent = color === "w" ? "♙" : "♟";
+  }
+  renderCapturedMaterial();
+  return;
+ }
  $("topName").textContent=humanColor==="w"?"AI":"You";$("bottomName").textContent=humanColor==="w"?"You":"AI";
  $("topRating").textContent=humanColor==="w"?"ELO "+elo:"Black";$("bottomRating").textContent=humanColor==="w"?"White":"ELO "+elo;
  $("topAvatar").textContent=humanColor==="w"?"♟":"♙";$("bottomAvatar").textContent=humanColor==="w"?"♙":"♟";
@@ -622,7 +882,7 @@ function renderCapturedMaterial(){
  for(const move of history){if(move.captured)captured[move.color].push(move.captured);}
  const points={p:1,n:3,b:3,r:5,q:8,k:0};
  const score={w:captured.w.reduce((sum,t)=>sum+points[t],0),b:captured.b.reduce((sum,t)=>sum+points[t],0)};
- const topColor=humanColor==="w"?"b":"w",bottomColor=humanColor;
+ const bottomColor=online?.code?orientation:humanColor,topColor=bottomColor==="w"?"b":"w";
  for(const [slot,color] of [["top",topColor],["bottom",bottomColor]]){
   const icons=$(slot+"Captured");icons.innerHTML="";
   for(const type of captured[color]){const img=document.createElement("img");img.src=PIECE_IMAGES[(color==="w"?"b":"w")+type];img.alt=type;img.title="Captured "+type;icons.appendChild(img);}
@@ -689,7 +949,7 @@ function onSquare(square){
 }
 
 function attemptMove(from,to,promotion){
- if(game.turn()!==humanColor)return;
+ if(!gameStarted || !isHumanTurn() || online?.pendingMove)return;
 
  const moves=game.moves({square:from,verbose:true}).filter(m=>m.to===to);
 
@@ -716,6 +976,12 @@ function showPromotion(from,to){
 }
 
 function makeMove(move){
+ if (online?.code) {
+  if (online.socket.readyState !== WebSocket.OPEN) return;
+  online.pendingMove = true;
+  online.socket.send(JSON.stringify({ type: "move", move: uci(move), ply: online.moveCount }));
+  return;
+ }
  const made=game.move({from:move.from,to:move.to,promotion:move.promotion||"q"});if(!made)return;
  lastMove={from:made.from,to:made.to};updateOpening();clearSelection();clearArrows();renderAll();
  if(game.isGameOver()){clockRunning=false;showGameOver();return;}
@@ -723,8 +989,8 @@ function makeMove(move){
 }
 function showGameOver(){
  gameStarted=false;clockRunning=false;
- const title=game.isCheckmate()?"Checkmate!":game.isStalemate()?"Stalemate": "Game over";
- const message=game.isCheckmate()?sideName(game.turn()==="w"?"b":"w")+" wins by checkmate.":gameOverText();
+ const title=online?.resigned?"Resignation":game.isCheckmate()?"Checkmate!":game.isStalemate()?"Stalemate": "Game over";
+ const message=online?.resigned?`${sideName(online.resigned === "w" ? "b" : "w")} wins by resignation.`:gameOverText();
  $("endTitle").textContent=title;$("endMessage").textContent=message;$("endOverlay").classList.add("visible");
 }
 
@@ -776,6 +1042,8 @@ function buildThemes(){
  applyTheme(selectedTheme);
 }
 function showPage(page){
+ const changed = activePage !== page;
+ if (changed) stopAnalysis();
  activePage=page;
  $("playHub").classList.toggle("visible",page==="hub");
  $("themesPage").classList.toggle("visible",page==="themes");
@@ -785,6 +1053,10 @@ function showPage(page){
  $("navThemes").classList.toggle("active",page==="themes");
  $("navNextMove").classList.toggle("active",page==="next");
  if(page==="next")analyzeNextPosition();
+ if (page === "game" && online?.code) {
+  updateOnlineStatus(online);
+  if (changed) analyzeOnlinePosition();
+ }
 }
 
 function nextInitialPosition(){nextGame=new Chess();nextSelected=null;nextLegalTargets=[];nextLastMove=null;nextPromotion=null;renderNextBoard();analyzeNextPosition();}
@@ -818,12 +1090,197 @@ function nextPointerMove(event){if(!nextPointerDrag)return;const d=nextPointerDr
 function nextPointerUp(event){if(!nextPointerDrag)return;const drag=nextPointerDrag;nextPointerDrag=null;nextDragGhost?.remove();nextDragGhost=null;const destination=nextSquareFromElement(document.elementFromPoint(event.clientX,event.clientY));if(drag.moved&&drag.piece&&destination&&destination!==drag.from){if(nextGame.moves({square:drag.from,verbose:true}).some(m=>m.to===destination))nextAttemptMove(drag.from,destination);return;}if(!drag.moved)nextClickSquare(drag.from);}
 function nextPointerCancel(){nextPointerDrag=null;nextDragGhost?.remove();nextDragGhost=null;}
 function nextFen(){return nextGame.fen();}
-function drawNextArrows(){const svg=$("nextArrowLayer");if(!svg)return;svg.innerHTML="";const ns="http://www.w3.org/2000/svg";nextCandidates.slice(0,3).forEach((candidate,index)=>{const from=nextCoordinates(candidate.from),to=nextCoordinates(candidate.to),dx=to.x-from.x,dy=to.y-from.y,len=Math.hypot(dx,dy);if(!len)return;const ux=dx/len,uy=dy/len,endX=to.x-ux*22,endY=to.y-uy*22;const line=document.createElementNS(ns,"line");line.setAttribute("x1",from.x);line.setAttribute("y1",from.y);line.setAttribute("x2",endX);line.setAttribute("y2",endY);line.setAttribute("class","next-arrow-line");line.style.opacity=String(.95-index*.18);svg.append(line);const head=document.createElementNS(ns,"polygon"),px=-uy*15,py=ux*15;head.setAttribute("points",`${to.x},${to.y} ${endX+px},${endY+py} ${endX-px},${endY-py}`);head.setAttribute("class","next-arrow-head");svg.append(head);const label=document.createElementNS(ns,"text");label.setAttribute("x",(from.x+to.x)/2);label.setAttribute("y",(from.y+to.y)/2-12);label.setAttribute("class","next-arrow-number");label.textContent=String(index+1);svg.append(label);});}
-function showNextMoves(){const list=$("nextMoveList");if(!list)return;list.innerHTML="";for(let i=0;i<3;i++){const candidate=nextCandidates[i],row=document.createElement("div"),number=document.createElement("span"),san=document.createElement("strong"),desc=document.createElement("span");row.className="next-move-item";number.className="next-move-number";number.textContent=i+1;san.className="next-move-san";san.textContent=candidate?.san||"—";desc.className="next-move-desc";desc.textContent=candidate?candidate.from+" → "+candidate.to:"";row.append(number,san,desc);list.append(row);}drawNextArrows();}
 function updateNextTurnLabel(){if(!nextGame)return;const turn=nextGame.turn();$("nextTurnLabel").textContent=nextGame.isGameOver()?"Game over — "+(nextGame.isCheckmate()?sideName(turn==="w"?"b":"w")+" wins":"Draw"):sideName(turn)+" to move"+(nextGame.isCheck()?" · Check":"");}
-function initNextWorker(){if(nextWorker)return;try{nextWorker=new Worker("./engine/stockfish-19-lite-single.js");nextWorker.onmessage=event=>onNextEngineMessage(String(event.data||"").trim());nextWorker.onerror=()=>{$("nextStatus").textContent="Stockfish could not load. Check the engine folder.";};nextWorker.postMessage("uci");}catch(error){$("nextStatus").textContent="Stockfish could not start: "+error.message;}}
-function onNextEngineMessage(line){if(line==="uciok"){nextWorker.postMessage("setoption name Threads value 1");nextWorker.postMessage("setoption name MultiPV value 3");nextWorker.postMessage("isready");return;}if(line==="readyok"){nextWorkerReady=true;analyzeNextPosition();return;}if(line.startsWith("info ")){const multipv=+(line.match(/\bmultipv (\d+)/)||[])[1]||1,pv=(line.match(/\bpv (.+)$/)||[])[1];if(!pv||multipv>3)return;const uci=pv.trim().split(/\s+/)[0];if(!uci||uci.length<4)return;try{const chess=new Chess(nextPositionFen);const move=chess.move({from:uci.slice(0,2),to:uci.slice(2,4),promotion:uci[4]||"q"});if(move){nextCandidates[multipv-1]={from:move.from,to:move.to,san:move.san,uci};showNextMoves();}}catch{}return;}if(line.startsWith("bestmove ")){$("nextStatus").textContent=nextGame.isGameOver()?"Game over — no legal moves.":"Top moves for "+sideName(nextGame.turn())+" to move.";showNextMoves();}}
-function analyzeNextPosition(){if(activePage!=="next"||!nextGame)return;nextAnalysisToken++;const token=nextAnalysisToken;nextCandidates=[];showNextMoves();if(nextAnalysisTimer)clearTimeout(nextAnalysisTimer);if(nextGame.isGameOver()){$("nextStatus").textContent="Game over — no legal moves.";return;}if(!nextWorkerReady){$("nextStatus").textContent="Loading Stockfish…";initNextWorker();return;}const fen=nextFen();nextPositionFen=fen;$("nextStatus").textContent="Analyzing the top 3 moves for "+sideName(nextGame.turn())+"…";nextAnalysisTimer=setTimeout(()=>{if(token!==nextAnalysisToken||!nextWorkerReady)return;nextWorker.postMessage("stop");nextWorker.postMessage("setoption name MultiPV value 3");nextWorker.postMessage("position fen "+fen);nextWorker.postMessage("go movetime 2200");},180);}
+function drawAnalysisArrows(svg, candidates, coordinates) {
+ const ns = svg.namespaceURI;
+ candidates.forEach((candidate, index) => {
+  const from = coordinates(candidate.from), to = coordinates(candidate.to);
+  const dx = to.x - from.x, dy = to.y - from.y, length = Math.hypot(dx, dy);
+  if (!length) return;
+  const ux = dx / length, uy = dy / length;
+  const endX = to.x - ux * 22, endY = to.y - uy * 22;
+  const line = document.createElementNS(ns, "line");
+  line.setAttribute("x1", from.x);
+  line.setAttribute("y1", from.y);
+  line.setAttribute("x2", endX);
+  line.setAttribute("y2", endY);
+  line.setAttribute("class", "next-arrow-line");
+  line.style.opacity = String(.95 - index * .18);
+  const head = document.createElementNS(ns, "polygon");
+  const px = -uy * 15, py = ux * 15;
+  head.setAttribute("points", `${to.x},${to.y} ${endX + px},${endY + py} ${endX - px},${endY - py}`);
+  head.setAttribute("class", "next-arrow-head");
+  const label = document.createElementNS(ns, "text");
+  label.setAttribute("x", (from.x + to.x) / 2);
+  label.setAttribute("y", (from.y + to.y) / 2 - 12);
+  label.setAttribute("class", "next-arrow-number");
+  label.textContent = index + 1;
+  svg.append(line, head, label);
+ });
+}
+
+function drawNextArrows() {
+ const svg = $("nextArrowLayer");
+ if (!svg) return;
+ svg.replaceChildren();
+ drawAnalysisArrows(svg, nextCandidates, nextCoordinates);
+}
+
+function renderMoveSuggestions(list, candidates) {
+ list.replaceChildren();
+ candidates.forEach((candidate, index) => {
+  const row = document.createElement("div");
+  row.className = "next-move-item";
+  for (const [tag, name, content] of [
+   ["span", "number", index + 1],
+   ["strong", "san", candidate.san],
+   ["span", "desc", `${candidate.from} → ${candidate.to}`],
+  ]) {
+   const item = document.createElement(tag);
+   item.className = "next-move-" + name;
+   item.textContent = content;
+   row.append(item);
+  }
+  list.append(row);
+ });
+}
+
+function showNextMoves() {
+ renderMoveSuggestions($("nextMoveList"), nextCandidates);
+ drawNextArrows();
+}
+
+function initNextWorker() {
+ try {
+  nextWorker = new Worker("./engine/stockfish-19-lite-single.js");
+  nextWorker.onmessage = event => onNextEngineMessage(String(event.data).trim());
+  nextWorker.onerror = failAnalysis;
+  nextWorker.postMessage("uci");
+ } catch {
+  failAnalysis();
+ }
+}
+
+function failAnalysis() {
+ const job = queuedAnalysis || runningAnalysis;
+ nextWorker?.terminate();
+ nextWorker = null;
+ nextWorkerReady = false;
+ queuedAnalysis = runningAnalysis = null;
+ if (job && !job.stopped) job.report([], true);
+}
+
+function stopAnalysis() {
+ queuedAnalysis = null;
+ if (runningAnalysis && !runningAnalysis.stopped) {
+  runningAnalysis.stopped = true;
+  nextWorker.postMessage("stop");
+ }
+}
+
+function requestAnalysis(position, report) {
+ stopAnalysis();
+ queuedAnalysis = { fen: position.fen(), candidates: [], report };
+ if (!nextWorker) initNextWorker();
+ else startQueuedAnalysis();
+}
+
+function startQueuedAnalysis() {
+ if (!nextWorkerReady || runningAnalysis || !queuedAnalysis) return;
+ runningAnalysis = queuedAnalysis;
+ queuedAnalysis = null;
+ runningAnalysis.legal = new Map(new Chess(runningAnalysis.fen).moves({ verbose: true })
+  .map(move => [uci(move), move]));
+ nextWorker.postMessage("position fen " + runningAnalysis.fen);
+ nextWorker.postMessage("go movetime 1800");
+}
+
+function onNextEngineMessage(line) {
+ if (line === "uciok") {
+  nextWorker.postMessage("setoption name Threads value 1");
+  nextWorker.postMessage("setoption name MultiPV value 3");
+  nextWorker.postMessage("isready");
+  return;
+ }
+ if (line === "readyok") {
+  nextWorkerReady = true;
+  startQueuedAnalysis();
+  return;
+ }
+ if (!runningAnalysis) return;
+ if (line.startsWith("bestmove ")) {
+  const finished = runningAnalysis;
+  runningAnalysis = null;
+  if (!finished.stopped) {
+   const best = finished.legal.get(line.split(/\s+/)[1]);
+   if (!finished.candidates[0] && best) finished.candidates[0] = best;
+   finished.report(finished.candidates);
+  }
+  startQueuedAnalysis();
+ } else if (!runningAnalysis.stopped && line.startsWith("info ")) {
+  const code = line.match(/\bpv (\S+)/)?.[1];
+  const index = Number(line.match(/\bmultipv (\d+)/)?.[1] || 1) - 1;
+  const move = runningAnalysis.legal.get(code);
+  if (move && index >= 0 && index < 3) runningAnalysis.candidates[index] = move;
+ }
+}
+
+function analyzeNextPosition() {
+ if (activePage !== "next" || !nextGame) return;
+ nextCandidates = [];
+ showNextMoves();
+ const status = $("nextStatus");
+ if (nextGame.isGameOver()) {
+  stopAnalysis();
+  status.textContent = "Game over.";
+  return;
+ }
+ const side = sideName(nextGame.turn());
+ status.textContent = `Analyzing best moves for ${side}…`;
+ requestAnalysis(nextGame, (candidates, failed) => {
+  nextCandidates = candidates;
+  showNextMoves();
+  status.textContent = failed ? "Could not load Stockfish. Check the engine folder." : `Best moves for ${side}.`;
+ });
+}
+
+function showOnlineSuggestions(show) {
+ if (!online?.analysisAllowed) return;
+ online.showSuggestions = show;
+ $("onlineAnalysis").hidden = !show;
+ $("onlineAnalysisToggle").setAttribute("aria-expanded", String(show));
+ $("onlineAnalysisToggle").textContent = show ? "Hide best moves" : "Show best moves";
+ if (show) analyzeOnlinePosition();
+ else {
+  stopAnalysis();
+  online.candidates = [];
+  renderArrows();
+ }
+}
+
+function analyzeOnlinePosition() {
+ if (activePage !== "game" || !online?.showSuggestions) return;
+ const session = online;
+ const status = $("onlineAnalysisStatus");
+ const list = $("onlineBestMoves");
+ session.candidates = [];
+ renderMoveSuggestions(list, []);
+ renderArrows();
+ if (!session.opponentJoined || session.resigned || game.isGameOver()) {
+  stopAnalysis();
+  status.textContent = session.opponentJoined ? "Game over." : "Waiting for your opponent to join.";
+  return;
+ }
+ const side = sideName(game.turn());
+ status.textContent = `Analyzing best moves for ${side}…`;
+ requestAnalysis(game, (candidates, failed) => {
+  session.candidates = candidates;
+  renderMoveSuggestions(list, candidates);
+  renderArrows();
+  status.textContent = failed ? "Could not load Stockfish. Check the engine folder." : `Best moves for ${side}.`;
+ });
+}
+
 function resetNextPosition(){nextInitialPosition();}
 function undoNextMove(){if(!nextGame||!nextGame.undo())return;nextLastMove=null;const history=nextGame.history({verbose:true});if(history.length)nextLastMove={from:history[history.length-1].from,to:history[history.length-1].to};nextSelected=null;nextLegalTargets=[];renderNextBoard();analyzeNextPosition();}
 
@@ -864,7 +1321,9 @@ function initEngine(){
 
   engine.onerror=()=>{
    engineReady=false;
-   setStatus("Could not load AI. Check your engine folder and reload.");
+   engine.terminate();
+   engine=null;
+   if (!online?.code) setStatus("Could not load AI. Check your engine folder and reload.");
   };
 
   engine.postMessage("uci");
@@ -941,12 +1400,14 @@ function onEngineMessage(line){
 
  if(line==="readyok"){
   engineReady=true;
+  if (online?.code) return;
   setStatus("AI ready.");
 
   if(gameStarted&&game.turn()!==humanColor&&!game.isGameOver()){engineMove();}
   return;
  }
 
+ if (online?.code) return;
  if(line.startsWith("info ")){
   const depth=+(line.match(/\bdepth (\d+)/)||[])[1]||0;
   const multipv=+(line.match(/\bmultipv (\d+)/)||[])[1]||1;
@@ -1089,27 +1550,67 @@ $("flipBtn").onclick=()=>{
 $("promoOverlay").addEventListener("click",event=>{
  if(event.target.id==="promoOverlay"){
   $("promoOverlay").style.display="none";
+  nextPromotion=null;
  }
 });
 
 $("lightModeBtn").onclick=()=>setColorMode("light");$("darkModeBtn").onclick=()=>setColorMode("dark");
-$("playAgainBtn").onclick=()=>{restart();startGame();};
-$("goBackBtn").onclick=()=>{restart();showPage("hub");};
-$("navPlay").onclick=()=>showPage("hub");
+$("playAgainBtn").onclick=()=>{
+ if (online?.code) $("endOverlay").classList.remove("visible");
+ else { restart(); startGame(); }
+};
+$("goBackBtn").onclick=()=>{
+ if (online?.code) leaveOnline();
+ else { restart(); showPage("hub"); }
+};
+$("navPlay").onclick=()=>showPage(online?.code ? "game" : "hub");
 $("navThemes").onclick=()=>showPage("themes");
-$("navNextMove").onclick=()=>{showPage("next");initNextWorker();};
+$("navNextMove").onclick=()=>{
+ if (online?.code) {
+  if (!online.analysisAllowed) return;
+  showPage("game");
+  if (!online.showSuggestions) showOnlineSuggestions(true);
+ } else showPage("next");
+};
 $("nextFlip").onclick=()=>{nextViewSide=nextViewSide==="w"?"b":"w";renderNextBoard();};
 $("nextUndo").onclick=undoNextMove;
 $("nextReset").onclick=resetNextPosition;
 document.addEventListener("pointermove",nextPointerMove);document.addEventListener("pointerup",nextPointerUp);document.addEventListener("pointercancel",nextPointerCancel);
-$("onlineChoice").onclick=()=>{$("onlineNotice").style.display="block";};
-$("aiChoice").onclick=()=>{showPage("game");applyNewGame();};
+$("onlineChoice").onclick=showOnlineLobby;
+$("createRoomBtn").onclick=()=>startOnline("create");
+$("randomMatchBtn").onclick=()=>startOnline("match");
+$("joinRoomForm").onsubmit=event=>{
+ event.preventDefault();
+ startOnline("join", $("roomCode").value.trim().toUpperCase());
+};
+$("cancelOnline").onclick=leaveOnline;
+$("leaveOnlineBtn").onclick=leaveOnline;
+$("onlineAnalysisToggle").onclick=()=>showOnlineSuggestions(!online?.showSuggestions);
+$("copyInviteBtn").onclick=async ()=>{
+ const field = $("inviteLink");
+ const button = $("copyInviteBtn");
+ try {
+  await navigator.clipboard.writeText(field.value);
+  button.textContent = "Copied";
+ } catch {
+  field.select();
+ }
+};
+$("aiChoice").onclick=()=>{
+ if (online) leaveOnline();
+ showPage("game");
+ applyNewGame();
+ if (!engineReady) setStatus("Loading Stockfish…");
+ if (!engine) initEngine();
+};
+window.addEventListener("hashchange", joinFromInvite);
 buildThemes();setColorMode(colorMode);
 nextInitialPosition();
 resetClock();updateOpening();
 if(!clockInterval)clockInterval=setInterval(clockTick,250);
-initEngine();
 renderAll();
+showPage("hub");
+joinFromInvite();
 </script>
 
 </body></html>
