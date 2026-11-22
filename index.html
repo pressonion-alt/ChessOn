@@ -285,7 +285,7 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
 <div class="end-overlay" id="endOverlay"><div class="end-card"><h2 id="endTitle">Checkmate!</h2><p id="endMessage">The game is over.</p><div class="end-actions"><button class="primary" id="playAgainBtn">Play again</button><button id="goBackBtn">Go back</button></div></div></div>
 
 <script type="module">
-const SERVER_HOST = "chess-on-server.duckdns.org";
+const SERVER_HOST = "chess-on.duckdns.org";
 const LOOPBACK_HOSTS = ["127.0.0.1", "localhost", "[::1]"];
 const servedByGameServer = location.hostname === SERVER_HOST || LOOPBACK_HOSTS.includes(location.hostname);
 const onlineOrigin = servedByGameServer ? location.origin : `https://${SERVER_HOST}`;
