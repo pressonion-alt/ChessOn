@@ -121,7 +121,15 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
 .left-sidebar{position:fixed;left:0;top:0;bottom:0;width:210px;background:var(--sidebar);border-right:1px solid var(--line);padding:22px 14px;z-index:50;display:flex;flex-direction:column;gap:12px}
 .sidebar-logo{font-size:27px;font-weight:900;letter-spacing:-1.5px;color:#242321;padding:4px 12px 24px}.sidebar-logo span{color:#d4a400}
 .sidebar-nav{display:grid;gap:8px}.sidebar-nav button{text-align:left;background:transparent;color:#555149;padding:13px 14px;border-radius:8px}.sidebar-nav button.active{background:#fff4c7;outline:0;color:#5b4700}.sidebar-note{margin-top:auto;font-size:11px;color:#999187;padding:10px 12px}
-.page{display:none;max-width:1000px;margin:48px auto;padding:0 24px}.page.visible{display:block}.hub-title{font-size:34px;margin:0 0 8px}.hub-sub{color:var(--muted);margin:0 0 26px}.choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.choice-card{background:#fff;border:1px solid #e5e1d8;border-radius:14px;padding:26px;min-height:170px;text-align:left}.choice-card strong{display:block;font-size:22px;margin-bottom:8px}.choice-card span{color:var(--muted);font-weight:400}.theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}.theme-card{background:#fff;border:2px solid #e5e1d8;border-radius:12px;padding:12px;text-align:left}.theme-card.active{border-color:var(--accent);outline:0}.theme-preview{height:90px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);border-radius:7px;overflow:hidden;margin-bottom:10px}.theme-preview i:nth-child(odd){background:var(--preview-light)}.theme-preview i:nth-child(even){background:var(--preview-dark)}.theme-card strong{display:block}
+.page{display:none;max-width:1000px;margin:48px auto;padding:0 24px}.page.visible{display:block}.hub-title{font-size:34px;margin:0 0 8px}.hub-sub{color:var(--muted);margin:0 0 26px}.choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.hub-layout{display:grid;grid-template-columns:minmax(250px,0.82fr) minmax(360px,1.18fr);gap:24px;align-items:stretch}
+.hub-options{display:flex;flex-direction:column;gap:18px}
+.hub-options .choice-card{width:100%;min-height:190px}
+.user-ad{min-width:0;min-height:398px;background:#d9d9d9;border-radius:12px;overflow:hidden;box-shadow:0 5px 22px #00000012}
+.user-ad a{display:block;width:100%;height:100%;min-height:398px;cursor:pointer}
+.user-ad img{display:block;width:100%;height:100%;min-height:398px;object-fit:contain}
+@media(max-width:760px){.hub-layout{grid-template-columns:1fr}.hub-options{display:grid;grid-template-columns:1fr 1fr}.hub-options .choice-card{min-height:145px}.user-ad,.user-ad a,.user-ad img{min-height:320px}}
+@media(max-width:480px){.hub-options{grid-template-columns:1fr}.hub-options .choice-card{min-height:115px}}.choice-card{background:#fff;border:1px solid #e5e1d8;border-radius:14px;padding:26px;min-height:170px;text-align:left}.choice-card strong{display:block;font-size:22px;margin-bottom:8px}.choice-card span{color:var(--muted);font-weight:400}.theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}.theme-card{background:#fff;border:2px solid #e5e1d8;border-radius:12px;padding:12px;text-align:left}.theme-card.active{border-color:var(--accent);outline:0}.theme-preview{height:90px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);border-radius:7px;overflow:hidden;margin-bottom:10px}.theme-preview i:nth-child(odd){background:var(--preview-light)}.theme-preview i:nth-child(even){background:var(--preview-dark)}.theme-card strong{display:block}
 .clock{margin-left:auto;background:#242321;color:#fff;padding:7px 12px;border-radius:6px;font:800 19px ui-monospace,monospace;min-width:78px;text-align:center}.clock.active-clock{background:#e5b400;color:#242321}.game-hidden{display:none!important}
 
 /* Next Move uses the same board and piece sizing as Play vs AI */
@@ -143,6 +151,36 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
 #onlineControls,#onlineAnalysis,#cancelOnline{margin-top:12px}
 #inviteControls{margin-bottom:12px}
 .online-game .ai-only,.online-game [hidden]{display:none!important}
+
+/* User-supplied homepage advertisement */
+.user-ad{width:100%;display:flex;justify-content:center;margin:28px auto 10px}
+.user-ad a{display:block;width:min(100%,420px);line-height:0;transition:transform .16s ease,filter .16s ease}
+.user-ad a:hover{transform:translateY(-2px);filter:brightness(1.03)}
+.user-ad img{display:block;width:100%;height:auto;border-radius:2px;box-shadow:0 5px 22px #00000012}
+#themesFakeAd,#nextFakeAd,#gameFakeAd{display:none!important}
+@media(max-width:850px){.user-ad{margin:20px auto}.user-ad a{width:min(100%,360px)}}
+.fake-ad{position:relative;display:flex;align-items:center;gap:16px;padding:17px 18px;margin:22px 0;background:linear-gradient(115deg,#fff8df,#fff 58%,#f6edcf);border:1px solid #e7d9a7;border-radius:12px;color:#28251d;overflow:hidden;box-shadow:0 4px 16px #6b55200d}
+.fake-ad[hidden]{display:none}
+.fake-ad-mark{flex:0 0 46px;width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:#e7b600;color:#2a2207;font-size:24px;font-weight:900}
+.fake-ad-copy{min-width:0;flex:1}
+.fake-ad-label{display:block;font-size:9px;letter-spacing:1.2px;text-transform:uppercase;font-weight:900;color:#8b7434;margin-bottom:4px}
+.fake-ad-title{display:block;font-size:17px;line-height:1.2;font-weight:900;margin-bottom:4px}
+.fake-ad-description{display:block;font-size:12px;line-height:1.4;color:#6d6655}
+.fake-ad-action{flex:0 0 auto;background:#28251d;color:#fff;border-radius:7px;padding:9px 12px;font-size:11px;font-weight:800}
+.fake-ad-action:hover{filter:brightness(1.25)}
+.fake-ad-note{display:block;font-size:10px;color:#8b826d;margin-top:6px;min-height:12px}
+.fake-ad.compact{margin:18px 0 0;padding:14px;gap:11px;align-items:flex-start}
+.fake-ad.compact .fake-ad-mark{width:38px;height:38px;flex-basis:38px;font-size:20px;border-radius:10px}
+.fake-ad.compact .fake-ad-title{font-size:14px}
+.fake-ad.compact .fake-ad-description{font-size:11px}
+.fake-ad.compact .fake-ad-action{padding:8px 10px;font-size:10px}
+body.dark-mode .fake-ad{background:linear-gradient(115deg,#393321,#28261f 58%,#343020);border-color:#65552a;color:#f7f0d8}
+body.dark-mode .fake-ad-label{color:#e3c86f}
+body.dark-mode .fake-ad-description,body.dark-mode .fake-ad-note{color:#c2b99e}
+body.dark-mode .fake-ad-mark{background:#d7ad22;color:#211a05}
+body.dark-mode .fake-ad-action{background:#e0b72c;color:#211a05}
+@media(max-width:850px){.fake-ad{gap:10px;padding:13px}.fake-ad-mark{width:38px;height:38px;flex-basis:38px;font-size:20px}.fake-ad-title{font-size:14px}.fake-ad-description{font-size:11px}.fake-ad-action{padding:8px;font-size:10px}.fake-ad.compact{margin-top:14px}}
+
 </style>
 </head>
 <body>
@@ -155,27 +193,34 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
  </nav>
  <div class="sidebar-note">Your chess. Your moves.</div>
 </aside>
-<section class="page" id="playHub">
+<section class="page visible" id="playHub">
  <h1 class="hub-title">Play ChessOn</h1>
  <p class="hub-sub">Choose how you want to play.</p>
- <div class="choice-grid">
-  <button class="choice-card" id="onlineChoice" aria-controls="onlineLobby" aria-expanded="false"><strong>Online</strong><span>Invite a friend or find a random opponent.</span></button>
-  <button class="choice-card" id="aiChoice"><strong>Play vs AI</strong><span>Start a game against the ChessOn AI.</span></button>
+ <div class="hub-layout">
+  <div class="hub-options">
+   <button class="choice-card" id="onlineChoice" aria-controls="onlineLobby" aria-expanded="false"><strong>Online</strong><span>Invite a friend or find a random opponent.</span></button>
+   <button class="choice-card" id="aiChoice"><strong>Play vs AI</strong><span>Start a game against the ChessOn AI.</span></button>
+  </div>
+  <div class="user-ad" aria-label="Advertisement">
+   <a href="https://pressonion.github.io/DuckWeb/" target="_blank" rel="noopener noreferrer" aria-label="Visit DuckWeb">
+    <img src="./ads.png" alt="Try DuckWeb today — fun and games">
+   </a>
+  </div>
  </div>
- <div class="setup" id="onlineLobby" hidden>
+ <div class="setup" id="onlineLobby" hidden="">
   <label><input type="checkbox" id="allowSuggestions"> Allow Next Move suggestions for both players in your invite room</label>
   <div class="online-actions">
    <button class="primary" id="createRoomBtn" type="button">Create invite room</button>
    <button id="randomMatchBtn" type="button">Find random opponent</button>
   </div>
-  <form id="joinRoomForm" novalidate>
+  <form id="joinRoomForm" novalidate="">
    <label for="roomCode">Room code</label>
    <div class="online-actions">
     <input id="roomCode" type="text" maxlength="12" autocomplete="off" spellcheck="false">
     <button id="joinRoomBtn" type="submit">Join invite room</button>
    </div>
   </form>
-  <button id="cancelOnline" type="button" hidden>Cancel</button>
+  <button id="cancelOnline" type="button" hidden="">Cancel</button>
   <p class="small" id="onlineLobbyStatus" role="status"></p>
  </div>
 </section>
@@ -184,6 +229,9 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
  <p class="hub-sub">Choose a board style and switch between light and dark ChessOn.</p>
  <div class="theme-options"><strong>App appearance</strong><button id="lightModeBtn" class="active">Light mode</button><button id="darkModeBtn">Dark mode</button></div>
  <div class="theme-grid" id="themeGrid"><button class="theme-card active" data-theme="classic"><div class="theme-preview" style="--preview-light: #f0d9a5; --preview-dark: #b58863;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Classic</strong></button><button class="theme-card" data-theme="green"><div class="theme-preview" style="--preview-light: #eeeed2; --preview-dark: #769656;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Tournament Green</strong></button><button class="theme-card" data-theme="blue"><div class="theme-preview" style="--preview-light: #dce8f2; --preview-dark: #6689a8;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Ocean Blue</strong></button><button class="theme-card" data-theme="purple"><div class="theme-preview" style="--preview-light: #eee2f4; --preview-dark: #9270a8;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Royal Purple</strong></button><button class="theme-card" data-theme="rose"><div class="theme-preview" style="--preview-light: #f3d7d8; --preview-dark: #b66f78;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Rosewood</strong></button><button class="theme-card" data-theme="slate"><div class="theme-preview" style="--preview-light: #dce0e5; --preview-dark: #788493;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Slate</strong></button><button class="theme-card" data-theme="wood"><div class="theme-preview" style="--preview-light: #f1dfbd; --preview-dark: #9b6b43;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Warm Wood</strong></button><button class="theme-card" data-theme="midnight"><div class="theme-preview" style="--preview-light: #aeb7c8; --preview-dark: #46536d;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Midnight</strong></button><button class="theme-card" data-theme="mint"><div class="theme-preview" style="--preview-light: #e1f0e5; --preview-dark: #72a98b;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Mint</strong></button><button class="theme-card" data-theme="sand"><div class="theme-preview" style="--preview-light: #f3e8c9; --preview-dark: #b6a06a;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Sand</strong></button><button class="theme-card" data-theme="monochrome"><div class="theme-preview" style="--preview-light: #ffffff; --preview-dark: #222222;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Black &amp; White</strong></button></div>
+ <div class="fake-ad" id="themesFakeAd" data-ad-slot="themes" aria-label="Fictional advertisement">
+  <div class="fake-ad-mark" data-ad-icon="">♜</div><div class="fake-ad-copy"><span class="fake-ad-label">Fictional sponsor · Demo ad</span><strong class="fake-ad-title" data-ad-title="">BoardBuddy</strong><span class="fake-ad-description" data-ad-description="">Give your chess setup a fresh look with handcrafted board accessories.</span><span class="fake-ad-note" data-ad-note="" aria-live="polite"></span></div><button class="fake-ad-action" type="button" data-ad-action="">Explore</button>
+ </div>
 </section>
 
 <section class="page" id="nextMovePage">
@@ -200,11 +248,14 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
    <div class="next-status" id="nextStatus">Loading Stockfish…</div>
    <div class="next-move-list" id="nextMoveList"><div class="next-move-item"><span class="next-move-number">1</span><strong>—</strong></div><div class="next-move-item"><span class="next-move-number">2</span><strong>—</strong></div><div class="next-move-item"><span class="next-move-number">3</span><strong>—</strong></div></div>
    <div class="next-hint">The numbered arrows show Stockfish’s top 3 moves for the side whose turn it is. 1 is the best move. Make a move and the suggestions automatically switch to the other side.</div>
+   <div class="fake-ad compact" id="nextFakeAd" data-ad-slot="next" aria-label="Fictional advertisement">
+    <div class="fake-ad-mark" data-ad-icon="">⌛</div><div class="fake-ad-copy"><span class="fake-ad-label">Fictional sponsor · Demo ad</span><strong class="fake-ad-title" data-ad-title="">ClockCraft</strong><span class="fake-ad-description" data-ad-description="">Keep every game on time with a chess clock made for your desk.</span><span class="fake-ad-note" data-ad-note="" aria-live="polite"></span></div><button class="fake-ad-action" type="button" data-ad-action="">Explore</button>
+   </div>
   </div></aside>
  </div>
 </section>
 
-<main id="gamePage" class="">
+<main id="gamePage" class="game-hidden">
 <section class="board-column">
  <div class="game-top">
   <span id="gameModeLabel">PLAY AGAINST AI</span>
@@ -253,19 +304,19 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
    <button class="primary" id="startBtn" style="width:100%;margin-top:13px">Play game</button>
   </div>
   <div class="status" id="status" role="status">Loading Stockfish…</div>
-  <div id="onlineControls" hidden>
-   <div id="inviteControls" hidden>
+  <div id="onlineControls" hidden="">
+   <div id="inviteControls" hidden="">
     <label for="inviteLink">Invite link · <span id="activeRoomCode"></span></label>
     <div class="online-actions">
-     <input id="inviteLink" readonly>
+     <input id="inviteLink" readonly="">
      <button id="copyInviteBtn" type="button">Copy link</button>
     </div>
    </div>
    <div class="online-actions">
-    <button id="onlineAnalysisToggle" type="button" aria-controls="onlineAnalysis" aria-expanded="false" hidden>Show best moves</button>
+    <button id="onlineAnalysisToggle" type="button" aria-controls="onlineAnalysis" aria-expanded="false" hidden="">Show best moves</button>
     <button id="leaveOnlineBtn" type="button">Leave game</button>
    </div>
-   <div id="onlineAnalysis" hidden>
+   <div id="onlineAnalysis" hidden="">
     <div class="small" id="onlineAnalysisStatus" role="status"></div>
     <div class="next-move-list" id="onlineBestMoves"></div>
    </div>
@@ -276,6 +327,9 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
   <label>Move history</label>
   <div class="moves" id="moves"><div class="small">No moves yet.</div></div>
   <div class="small ai-only">The AI thinks for about 3 seconds before each reply. Beginner AI levels deliberately make more mistakes. Hold Shift and drag, or right-click and drag, to draw arrows. Shift+click or right-click a piece to clear arrows touching it.</div>
+  <div class="fake-ad compact" id="gameFakeAd" data-ad-slot="game" aria-label="Fictional advertisement">
+   <div class="fake-ad-mark" data-ad-icon="">♟</div><div class="fake-ad-copy"><span class="fake-ad-label">Fictional sponsor · Demo ad</span><strong class="fake-ad-title" data-ad-title="">Grandmaster Snacks</strong><span class="fake-ad-description" data-ad-description="">Fuel your next brilliant move with snacks worthy of a champion.</span><span class="fake-ad-note" data-ad-note="" aria-live="polite"></span></div><button class="fake-ad-action" type="button" data-ad-action="">Explore</button>
+  </div>
  </div>
 </aside>
 </main>
@@ -1612,5 +1666,6 @@ renderAll();
 showPage("hub");
 joinFromInvite();
 </script>
+
 
 </body></html>
