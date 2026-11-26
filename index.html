@@ -153,7 +153,16 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:var(--muted);fon
 .theme-preview{height:90px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);border-radius:7px;overflow:hidden;margin-bottom:10px}
 .theme-preview i{background:var(--dark)}
 .theme-preview i:is(:nth-child(1),:nth-child(3),:nth-child(6),:nth-child(8)){background:var(--light)}
-.theme-card strong{display:block}
+ .theme-card strong{display:block}
+ .piece-set-section{margin-top:30px;padding-top:24px;border-top:1px solid var(--line)}
+ .piece-set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+ .piece-set-card{background:var(--panel);border:2px solid var(--line);border-radius:12px;padding:14px;text-align:left;color:var(--text);width:100%}
+ .piece-set-card.active{border-color:var(--accent-text);outline:0}
+ .piece-set-card:focus-visible{outline:2px solid var(--accent-text);outline-offset:3px}
+ .piece-set-preview{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;align-items:center;justify-items:center;background:var(--soft);border-radius:8px;padding:10px;margin-bottom:10px}
+ .piece-set-preview img{width:100%;max-width:42px;height:42px;object-fit:contain}
+ .piece-set-card strong{display:block;font-size:15px;margin-bottom:4px}
+ .piece-set-card span{display:block;color:var(--muted);font-size:12px;font-weight:400}
 .clock{margin-left:auto;background:#242321;color:#fff;padding:7px 12px;border-radius:6px;font:800 19px ui-monospace,monospace;min-width:78px;text-align:center}.clock.active-clock{background:#e5b400;color:#242321}.game-hidden{display:none!important}
 
 /* Next Move uses the same board and piece sizing as Play vs AI */
@@ -192,13 +201,13 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:var(--muted);fon
 <aside class="left-sidebar">
  <div class="sidebar-logo">Chess<span>On</span></div>
  <nav class="sidebar-nav">
-  <button id="navPlay" class="active">♟ &nbsp; Play</button>
-  <button id="navThemes">▦ &nbsp; Themes</button>
-  <button id="navNextMove">➜ &nbsp; Next Move</button>
+  <button id="navPlay" class="">♟ &nbsp; Play</button>
+  <button id="navThemes" class="active">▦ &nbsp; Themes</button>
+  <button id="navNextMove" class="">➜ &nbsp; Next Move</button>
  </nav>
  <div class="sidebar-note">Your chess. Your moves.</div>
 </aside>
-<section class="page visible" id="playHub">
+<section class="page" id="playHub">
  <h1 class="hub-title">Play ChessOn</h1>
  <p class="hub-sub">Choose how you want to play.</p>
  <div class="choice-grid">
@@ -222,7 +231,7 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:var(--muted);fon
   <p class="small" id="onlineLobbyStatus" role="status"></p>
  </div>
 </section>
-<section class="page" id="themesPage">
+<section class="page visible" id="themesPage">
  <h1 class="hub-title">Board themes</h1>
  <p class="hub-sub">Choose a board style and switch between light and dark ChessOn.</p>
  <div class="theme-options" role="group" aria-label="App appearance">
@@ -275,10 +284,30 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:var(--muted);fon
    <span class="theme-preview" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
    <strong>Black &amp; White</strong>
   </button>
- </div>
-</section>
+  </div>
+  <section class="piece-set-section" aria-labelledby="pieceSetTitle">
+   <h2 class="section-title" id="pieceSetTitle">Piece sets</h2>
+   <p class="hub-sub">Choose the style of chess pieces used across ChessOn.</p>
+   <div class="piece-set-grid" id="pieceSetGrid" role="group" aria-label="Chess piece set">
+    <button type="button" class="piece-set-card active" data-piece-set="chesson" aria-pressed="true">
+     <div class="piece-set-preview" aria-hidden="true">
+      <img src="./WRook.png" alt=""><img src="./WHorse.png" alt=""><img src="./WBishop.png" alt=""><img src="./WQueen.png" alt=""><img src="./Wking.png" alt=""><img src="./WPawn.png" alt="">
+      <img src="./BRook.png" alt=""><img src="./BHorse.png" alt=""><img src="./BBishop.png" alt=""><img src="./BQueen.png" alt=""><img src="./Bking.png" alt=""><img src="./BPawn.png" alt="">
+     </div>
+     <strong>ChessOn</strong><span>Original ChessOn pieces</span>
+    </button>
+    <button type="button" class="piece-set-card" data-piece-set="lichess" aria-pressed="false">
+     <div class="piece-set-preview" aria-hidden="true">
+      <img src="./wR.svg" alt=""><img src="./wN.svg" alt=""><img src="./wB.svg" alt=""><img src="./wQ.svg" alt=""><img src="./wK.svg" alt=""><img src="./wP.svg" alt="">
+      <img src="./bR.svg" alt=""><img src="./bN.svg" alt=""><img src="./bB.svg" alt=""><img src="./bQ.svg" alt=""><img src="./bK.svg" alt=""><img src="./bP.svg" alt="">
+     </div>
+     <strong>Lichess</strong><span>Classic Lichess piece style</span>
+    </button>
+   </div>
+  </section>
+ </section>
 
-<section class="page" id="nextMovePage">
+ <section class="page" id="nextMovePage">
  <h1 class="hub-title">Next Move</h1>
  <p class="hub-sub">Play a normal chess game and see Stockfish’s top three moves for whoever’s turn it is.</p>
  <div class="next-layout">
@@ -289,8 +318,8 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:var(--muted);fon
   </section>
   <aside class="next-side"><div class="next-side-content">
    <h2 class="section-title">Best moves</h2>
-   <div class="next-status" id="nextStatus">Loading Stockfish…</div>
-   <div class="next-move-list" id="nextMoveList"><div class="next-move-item"><span class="next-move-number">1</span><strong>—</strong></div><div class="next-move-item"><span class="next-move-number">2</span><strong>—</strong></div><div class="next-move-item"><span class="next-move-number">3</span><strong>—</strong></div></div>
+   <div class="next-status" id="nextStatus">Could not load Stockfish. Check the engine folder.</div>
+   <div class="next-move-list" id="nextMoveList"></div>
    <div class="next-hint">The numbered arrows show Stockfish’s top 3 moves for the side whose turn it is. 1 is the best move. Make a move and the suggestions automatically switch to the other side.</div>
   </div></aside>
  </div>
@@ -393,12 +422,22 @@ const GLYPHS={
  bk:"♚",bq:"♛",br:"♜",bb:"♝",bn:"♞",bp:"♟"
 };
 
-const PIECE_IMAGES={
- wp:"./WPawn.png",wr:"./WRook.png",wn:"./WHorse.png",
- wb:"./WBishop.png",wq:"./WQueen.png",wk:"./Wking.png",
- bp:"./BPawn.png",br:"./BRook.png",bn:"./BHorse.png",
- bb:"./BBishop.png",bq:"./BQueen.png",bk:"./Bking.png"
+const PIECE_SETS={
+ chesson:{
+  wp:"./WPawn.png",wr:"./WRook.png",wn:"./WHorse.png",
+  wb:"./WBishop.png",wq:"./WQueen.png",wk:"./Wking.png",
+  bp:"./BPawn.png",br:"./BRook.png",bn:"./BHorse.png",
+  bb:"./BBishop.png",bq:"./BQueen.png",bk:"./Bking.png"
+ },
+ lichess:{
+  wp:"./wP.svg",wr:"./wR.svg",wn:"./wN.svg",
+  wb:"./wB.svg",wq:"./wQ.svg",wk:"./wK.svg",
+  bp:"./bP.svg",br:"./bR.svg",bn:"./bN.svg",
+  bb:"./bB.svg",bq:"./bQ.svg",bk:"./bK.svg"
+ }
 };
+let activePieceSet="chesson";
+let PIECE_IMAGES={...PIECE_SETS.chesson};
 
 let game=new Chess();
 let engine=null;
@@ -1114,6 +1153,18 @@ function applyTheme(id) {
  try { localStorage.setItem("chesson-board-theme", selected.dataset.theme); } catch {}
 }
 
+function applyPieceSet(id){
+ const selectedId=PIECE_SETS[id]?id:"chesson";
+ activePieceSet=selectedId;
+ PIECE_IMAGES={...PIECE_SETS[selectedId]};
+ const cards=[...$("pieceSetGrid").querySelectorAll(".piece-set-card")];
+ for(const card of cards)setPressed(card,card.dataset.pieceSet===selectedId);
+ try{localStorage.setItem("chesson-piece-set",selectedId);}catch{}
+ // Refresh every board and any captured-piece/promotion previews using the selected set.
+ renderBoard();
+ renderNextBoard();
+}
+
 function showPage(page){
  const changed = activePage !== page;
  if (changed && page === "themes") themesFromGame = activePage === "game";
@@ -1634,6 +1685,10 @@ $("themeGrid").onclick=event=>{
  const card = event.target.closest(".theme-card");
  if (card) applyTheme(card.dataset.theme);
 };
+$("pieceSetGrid").onclick=event=>{
+ const card=event.target.closest(".piece-set-card");
+ if(card)applyPieceSet(card.dataset.pieceSet);
+};
 $("playAgainBtn").onclick=()=>{
  if (online?.code) $("endOverlay").classList.remove("visible");
  else { restart(); startGame(); }
@@ -1688,6 +1743,9 @@ $("aiChoice").onclick=()=>{
 window.addEventListener("hashchange", joinFromInvite);
 applyTheme(document.documentElement.dataset.theme);
 setColorMode(document.documentElement.classList.contains("dark-mode") ? "dark" : "light");
+ let savedPieceSet="chesson";
+ try{savedPieceSet=localStorage.getItem("chesson-piece-set")||"chesson";}catch{}
+ applyPieceSet(savedPieceSet);
 nextInitialPosition();
 resetClock();updateOpening();
 if(!clockInterval)clockInterval=setInterval(clockTick,250);
