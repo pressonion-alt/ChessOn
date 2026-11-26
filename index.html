@@ -1,18 +1,41 @@
-<html lang="en" style="--light: #f0d9a5; --dark: #b58863;"><head>
+<html lang="en" data-theme="classic"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" type="image/png" href="./chessonlogo.png">
 <title>ChessOn</title>
+<script>
+try {
+ const root = document.documentElement;
+ root.dataset.theme = localStorage.getItem("chesson-board-theme") || "classic";
+ root.classList.toggle("dark-mode", localStorage.getItem("chesson-color-mode") === "dark");
+} catch {}
+</script>
 <style>
-:root{--bg:#f5f5f2;--panel:#ffffff;--panel2:#f0eee8;--text:#242321;--muted:#77736b;--accent:#e5b400;--accent2:#f4d35e;--light:#f0d9a5;--dark:#b58863;--board-border:#d8d2c5;--soft:#f5f3ed;--line:#e5e1d8;--sidebar:#fff;--sidebar-active:#fff4c7}
-body.dark-mode{--bg:#111214;--panel:#1d1f22;--panel2:#2b2e32;--text:#f1f1f1;--muted:#a5a8ad;--soft:#272a2e;--line:#383c42;--sidebar:#191b1e;--sidebar-active:#3a3218;color:var(--text)}
-body.dark-mode .status,body.dark-mode .moves,body.dark-mode .setup{background:var(--soft)}
-body.dark-mode .move-row:nth-child(even){background:#303338}
-body.dark-mode .sidebar-nav button{color:#d8d8d8}
-body.dark-mode .sidebar-nav button.active{color:#ffe18a}
-body.dark-mode .theme-card,body.dark-mode .choice-card{background:var(--panel);border-color:var(--line)}
-body.dark-mode .sidebar-logo{color:#fff}
-body.dark-mode .player-strip,body.dark-mode .side{border-color:var(--line)}
+:root{
+ color-scheme:light;
+ --bg:#f5f5f2;--panel:#ffffff;--panel2:#f0eee8;--text:#242321;--muted:#77736b;
+ --accent:#e5b400;--accent2:#f4d35e;--accent-text:#9a7600;--board-border:#d8d2c5;
+ --soft:#f5f3ed;--line:#e5e1d8;--move-stripe:#ebe8df;--material-edge:#16834a;
+ --sidebar:#fff;--sidebar-text:#555149;--sidebar-active:#fff4c7;--sidebar-active-text:#5b4700;
+}
+:root.dark-mode{
+ color-scheme:dark;
+ --bg:#111214;--panel:#1d1f22;--panel2:#2b2e32;--text:#f1f1f1;--muted:#a5a8ad;
+ --accent-text:#ffe18a;--board-border:#383c42;
+ --soft:#272a2e;--line:#383c42;--move-stripe:#303338;--material-edge:#8fe0a9;
+ --sidebar:#191b1e;--sidebar-text:#d8d8d8;--sidebar-active:#3a3218;--sidebar-active-text:#ffe18a;
+}
+:root,[data-theme="classic"]{--light:#f0d9a5;--dark:#b58863}
+[data-theme="green"]{--light:#eeeed2;--dark:#769656}
+[data-theme="blue"]{--light:#dce8f2;--dark:#6689a8}
+[data-theme="purple"]{--light:#eee2f4;--dark:#9270a8}
+[data-theme="rose"]{--light:#f3d7d8;--dark:#b66f78}
+[data-theme="slate"]{--light:#dce0e5;--dark:#788493}
+[data-theme="wood"]{--light:#f1dfbd;--dark:#9b6b43}
+[data-theme="midnight"]{--light:#aeb7c8;--dark:#46536d}
+[data-theme="mint"]{--light:#e1f0e5;--dark:#72a98b}
+[data-theme="sand"]{--light:#f3e8c9;--dark:#b6a06a}
+[data-theme="monochrome"]{--light:#ffffff;--dark:#222222}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:15px Inter,system-ui,Segoe UI,Arial,sans-serif;padding-left:230px}
 button,input{font:inherit}
@@ -28,7 +51,7 @@ header{display:none}
 main{max-width:1320px;margin:24px auto;padding:0 20px;display:grid;grid-template-columns:minmax(320px,min(66vw,720px)) minmax(300px,390px);gap:24px;align-items:start}
 .board-column{min-width:0}
 .game-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:var(--muted);font-size:13px}
-.player-strip{height:54px;background:var(--panel);border:1px solid #e5e1d8;border-radius:8px;margin:8px 0;display:flex;align-items:center;padding:0 13px;gap:10px}
+.player-strip{height:54px;background:var(--panel);border:1px solid var(--line);border-radius:8px;margin:8px 0;display:flex;align-items:center;padding:0 13px;gap:10px}
 .avatar{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#45423d;font-size:17px}
 .player-name{font-weight:700}
 .player-sub{margin-left:auto;color:var(--muted);font-size:12px}
@@ -65,17 +88,15 @@ main{max-width:1320px;margin:24px auto;padding:0 20px;display:grid;grid-template
 .collection-row{display:flex;align-items:center;gap:7px;min-height:25px;margin-left:38px;color:var(--muted);font-size:12px}
 .collection-icons{display:flex;align-items:center;gap:2px;flex-wrap:wrap}
 .collection-icons img{width:19px;height:19px;object-fit:contain}
-.material-edge{margin-left:auto;font-weight:900;color:#16834a;font-size:13px;white-space:nowrap}
-body.dark-mode .material-edge{color:#8fe0a9}
+.material-edge{margin-left:auto;font-weight:900;color:var(--material-edge);font-size:13px;white-space:nowrap}
 .opening-panel{margin:12px 0;padding:11px 12px;background:var(--soft);border-radius:8px;border:1px solid var(--line)}
 .opening-panel span{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
 .opening-panel strong{font-size:14px}
 .game-overlay{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:#0009;z-index:20;border-radius:3px}
 .game-overlay.visible{display:flex}
-.game-overlay-card{background:#fff;color:#222;padding:26px 34px;border-radius:14px;text-align:center;min-width:220px;box-shadow:0 12px 45px #0006}
-.game-overlay-card strong{display:block;font-size:clamp(34px,7vw,64px);line-height:1.1;color:#b58b00}
+.game-overlay-card{background:var(--panel);color:var(--text);padding:26px 34px;border-radius:14px;text-align:center;min-width:220px;box-shadow:0 12px 45px #0006}
+.game-overlay-card strong{display:block;font-size:clamp(34px,7vw,64px);line-height:1.1;color:var(--accent-text)}
 .game-overlay-card span{display:block;margin-top:8px;font-weight:750}
-body.dark-mode .game-overlay-card{background:#202328;color:#fff}
 .end-overlay{position:fixed;inset:0;background:#000b;z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
 .end-overlay.visible{display:flex}
 .end-card{width:min(420px,100%);background:var(--panel);color:var(--text);padding:28px;border-radius:16px;text-align:center;border:1px solid var(--line)}
@@ -90,46 +111,49 @@ body.dark-mode .game-overlay-card{background:#202328;color:#fff}
 .clock-start-overlay{position:absolute;inset:0;z-index:25;display:none;align-items:center;justify-content:center;pointer-events:none}
 .clock-start-overlay.visible{display:flex}
 .clock-start-overlay strong{font-size:clamp(54px,12vw,110px);font-weight:950;color:#fff;text-shadow:0 3px 18px #000;letter-spacing:2px}
-body.dark-mode .game-overlay-card{background:#202328;color:#fff}
 
 .board-tools{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 .board-tools button{flex:1}
-.side{background:var(--panel);border:1px solid #e5e1d8;border-radius:10px;overflow:hidden}
+.side{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .panel-content{padding:16px}
 .section-title{font-size:16px;font-weight:800;margin:0 0 12px}
-.status{background:#f5f3ed;padding:12px;border-radius:7px;color:var(--muted);font-size:13px;margin-bottom:14px;min-height:42px}
-.moves{height:230px;overflow:auto;background:#f5f3ed;border-radius:7px;padding:8px;margin-top:12px;font-variant-numeric:tabular-nums}
+.status{background:var(--soft);padding:12px;border-radius:7px;color:var(--muted);font-size:13px;margin-bottom:14px;min-height:42px}
+.moves{height:230px;overflow:auto;background:var(--soft);border-radius:7px;padding:8px;margin-top:12px;font-variant-numeric:tabular-nums}
 .move-row{display:grid;grid-template-columns:35px 1fr 1fr;gap:5px;padding:5px 6px;border-radius:4px}
-.move-row:nth-child(even){background:#ebe8df}
-.move-no{color:#89847b}
+.move-row:nth-child(even){background:var(--move-stripe)}
+.move-no{color:var(--muted)}
 .move{padding:2px 5px;border-radius:4px}
 .move.current{background:var(--accent);color:#24200f}
 label{display:block;color:var(--muted);font-size:12px;font-weight:700;margin:13px 0 6px}
 input[type=range]{width:100%;accent-color:var(--accent)}
 .range-row{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px}
-.elo-number{color:#9a7600;font-weight:800;font-size:17px}
-.setup{background:#f5f3ed;border-radius:8px;padding:12px;margin-bottom:14px}
+.elo-number{color:var(--accent-text);font-weight:800;font-size:17px}
+.setup{background:var(--soft);border-radius:8px;padding:12px;margin-bottom:14px}
 .colors{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
 .colors button{padding:9px 5px}
-.engine-line{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:12px;padding:7px 0;border-bottom:1px solid #e5e1d8}
+.engine-line{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:12px;padding:7px 0;border-bottom:1px solid var(--line)}
 .engine-line strong{color:var(--text)}
 .small{font-size:11px;color:var(--muted);line-height:1.5;margin-top:10px}
 .promo-overlay{position:fixed;inset:0;background:#0009;display:none;place-items:center;z-index:10}
 .promo-box{background:var(--panel);padding:20px;border-radius:10px;display:flex;gap:10px}
 .promo-box button{font-size:34px;padding:10px}
-footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-size:11px}
+footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:var(--muted);font-size:11px}
 .left-sidebar{position:fixed;left:0;top:0;bottom:0;width:210px;background:var(--sidebar);border-right:1px solid var(--line);padding:22px 14px;z-index:50;display:flex;flex-direction:column;gap:12px}
-.sidebar-logo{font-size:27px;font-weight:900;letter-spacing:-1.5px;color:#242321;padding:4px 12px 24px}.sidebar-logo span{color:#d4a400}
-.sidebar-nav{display:grid;gap:8px}.sidebar-nav button{text-align:left;background:transparent;color:#555149;padding:13px 14px;border-radius:8px}.sidebar-nav button.active{background:#fff4c7;outline:0;color:#5b4700}.sidebar-note{margin-top:auto;font-size:11px;color:#999187;padding:10px 12px}
-.page{display:none;max-width:1000px;margin:48px auto;padding:0 24px}.page.visible{display:block}.hub-title{font-size:34px;margin:0 0 8px}.hub-sub{color:var(--muted);margin:0 0 26px}.choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
-.hub-layout{display:grid;grid-template-columns:minmax(250px,0.82fr) minmax(360px,1.18fr);gap:24px;align-items:stretch}
-.hub-options{display:flex;flex-direction:column;gap:18px}
-.hub-options .choice-card{width:100%;min-height:190px}
-.user-ad{min-width:0;min-height:398px;background:#d9d9d9;border-radius:12px;overflow:hidden;box-shadow:0 5px 22px #00000012}
-.user-ad a{display:block;width:100%;height:100%;min-height:398px;cursor:pointer}
-.user-ad img{display:block;width:100%;height:100%;min-height:398px;object-fit:contain}
-@media(max-width:760px){.hub-layout{grid-template-columns:1fr}.hub-options{display:grid;grid-template-columns:1fr 1fr}.hub-options .choice-card{min-height:145px}.user-ad,.user-ad a,.user-ad img{min-height:320px}}
-@media(max-width:480px){.hub-options{grid-template-columns:1fr}.hub-options .choice-card{min-height:115px}}.choice-card{background:#fff;border:1px solid #e5e1d8;border-radius:14px;padding:26px;min-height:170px;text-align:left}.choice-card strong{display:block;font-size:22px;margin-bottom:8px}.choice-card span{color:var(--muted);font-weight:400}.theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}.theme-card{background:#fff;border:2px solid #e5e1d8;border-radius:12px;padding:12px;text-align:left}.theme-card.active{border-color:var(--accent);outline:0}.theme-preview{height:90px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);border-radius:7px;overflow:hidden;margin-bottom:10px}.theme-preview i:nth-child(odd){background:var(--preview-light)}.theme-preview i:nth-child(even){background:var(--preview-dark)}.theme-card strong{display:block}
+.sidebar-logo{font-size:27px;font-weight:900;letter-spacing:-1.5px;color:var(--text);padding:4px 12px 24px}.sidebar-logo span{color:#d4a400}
+.sidebar-nav{display:grid;gap:8px}
+.sidebar-nav button{text-align:left;background:transparent;color:var(--sidebar-text);padding:13px 14px;border-radius:8px}
+.sidebar-nav button.active{background:var(--sidebar-active);outline:0;color:var(--sidebar-active-text)}
+.sidebar-note{margin-top:auto;font-size:11px;color:var(--muted);padding:10px 12px}
+.page{display:none;max-width:1000px;margin:48px auto;padding:0 24px}.page.visible{display:block}.hub-title{font-size:34px;margin:0 0 8px}.hub-sub{color:var(--muted);margin:0 0 26px}.choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.choice-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:26px;min-height:170px;text-align:left}.choice-card strong{display:block;font-size:22px;margin-bottom:8px}.choice-card span{color:var(--muted);font-weight:400}
+.theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.theme-card{background:var(--panel);border:2px solid var(--line);border-radius:12px;padding:12px;text-align:left}
+.theme-card.active{border-color:var(--accent-text);outline:0}
+.theme-options button.active{outline-color:var(--accent-text)}
+.theme-card:focus-visible,.theme-options button:focus-visible,.sidebar-nav button:focus-visible{outline:2px solid var(--accent-text);outline-offset:3px}
+.theme-preview{height:90px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);border-radius:7px;overflow:hidden;margin-bottom:10px}
+.theme-preview i{background:var(--dark)}
+.theme-preview i:is(:nth-child(1),:nth-child(3),:nth-child(6),:nth-child(8)){background:var(--light)}
+.theme-card strong{display:block}
 .clock{margin-left:auto;background:#242321;color:#fff;padding:7px 12px;border-radius:6px;font:800 19px ui-monospace,monospace;min-width:78px;text-align:center}.clock.active-clock{background:#e5b400;color:#242321}.game-hidden{display:none!important}
 
 /* Next Move uses the same board and piece sizing as Play vs AI */
@@ -143,7 +167,18 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
 
 @media(max-width:850px){.next-layout{grid-template-columns:1fr;max-width:700px;gap:16px}.piece-tray{grid-template-columns:repeat(6,minmax(0,1fr))}.tray-piece{height:56px}}
 
-@media(max-width:850px){body{padding-left:0;padding-bottom:70px}.left-sidebar{top:auto;right:0;bottom:0;width:100%;height:64px;border-right:0;border-top:1px solid #e5e1d8;padding:6px 10px;flex-direction:row;align-items:center}.sidebar-logo{display:none}.sidebar-nav{width:100%;grid-template-columns:repeat(2,1fr)}.sidebar-nav button{text-align:center;padding:10px}.sidebar-note{display:none}main{grid-template-columns:1fr;max-width:700px;gap:16px}.side{width:100%}.choice-grid{grid-template-columns:1fr}.page{margin:28px auto}.board-tools button{min-width:calc(50% - 8px)}}
+@media(max-width:850px){
+ body{padding-left:0;padding-bottom:70px}
+ .left-sidebar{top:auto;right:0;bottom:0;width:100%;height:64px;border-right:0;border-top:1px solid var(--line);padding:6px 10px;flex-direction:row;align-items:center}
+ .sidebar-logo,.sidebar-note{display:none}
+ .sidebar-nav{width:100%;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
+ .sidebar-nav button{text-align:center;padding:8px 4px;font-size:14px}
+ main{grid-template-columns:1fr;max-width:700px;gap:16px}
+ .side{width:100%}
+ .choice-grid{grid-template-columns:1fr}
+ .page{margin:28px auto}
+ .board-tools button{min-width:calc(50% - 8px)}
+}
 .online-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .online-actions input{flex:1;min-width:0;padding:8px;border:1px solid var(--line);border-radius:7px;background:var(--panel);color:var(--text)}
 #onlineLobby{margin-top:18px}
@@ -151,36 +186,6 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:#77736c;font-siz
 #onlineControls,#onlineAnalysis,#cancelOnline{margin-top:12px}
 #inviteControls{margin-bottom:12px}
 .online-game .ai-only,.online-game [hidden]{display:none!important}
-
-/* User-supplied homepage advertisement */
-.user-ad{width:100%;display:flex;justify-content:center;margin:28px auto 10px}
-.user-ad a{display:block;width:min(100%,420px);line-height:0;transition:transform .16s ease,filter .16s ease}
-.user-ad a:hover{transform:translateY(-2px);filter:brightness(1.03)}
-.user-ad img{display:block;width:100%;height:auto;border-radius:2px;box-shadow:0 5px 22px #00000012}
-#themesFakeAd,#nextFakeAd,#gameFakeAd{display:none!important}
-@media(max-width:850px){.user-ad{margin:20px auto}.user-ad a{width:min(100%,360px)}}
-.fake-ad{position:relative;display:flex;align-items:center;gap:16px;padding:17px 18px;margin:22px 0;background:linear-gradient(115deg,#fff8df,#fff 58%,#f6edcf);border:1px solid #e7d9a7;border-radius:12px;color:#28251d;overflow:hidden;box-shadow:0 4px 16px #6b55200d}
-.fake-ad[hidden]{display:none}
-.fake-ad-mark{flex:0 0 46px;width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:#e7b600;color:#2a2207;font-size:24px;font-weight:900}
-.fake-ad-copy{min-width:0;flex:1}
-.fake-ad-label{display:block;font-size:9px;letter-spacing:1.2px;text-transform:uppercase;font-weight:900;color:#8b7434;margin-bottom:4px}
-.fake-ad-title{display:block;font-size:17px;line-height:1.2;font-weight:900;margin-bottom:4px}
-.fake-ad-description{display:block;font-size:12px;line-height:1.4;color:#6d6655}
-.fake-ad-action{flex:0 0 auto;background:#28251d;color:#fff;border-radius:7px;padding:9px 12px;font-size:11px;font-weight:800}
-.fake-ad-action:hover{filter:brightness(1.25)}
-.fake-ad-note{display:block;font-size:10px;color:#8b826d;margin-top:6px;min-height:12px}
-.fake-ad.compact{margin:18px 0 0;padding:14px;gap:11px;align-items:flex-start}
-.fake-ad.compact .fake-ad-mark{width:38px;height:38px;flex-basis:38px;font-size:20px;border-radius:10px}
-.fake-ad.compact .fake-ad-title{font-size:14px}
-.fake-ad.compact .fake-ad-description{font-size:11px}
-.fake-ad.compact .fake-ad-action{padding:8px 10px;font-size:10px}
-body.dark-mode .fake-ad{background:linear-gradient(115deg,#393321,#28261f 58%,#343020);border-color:#65552a;color:#f7f0d8}
-body.dark-mode .fake-ad-label{color:#e3c86f}
-body.dark-mode .fake-ad-description,body.dark-mode .fake-ad-note{color:#c2b99e}
-body.dark-mode .fake-ad-mark{background:#d7ad22;color:#211a05}
-body.dark-mode .fake-ad-action{background:#e0b72c;color:#211a05}
-@media(max-width:850px){.fake-ad{gap:10px;padding:13px}.fake-ad-mark{width:38px;height:38px;flex-basis:38px;font-size:20px}.fake-ad-title{font-size:14px}.fake-ad-description{font-size:11px}.fake-ad-action{padding:8px;font-size:10px}.fake-ad.compact{margin-top:14px}}
-
 </style>
 </head>
 <body>
@@ -196,16 +201,9 @@ body.dark-mode .fake-ad-action{background:#e0b72c;color:#211a05}
 <section class="page visible" id="playHub">
  <h1 class="hub-title">Play ChessOn</h1>
  <p class="hub-sub">Choose how you want to play.</p>
- <div class="hub-layout">
-  <div class="hub-options">
-   <button class="choice-card" id="onlineChoice" aria-controls="onlineLobby" aria-expanded="false"><strong>Online</strong><span>Invite a friend or find a random opponent.</span></button>
-   <button class="choice-card" id="aiChoice"><strong>Play vs AI</strong><span>Start a game against the ChessOn AI.</span></button>
-  </div>
-  <div class="user-ad" aria-label="Advertisement">
-   <a href="https://pressonion.github.io/DuckWeb/" target="_blank" rel="noopener noreferrer" aria-label="Visit DuckWeb">
-    <img src="./ads.png" alt="Try DuckWeb today — fun and games">
-   </a>
-  </div>
+ <div class="choice-grid">
+  <button class="choice-card" id="onlineChoice" aria-controls="onlineLobby" aria-expanded="false"><strong>Online</strong><span>Invite a friend or find a random opponent.</span></button>
+  <button class="choice-card" id="aiChoice"><strong>Play vs AI</strong><span>Start a game against the ChessOn AI.</span></button>
  </div>
  <div class="setup" id="onlineLobby" hidden="">
   <label><input type="checkbox" id="allowSuggestions"> Allow Next Move suggestions for both players in your invite room</label>
@@ -227,10 +225,56 @@ body.dark-mode .fake-ad-action{background:#e0b72c;color:#211a05}
 <section class="page" id="themesPage">
  <h1 class="hub-title">Board themes</h1>
  <p class="hub-sub">Choose a board style and switch between light and dark ChessOn.</p>
- <div class="theme-options"><strong>App appearance</strong><button id="lightModeBtn" class="active">Light mode</button><button id="darkModeBtn">Dark mode</button></div>
- <div class="theme-grid" id="themeGrid"><button class="theme-card active" data-theme="classic"><div class="theme-preview" style="--preview-light: #f0d9a5; --preview-dark: #b58863;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Classic</strong></button><button class="theme-card" data-theme="green"><div class="theme-preview" style="--preview-light: #eeeed2; --preview-dark: #769656;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Tournament Green</strong></button><button class="theme-card" data-theme="blue"><div class="theme-preview" style="--preview-light: #dce8f2; --preview-dark: #6689a8;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Ocean Blue</strong></button><button class="theme-card" data-theme="purple"><div class="theme-preview" style="--preview-light: #eee2f4; --preview-dark: #9270a8;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Royal Purple</strong></button><button class="theme-card" data-theme="rose"><div class="theme-preview" style="--preview-light: #f3d7d8; --preview-dark: #b66f78;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Rosewood</strong></button><button class="theme-card" data-theme="slate"><div class="theme-preview" style="--preview-light: #dce0e5; --preview-dark: #788493;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Slate</strong></button><button class="theme-card" data-theme="wood"><div class="theme-preview" style="--preview-light: #f1dfbd; --preview-dark: #9b6b43;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Warm Wood</strong></button><button class="theme-card" data-theme="midnight"><div class="theme-preview" style="--preview-light: #aeb7c8; --preview-dark: #46536d;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Midnight</strong></button><button class="theme-card" data-theme="mint"><div class="theme-preview" style="--preview-light: #e1f0e5; --preview-dark: #72a98b;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Mint</strong></button><button class="theme-card" data-theme="sand"><div class="theme-preview" style="--preview-light: #f3e8c9; --preview-dark: #b6a06a;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Sand</strong></button><button class="theme-card" data-theme="monochrome"><div class="theme-preview" style="--preview-light: #ffffff; --preview-dark: #222222;"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Black &amp; White</strong></button></div>
- <div class="fake-ad" id="themesFakeAd" data-ad-slot="themes" aria-label="Fictional advertisement">
-  <div class="fake-ad-mark" data-ad-icon="">♜</div><div class="fake-ad-copy"><span class="fake-ad-label">Fictional sponsor · Demo ad</span><strong class="fake-ad-title" data-ad-title="">BoardBuddy</strong><span class="fake-ad-description" data-ad-description="">Give your chess setup a fresh look with handcrafted board accessories.</span><span class="fake-ad-note" data-ad-note="" aria-live="polite"></span></div><button class="fake-ad-action" type="button" data-ad-action="">Explore</button>
+ <div class="theme-options" role="group" aria-label="App appearance">
+  <strong>App appearance</strong>
+  <button type="button" id="lightModeBtn" class="active" aria-pressed="true">Light mode</button>
+  <button type="button" id="darkModeBtn" aria-pressed="false">Dark mode</button>
+ </div>
+ <div class="theme-grid" id="themeGrid" role="group" aria-label="Board theme">
+  <button type="button" class="theme-card active" data-theme="classic" aria-pressed="true">
+   <span class="theme-preview" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+   <strong>Classic</strong>
+  </button>
+  <button type="button" class="theme-card" data-theme="green" aria-pressed="false">
+   <span class="theme-preview" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+   <strong>Tournament Green</strong>
+  </button>
+  <button type="button" class="theme-card" data-theme="blue" aria-pressed="false">
+   <span class="theme-preview" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+   <strong>Ocean Blue</strong>
+  </button>
+  <button type="button" class="theme-card" data-theme="purple" aria-pressed="false">
+   <span class="theme-preview" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+   <strong>Royal Purple</strong>
+  </button>
+  <button type="button" class="theme-card" data-theme="rose" aria-pressed="false">
+   <span class="theme-preview" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+   <strong>Rosewood</strong>
+  </button>
+  <button type="button" class="theme-card" data-theme="slate" aria-pressed="false">
+   <span class="theme-preview" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+   <strong>Slate</strong>
+  </button>
+  <button type="button" class="theme-card" data-theme="wood" aria-pressed="false">
+   <span class="theme-preview" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+   <strong>Warm Wood</strong>
+  </button>
+  <button type="button" class="theme-card" data-theme="midnight" aria-pressed="false">
+   <span class="theme-preview" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+   <strong>Midnight</strong>
+  </button>
+  <button type="button" class="theme-card" data-theme="mint" aria-pressed="false">
+   <span class="theme-preview" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+   <strong>Mint</strong>
+  </button>
+  <button type="button" class="theme-card" data-theme="sand" aria-pressed="false">
+   <span class="theme-preview" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+   <strong>Sand</strong>
+  </button>
+  <button type="button" class="theme-card" data-theme="monochrome" aria-pressed="false">
+   <span class="theme-preview" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+   <strong>Black &amp; White</strong>
+  </button>
  </div>
 </section>
 
@@ -248,9 +292,6 @@ body.dark-mode .fake-ad-action{background:#e0b72c;color:#211a05}
    <div class="next-status" id="nextStatus">Loading Stockfish…</div>
    <div class="next-move-list" id="nextMoveList"><div class="next-move-item"><span class="next-move-number">1</span><strong>—</strong></div><div class="next-move-item"><span class="next-move-number">2</span><strong>—</strong></div><div class="next-move-item"><span class="next-move-number">3</span><strong>—</strong></div></div>
    <div class="next-hint">The numbered arrows show Stockfish’s top 3 moves for the side whose turn it is. 1 is the best move. Make a move and the suggestions automatically switch to the other side.</div>
-   <div class="fake-ad compact" id="nextFakeAd" data-ad-slot="next" aria-label="Fictional advertisement">
-    <div class="fake-ad-mark" data-ad-icon="">⌛</div><div class="fake-ad-copy"><span class="fake-ad-label">Fictional sponsor · Demo ad</span><strong class="fake-ad-title" data-ad-title="">ClockCraft</strong><span class="fake-ad-description" data-ad-description="">Keep every game on time with a chess clock made for your desk.</span><span class="fake-ad-note" data-ad-note="" aria-live="polite"></span></div><button class="fake-ad-action" type="button" data-ad-action="">Explore</button>
-   </div>
   </div></aside>
  </div>
 </section>
@@ -327,9 +368,6 @@ body.dark-mode .fake-ad-action{background:#e0b72c;color:#211a05}
   <label>Move history</label>
   <div class="moves" id="moves"><div class="small">No moves yet.</div></div>
   <div class="small ai-only">The AI thinks for about 3 seconds before each reply. Beginner AI levels deliberately make more mistakes. Hold Shift and drag, or right-click and drag, to draw arrows. Shift+click or right-click a piece to clear arrows touching it.</div>
-  <div class="fake-ad compact" id="gameFakeAd" data-ad-slot="game" aria-label="Fictional advertisement">
-   <div class="fake-ad-mark" data-ad-icon="">♟</div><div class="fake-ad-copy"><span class="fake-ad-label">Fictional sponsor · Demo ad</span><strong class="fake-ad-title" data-ad-title="">Grandmaster Snacks</strong><span class="fake-ad-description" data-ad-description="">Fuel your next brilliant move with snacks worthy of a champion.</span><span class="fake-ad-note" data-ad-note="" aria-live="polite"></span></div><button class="fake-ad-action" type="button" data-ad-action="">Explore</button>
-  </div>
  </div>
 </aside>
 </main>
@@ -394,10 +432,8 @@ let clockRunning=false;
 let clockLastTick=0;
 let clockInterval=null;
 let activePage="hub";
+let themesFromGame=false;
 let online = null;
-function readPreference(key,fallback){try{return localStorage.getItem(key)||fallback;}catch{return fallback;}}
-let selectedTheme=readPreference("chesson-board-theme","classic");
-let colorMode=readPreference("chesson-color-mode","light");
 
 // Next Move is a regular legal chess game with a separate Stockfish analysis worker.
 let nextViewSide="w", nextGame=null, nextWorker=null, nextWorkerReady=false;
@@ -1057,46 +1093,30 @@ function gameOverText(){
 }
 
 
-const THEMES=[
- {id:"classic",name:"Classic",light:"#f0d9a5",dark:"#b58863"},
- {id:"green",name:"Tournament Green",light:"#eeeed2",dark:"#769656"},
- {id:"blue",name:"Ocean Blue",light:"#dce8f2",dark:"#6689a8"},
- {id:"purple",name:"Royal Purple",light:"#eee2f4",dark:"#9270a8"},
- {id:"rose",name:"Rosewood",light:"#f3d7d8",dark:"#b66f78"},
- {id:"slate",name:"Slate",light:"#dce0e5",dark:"#788493"},
- {id:"wood",name:"Warm Wood",light:"#f1dfbd",dark:"#9b6b43"},
- {id:"midnight",name:"Midnight",light:"#aeb7c8",dark:"#46536d"},
- {id:"mint",name:"Mint",light:"#e1f0e5",dark:"#72a98b"},
- {id:"sand",name:"Sand",light:"#f3e8c9",dark:"#b6a06a"},
- {id:"monochrome",name:"Black & White",light:"#ffffff",dark:"#222222"}
-];
-function setColorMode(mode){
- colorMode=mode==="dark"?"dark":"light";
- document.body.classList.toggle("dark-mode",colorMode==="dark");
- $("lightModeBtn")?.classList.toggle("active",colorMode==="light");
- $("darkModeBtn")?.classList.toggle("active",colorMode==="dark");
- try{localStorage.setItem("chesson-color-mode",colorMode);}catch{}
+function setPressed(button, pressed) {
+ button.classList.toggle("active", pressed);
+ button.setAttribute("aria-pressed", String(pressed));
 }
-function applyTheme(id){
- const theme=THEMES.find(t=>t.id===id)||THEMES[0];selectedTheme=theme.id;
- try{localStorage.setItem("chesson-board-theme",selectedTheme);}catch{}
- document.documentElement.style.setProperty("--light",theme.light);
- document.documentElement.style.setProperty("--dark",theme.dark);
- document.querySelectorAll(".theme-card").forEach(card=>card.classList.toggle("active",card.dataset.theme===id));
+
+function setColorMode(mode) {
+ const dark = mode === "dark";
+ document.documentElement.classList.toggle("dark-mode", dark);
+ setPressed($("lightModeBtn"), !dark);
+ setPressed($("darkModeBtn"), dark);
+ try { localStorage.setItem("chesson-color-mode", dark ? "dark" : "light"); } catch {}
 }
-function buildThemes(){
- const grid=$("themeGrid");if(!grid)return;grid.innerHTML="";
- for(const theme of THEMES){
-  const card=document.createElement("button");card.className="theme-card";card.dataset.theme=theme.id;
-  const preview=document.createElement("div");preview.className="theme-preview";preview.style.setProperty("--preview-light",theme.light);preview.style.setProperty("--preview-dark",theme.dark);
-  for(let i=0;i<8;i++)preview.append(document.createElement("i"));
-  const name=document.createElement("strong");name.textContent=theme.name;
-  card.append(preview,name);card.onclick=()=>applyTheme(theme.id);grid.append(card);
- }
- applyTheme(selectedTheme);
+
+function applyTheme(id) {
+ const cards = [...$("themeGrid").querySelectorAll(".theme-card")];
+ const selected = cards.find(card => card.dataset.theme === id) || cards[0];
+ document.documentElement.dataset.theme = selected.dataset.theme;
+ for (const card of cards) setPressed(card, card === selected);
+ try { localStorage.setItem("chesson-board-theme", selected.dataset.theme); } catch {}
 }
+
 function showPage(page){
  const changed = activePage !== page;
+ if (changed && page === "themes") themesFromGame = activePage === "game";
  if (changed) stopAnalysis();
  activePage=page;
  $("playHub").classList.toggle("visible",page==="hub");
@@ -1608,7 +1628,12 @@ $("promoOverlay").addEventListener("click",event=>{
  }
 });
 
-$("lightModeBtn").onclick=()=>setColorMode("light");$("darkModeBtn").onclick=()=>setColorMode("dark");
+$("lightModeBtn").onclick=()=>setColorMode("light");
+$("darkModeBtn").onclick=()=>setColorMode("dark");
+$("themeGrid").onclick=event=>{
+ const card = event.target.closest(".theme-card");
+ if (card) applyTheme(card.dataset.theme);
+};
 $("playAgainBtn").onclick=()=>{
  if (online?.code) $("endOverlay").classList.remove("visible");
  else { restart(); startGame(); }
@@ -1617,7 +1642,10 @@ $("goBackBtn").onclick=()=>{
  if (online?.code) leaveOnline();
  else { restart(); showPage("hub"); }
 };
-$("navPlay").onclick=()=>showPage(online?.code ? "game" : "hub");
+$("navPlay").onclick=()=>{
+ const returnToGame = activePage === "themes" && themesFromGame;
+ showPage(online?.code || returnToGame ? "game" : "hub");
+};
 $("navThemes").onclick=()=>showPage("themes");
 $("navNextMove").onclick=()=>{
  if (online?.code) {
@@ -1658,7 +1686,8 @@ $("aiChoice").onclick=()=>{
  if (!engine) initEngine();
 };
 window.addEventListener("hashchange", joinFromInvite);
-buildThemes();setColorMode(colorMode);
+applyTheme(document.documentElement.dataset.theme);
+setColorMode(document.documentElement.classList.contains("dark-mode") ? "dark" : "light");
 nextInitialPosition();
 resetClock();updateOpening();
 if(!clockInterval)clockInterval=setInterval(clockTick,250);
@@ -1666,6 +1695,7 @@ renderAll();
 showPage("hub");
 joinFromInvite();
 </script>
+
 
 
 </body></html>
