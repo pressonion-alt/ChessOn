@@ -195,19 +195,30 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:var(--muted);fon
 #onlineControls,#onlineAnalysis,#cancelOnline{margin-top:12px}
 #inviteControls{margin-bottom:12px}
 .online-game .ai-only,.online-game [hidden]{display:none!important}
+/* Piece-set-specific sizing: ChessOn originals +10%, Lichess SVGs -20%. */
+html:not(.lichess-piece-set) .piece-image{transform:scale(1.573)}
+html:not(.lichess-piece-set) .square.selected .piece-image{transform:translateY(-13%) scale(1.573)}
+html:not(.lichess-piece-set) .next-square .piece-image{transform:scale(1.573)}
+html:not(.lichess-piece-set) .next-square.selected .piece-image{transform:translateY(-13%) scale(1.573)}
+html.lichess-piece-set .piece-image{transform:scale(1.144)}
+html.lichess-piece-set .square.selected .piece-image{transform:translateY(-13%) scale(1.144)}
+html.lichess-piece-set .next-square .piece-image{transform:scale(1.144)}
+html.lichess-piece-set .next-square.selected .piece-image{transform:translateY(-13%) scale(1.144)}
+html:not(.lichess-piece-set) .drag-ghost,html:not(.lichess-piece-set) .next-drag-ghost{transform:translate(-50%,-50%) scale(1.573)}
+html.lichess-piece-set .drag-ghost,html.lichess-piece-set .next-drag-ghost{transform:translate(-50%,-50%) scale(1.144)}
 </style>
 </head>
 <body>
 <aside class="left-sidebar">
  <div class="sidebar-logo">Chess<span>On</span></div>
  <nav class="sidebar-nav">
-  <button id="navPlay" class="">♟ &nbsp; Play</button>
-  <button id="navThemes" class="active">▦ &nbsp; Themes</button>
-  <button id="navNextMove" class="">➜ &nbsp; Next Move</button>
+  <button id="navPlay" class="active">♟ &nbsp; Play</button>
+  <button id="navThemes">▦ &nbsp; Themes</button>
+  <button id="navNextMove">➜ &nbsp; Next Move</button>
  </nav>
  <div class="sidebar-note">Your chess. Your moves.</div>
 </aside>
-<section class="page" id="playHub">
+<section class="page visible" id="playHub">
  <h1 class="hub-title">Play ChessOn</h1>
  <p class="hub-sub">Choose how you want to play.</p>
  <div class="choice-grid">
@@ -231,7 +242,7 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:var(--muted);fon
   <p class="small" id="onlineLobbyStatus" role="status"></p>
  </div>
 </section>
-<section class="page visible" id="themesPage">
+<section class="page" id="themesPage">
  <h1 class="hub-title">Board themes</h1>
  <p class="hub-sub">Choose a board style and switch between light and dark ChessOn.</p>
  <div class="theme-options" role="group" aria-label="App appearance">
@@ -318,8 +329,8 @@ footer{max-width:1320px;margin:0 auto;padding:0 20px 24px;color:var(--muted);fon
   </section>
   <aside class="next-side"><div class="next-side-content">
    <h2 class="section-title">Best moves</h2>
-   <div class="next-status" id="nextStatus">Could not load Stockfish. Check the engine folder.</div>
-   <div class="next-move-list" id="nextMoveList"></div>
+   <div class="next-status" id="nextStatus">Loading Stockfish…</div>
+   <div class="next-move-list" id="nextMoveList"><div class="next-move-item"><span class="next-move-number">1</span><strong>—</strong></div><div class="next-move-item"><span class="next-move-number">2</span><strong>—</strong></div><div class="next-move-item"><span class="next-move-number">3</span><strong>—</strong></div></div>
    <div class="next-hint">The numbered arrows show Stockfish’s top 3 moves for the side whose turn it is. 1 is the best move. Make a move and the suggestions automatically switch to the other side.</div>
   </div></aside>
  </div>
@@ -1156,6 +1167,7 @@ function applyTheme(id) {
 function applyPieceSet(id){
  const selectedId=PIECE_SETS[id]?id:"chesson";
  activePieceSet=selectedId;
+ document.documentElement.classList.toggle("lichess-piece-set",selectedId==="lichess");
  PIECE_IMAGES={...PIECE_SETS[selectedId]};
  const cards=[...$("pieceSetGrid").querySelectorAll(".piece-set-card")];
  for(const card of cards)setPressed(card,card.dataset.pieceSet===selectedId);
