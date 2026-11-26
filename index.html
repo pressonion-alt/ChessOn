@@ -84,7 +84,9 @@ main{max-width:1320px;margin:24px auto;padding:0 20px;display:grid;grid-template
 
 /* Pieces animate smoothly after click-to-move; drag uses the real board image. */
 .piece-image{will-change:transform}
+body>.piece-image{position:fixed!important;z-index:2147483000!important;pointer-events:none!important;max-width:none!important;max-height:none!important}
 .next-square .piece-image{will-change:transform}
+body>.piece-image{position:fixed!important;z-index:2147483000!important;pointer-events:none!important;max-width:none!important;max-height:none!important}
 .drag-ghost{display:none}
 .next-drag-ghost{display:none}
 
@@ -787,6 +789,9 @@ function liftRealPiece(square,x,y){
  image.style.width=rect.width+"px";image.style.height=rect.height+"px";image.style.margin="0";
  image.style.zIndex="1001";image.style.pointerEvents="none";image.style.transform="none";
  image.style.transition="none";image.style.filter="none";image.style.visibility="visible";
+ // Move the actual image out of the board's clipping/stacking context.
+ image.style.position="fixed";image.style.zIndex="2147483000";
+ document.body.appendChild(image);
  moveRealPiece(drag,x,y);return drag;
 }
 function moveRealPiece(drag,x,y){if(!drag)return;drag.image.style.left=(x-drag.rect.width/2)+"px";drag.image.style.top=(y-drag.rect.height/2)+"px";}
@@ -794,9 +799,14 @@ function lowerRealPiece(drag){if(!drag)return;drag.cell.appendChild(drag.image);
 function animateBoardMove(from,to){
  const cell=boardSquares.find(el=>squareFromElement(el)===to);const image=cell?.querySelector(".piece-image");
  const fromCell=boardSquares.find(el=>squareFromElement(el)===from);if(!image||image.hidden||!fromCell)return;
- const a=fromCell.getBoundingClientRect(),b=cell.getBoundingClientRect();const dx=a.left-b.left,dy=a.top-b.top;
- const base=getComputedStyle(image).transform;
- try{image.animate([{transform:`translate(${dx}px,${dy}px) ${base}`},{transform:base}],{duration:190,easing:"cubic-bezier(.2,.75,.25,1)"});}catch{}
+ const a=fromCell.getBoundingClientRect(),b=cell.getBoundingClientRect();
+ const originalStyle=image.getAttribute("style"),width=image.getBoundingClientRect().width,height=image.getBoundingClientRect().height;
+ image.style.position="fixed";image.style.left=a.left+(a.width-width)/2+"px";image.style.top=a.top+(a.height-height)/2+"px";
+ image.style.width=width+"px";image.style.height=height+"px";image.style.margin="0";image.style.transform="none";
+ image.style.zIndex="2147483000";image.style.pointerEvents="none";image.style.transition="none";
+ document.body.appendChild(image);
+ const animation=image.animate([{left:a.left+(a.width-width)/2+"px",top:a.top+(a.height-height)/2+"px"},{left:b.left+(b.width-width)/2+"px",top:b.top+(b.height-height)/2+"px"}],{duration:190,easing:"cubic-bezier(.2,.75,.25,1)"});
+ animation.onfinish=()=>{cell.appendChild(image);if(originalStyle===null)image.removeAttribute("style");else image.setAttribute("style",originalStyle);};
 }
 
 function buildBoardOnce(){
@@ -846,7 +856,12 @@ function buildBoardOnce(){
  const clockOverlay=document.createElement("div");clockOverlay.className="clock-start-overlay";clockOverlay.id="clockStartOverlay";
  const clockText=document.createElement("strong");clockText.id="clockStartText";clockText.textContent="GO!";clockOverlay.append(clockText);board.append(clockOverlay);
 
- board.addEventListener("pointerdown",onPointerDown);
+ board.addEventListener("pointerdown",event=>{
+  if(event.pointerType==="pen"||event.pointerType==="touch"||event.pointerType==="mouse"){
+   try{board.setPointerCapture(event.pointerId);}catch{}
+  }
+  onPointerDown(event);
+ });
  board.addEventListener("contextmenu",event=>event.preventDefault());
  document.addEventListener("pointermove",onPointerMove);
  document.addEventListener("pointerup",onPointerUp);
@@ -1220,11 +1235,11 @@ function nextClickSquare(square){if(nextPromotion)return;const piece=nextGame.ge
 function nextSelectSquare(square){nextSelected=square;nextLegalTargets=nextGame.moves({square,verbose:true}).map(m=>m.to);renderNextBoard();}
 function nextAttemptMove(from,to,promotion,animate=true){const moves=nextGame.moves({square:from,verbose:true}).filter(m=>m.to===to);if(!moves.length)return;if(moves.length>1&&!promotion){nextShowPromotion(from,to);return;}const move=moves.find(m=>!m.promotion||m.promotion===promotion)||moves[0];const made=nextGame.move({from:move.from,to:move.to,promotion:move.promotion||"q"});if(!made)return;nextLastMove={from:made.from,to:made.to};nextSelected=null;nextLegalTargets=[];renderNextBoard();if(animate)animateNextBoardMove(made.from,made.to);analyzeNextPosition();}
 function nextShowPromotion(from,to){nextPromotion={from,to};const color=nextGame.turn();$("promoChoices").innerHTML="";for(const type of ["q","r","b","n"]){const button=document.createElement("button"),image=document.createElement("img");image.src=PIECE_IMAGES[color+type];image.alt=({q:"Queen",r:"Rook",b:"Bishop",n:"Horse"})[type];const label=document.createElement("span");label.textContent=image.alt;button.append(image,label);button.onclick=()=>{$("promoOverlay").style.display="none";nextPromotion=null;nextAttemptMove(from,to,type);};$("promoChoices").append(button);}$("promoOverlay").style.display="grid";}
-function nextLiftRealPiece(square,x,y){const cell=$(`nextBoard`).querySelector(`[data-square="${square}"]`),image=cell?.querySelector(".piece-image");if(!image)return null;const rect=image.getBoundingClientRect(),drag={image,cell,originalStyle:image.getAttribute("style"),rect};image.style.position="fixed";image.style.left=rect.left+"px";image.style.top=rect.top+"px";image.style.width=rect.width+"px";image.style.height=rect.height+"px";image.style.margin="0";image.style.zIndex="1001";image.style.pointerEvents="none";image.style.transform="none";image.style.transition="none";document.body.append(image);nextMoveRealPiece(drag,x,y);return drag;}
+function nextLiftRealPiece(square,x,y){const cell=$(`nextBoard`).querySelector(`[data-square="${square}"]`),image=cell?.querySelector(".piece-image");if(!image)return null;const rect=image.getBoundingClientRect(),drag={image,cell,originalStyle:image.getAttribute("style"),rect};image.style.position="fixed";image.style.left=rect.left+"px";image.style.top=rect.top+"px";image.style.width=rect.width+"px";image.style.height=rect.height+"px";image.style.margin="0";image.style.zIndex="2147483000";image.style.pointerEvents="none";image.style.transform="none";image.style.transition="none";document.body.append(image);nextMoveRealPiece(drag,x,y);return drag;}
 function nextMoveRealPiece(drag,x,y){if(drag){drag.image.style.left=(x-drag.rect.width/2)+"px";drag.image.style.top=(y-drag.rect.height/2)+"px";}}
 function nextLowerRealPiece(drag){if(!drag)return;drag.cell.append(drag.image);if(drag.originalStyle===null)drag.image.removeAttribute("style");else drag.image.setAttribute("style",drag.originalStyle);}
-function animateNextBoardMove(from,to){const board=$("nextBoard"),cell=board.querySelector(`[data-square="${to}"]`),image=cell?.querySelector(".piece-image"),fromCell=board.querySelector(`[data-square="${from}"]`);if(!image||!fromCell)return;const a=fromCell.getBoundingClientRect(),b=cell.getBoundingClientRect(),base=getComputedStyle(image).transform;try{image.animate([{transform:`translate(${a.left-b.left}px,${a.top-b.top}px) ${base}`},{transform:base}],{duration:190,easing:"cubic-bezier(.2,.75,.25,1)"});}catch{}}
-function nextPointerDown(event){if(event.button!==0||event.target.closest(".next-arrow-layer"))return;const square=nextSquareFromElement(event.target);if(!square)return;const piece=nextGame.get(square);nextPointerDrag={from:square,x:event.clientX,y:event.clientY,moved:false,piece:piece&&piece.color===nextGame.turn()?piece:null,lifted:null};event.preventDefault();}
+function animateNextBoardMove(from,to){const board=$("nextBoard"),cell=board.querySelector(`[data-square="${to}"]`),image=cell?.querySelector(".piece-image"),fromCell=board.querySelector(`[data-square="${from}"]`);if(!image||!fromCell)return;const a=fromCell.getBoundingClientRect(),b=cell.getBoundingClientRect(),r=image.getBoundingClientRect(),originalStyle=image.getAttribute("style"),w=r.width,h=r.height;image.style.position="fixed";image.style.left=a.left+(a.width-w)/2+"px";image.style.top=a.top+(a.height-h)/2+"px";image.style.width=w+"px";image.style.height=h+"px";image.style.margin="0";image.style.transform="none";image.style.zIndex="2147483000";image.style.pointerEvents="none";image.style.transition="none";document.body.append(image);const anim=image.animate([{left:a.left+(a.width-w)/2+"px",top:a.top+(a.height-h)/2+"px"},{left:b.left+(b.width-w)/2+"px",top:b.top+(b.height-h)/2+"px"}],{duration:190,easing:"cubic-bezier(.2,.75,.25,1)"});anim.onfinish=()=>{cell.append(image);if(originalStyle===null)image.removeAttribute("style");else image.setAttribute("style",originalStyle);};}
+function nextPointerDown(event){if(event.button!==0||event.target.closest(".next-arrow-layer"))return;const square=nextSquareFromElement(event.target);if(!square)return;try{$("nextBoard").setPointerCapture(event.pointerId);}catch{}const piece=nextGame.get(square);nextPointerDrag={from:square,x:event.clientX,y:event.clientY,moved:false,piece:piece&&piece.color===nextGame.turn()?piece:null,lifted:null,pointerId:event.pointerId};event.preventDefault();}
 function nextPointerMove(event){if(!nextPointerDrag)return;const d=nextPointerDrag;if(Math.abs(event.clientX-d.x)>4||Math.abs(event.clientY-d.y)>4){if(!d.moved){d.moved=true;if(d.piece)d.lifted=nextLiftRealPiece(d.from,event.clientX,event.clientY);}nextMoveRealPiece(d.lifted,event.clientX,event.clientY);}}
 function nextPointerUp(event){if(!nextPointerDrag)return;const drag=nextPointerDrag;nextPointerDrag=null;nextLowerRealPiece(drag.lifted);const destination=nextSquareFromElement(document.elementFromPoint(event.clientX,event.clientY));if(drag.moved&&drag.piece&&destination&&destination!==drag.from){if(nextGame.moves({square:drag.from,verbose:true}).some(m=>m.to===destination))nextAttemptMove(drag.from,destination,undefined,false);return;}if(!drag.moved)nextClickSquare(drag.from);}
 function nextPointerCancel(){if(nextPointerDrag?.lifted)nextLowerRealPiece(nextPointerDrag.lifted);nextPointerDrag=null;}
