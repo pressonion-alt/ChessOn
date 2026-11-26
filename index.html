@@ -82,8 +82,12 @@ main{max-width:1320px;margin:24px auto;padding:0 20px;display:grid;grid-template
 .arrow-head{fill:#e5a900;opacity:.95}
 .arrow-start{display:none}
 
-/* The dragged piece follows the pointer. */
-.drag-ghost{position:fixed;z-index:1000;width:70px;height:70px;object-fit:contain;pointer-events:none;transform:translate(-50%,-50%) scale(1.43);filter:none}
+/* Pieces animate smoothly after click-to-move; drag uses the real board image. */
+.piece-image{will-change:transform}
+.next-square .piece-image{will-change:transform}
+.drag-ghost{display:none}
+.next-drag-ghost{display:none}
+
 .arrow-preview{stroke:#e5a900;stroke-width:12;stroke-linecap:round;stroke-dasharray:14 8;opacity:.7}
 .collection-row{display:flex;align-items:center;gap:7px;min-height:25px;margin-left:38px;color:var(--muted);font-size:12px}
 .collection-icons{display:flex;align-items:center;gap:2px;flex-wrap:wrap}
@@ -645,6 +649,7 @@ function receiveOnlineState(session, reply) {
  if (reanalyze) session.candidates = [];
  updateOpening();
  renderAll();
+ if(boardChanged&&reply.moves.length){const lastCode=reply.moves[reply.moves.length-1];if(session.animatePending!==false||reply.moves.length-session.moveCount>1)animateBoardMove(lastCode.slice(0,2),lastCode.slice(2,4));session.animatePending=null;}
  updateOnlineStatus(session);
  if (reanalyze) analyzeOnlinePosition();
 }
@@ -773,33 +778,25 @@ function addArrow(from,to){
  renderArrows();
 }
 
-function createDragGhost(square,x,y){
- removeDragGhost();
-
- const piece=game.get(square);
- if(!piece)return;
-
- const imagePath=PIECE_IMAGES[piece.color+piece.type];
- dragGhost=document.createElement("img");
- dragGhost.className="drag-ghost";
- dragGhost.src=imagePath;
- dragGhost.alt="";
- dragGhost.draggable=false;
- document.body.appendChild(dragGhost);
- moveDragGhost(x,y);
+function liftRealPiece(square,x,y){
+ const piece=game.get(square);if(!piece)return null;
+ const cell=boardSquares.find(el=>squareFromElement(el)===square);const image=cell?.querySelector(".piece-image");if(!image||image.hidden)return null;
+ const rect=image.getBoundingClientRect();
+ const drag={image,cell,originalStyle:image.getAttribute("style"),rect};
+ image.style.position="fixed";image.style.left=rect.left+"px";image.style.top=rect.top+"px";
+ image.style.width=rect.width+"px";image.style.height=rect.height+"px";image.style.margin="0";
+ image.style.zIndex="1001";image.style.pointerEvents="none";image.style.transform="none";
+ image.style.transition="none";image.style.filter="none";image.style.visibility="visible";
+ moveRealPiece(drag,x,y);return drag;
 }
-
-function moveDragGhost(x,y){
- if(!dragGhost)return;
- dragGhost.style.left=x+"px";
- dragGhost.style.top=y+"px";
-}
-
-function removeDragGhost(){
- if(dragGhost){
-  dragGhost.remove();
-  dragGhost=null;
- }
+function moveRealPiece(drag,x,y){if(!drag)return;drag.image.style.left=(x-drag.rect.width/2)+"px";drag.image.style.top=(y-drag.rect.height/2)+"px";}
+function lowerRealPiece(drag){if(!drag)return;drag.cell.appendChild(drag.image);if(drag.originalStyle===null)drag.image.removeAttribute("style");else drag.image.setAttribute("style",drag.originalStyle);}
+function animateBoardMove(from,to){
+ const cell=boardSquares.find(el=>squareFromElement(el)===to);const image=cell?.querySelector(".piece-image");
+ const fromCell=boardSquares.find(el=>squareFromElement(el)===from);if(!image||image.hidden||!fromCell)return;
+ const a=fromCell.getBoundingClientRect(),b=cell.getBoundingClientRect();const dx=a.left-b.left,dy=a.top-b.top;
+ const base=getComputedStyle(image).transform;
+ try{image.animate([{transform:`translate(${dx}px,${dy}px) ${base}`},{transform:base}],{duration:190,easing:"cubic-bezier(.2,.75,.25,1)"});}catch{}
 }
 
 function buildBoardOnce(){
@@ -886,9 +883,9 @@ function onPointerMove(event){
  if(!pointerDrag)return;
  const dx=event.clientX-pointerDrag.startX,dy=event.clientY-pointerDrag.startY;
  if(Math.abs(dx)>4||Math.abs(dy)>4){
-  if(!pointerDrag.moved){pointerDrag.moved=true;if(isHumanPiece(pointerDrag.from)&&gameStarted)createDragGhost(pointerDrag.from,event.clientX,event.clientY);}
+  if(!pointerDrag.moved){pointerDrag.moved=true;if(isHumanPiece(pointerDrag.from)&&gameStarted)pointerDrag.lifted=liftRealPiece(pointerDrag.from,event.clientX,event.clientY);}
  }
- if(pointerDrag.moved)moveDragGhost(event.clientX,event.clientY);
+ if(pointerDrag.moved)moveRealPiece(pointerDrag.lifted,event.clientX,event.clientY);
 }
 function onPointerUp(event){
  const target=document.elementFromPoint(event.clientX,event.clientY);const destination=squareFromElement(target);
@@ -911,13 +908,13 @@ function onPointerUp(event){
   return;
  }
  if(!pointerDrag)return;
- const drag=pointerDrag;pointerDrag=null;removeDragGhost();if(!destination)return;
+ const drag=pointerDrag;pointerDrag=null;lowerRealPiece(drag.lifted);if(!destination)return;
  if(!gameStarted)return;
- if(drag.moved&&drag.from!==destination){if(isHumanPiece(drag.from)&&game.turn()===humanColor)attemptMove(drag.from,destination);return;}
+ if(drag.moved&&drag.from!==destination){if(isHumanPiece(drag.from)&&game.turn()===humanColor)attemptMove(drag.from,destination,undefined,false);return;}
  if(drag.from===destination){if(isHumanPiece(destination)){selectSquare(destination);return;}onSquare(destination);return;}
  onSquare(destination);
 }
-function cancelPointer(){pointerDrag=null;arrowDrag=null;removeDragGhost();renderArrows();}
+function cancelPointer(){if(pointerDrag?.lifted)lowerRealPiece(pointerDrag.lifted);pointerDrag=null;arrowDrag=null;renderArrows();}
 
 function renderBoard(){
  buildBoardOnce();
@@ -1088,7 +1085,7 @@ function onSquare(square){
  }
 }
 
-function attemptMove(from,to,promotion){
+function attemptMove(from,to,promotion,animate=true){
  if(!gameStarted || !isHumanTurn() || online?.pendingMove)return;
 
  const moves=game.moves({square:from,verbose:true}).filter(m=>m.to===to);
@@ -1101,7 +1098,7 @@ function attemptMove(from,to,promotion){
  }
 
  const move=moves.find(m=>!m.promotion||m.promotion===promotion)||moves[0];
- makeMove(move);
+ makeMove(move,animate);
 }
 
 function showPromotion(from,to){
@@ -1115,15 +1112,16 @@ function showPromotion(from,to){
  $("promoOverlay").style.display="grid";
 }
 
-function makeMove(move){
+function makeMove(move,animate=true){
  if (online?.code) {
   if (online.socket.readyState !== WebSocket.OPEN) return;
   online.pendingMove = true;
+  online.animatePending = animate;
   online.socket.send(JSON.stringify({ type: "move", move: uci(move), ply: online.moveCount }));
   return;
  }
  const made=game.move({from:move.from,to:move.to,promotion:move.promotion||"q"});if(!made)return;
- lastMove={from:made.from,to:made.to};updateOpening();clearSelection();clearArrows();renderAll();
+ lastMove={from:made.from,to:made.to};updateOpening();clearSelection();clearArrows();renderAll();if(animate)animateBoardMove(made.from,made.to);
  if(game.isGameOver()){clockRunning=false;showGameOver();return;}
  if(game.turn()!==humanColor)engineMove();
 }
@@ -1220,12 +1218,16 @@ function renderNextBoard(){
 function nextFindKing(color){for(let rank=1;rank<=8;rank++)for(const file of "abcdefgh"){const p=nextGame.get(file+rank);if(p&&p.type==="k"&&p.color===color)return file+rank;}return null;}
 function nextClickSquare(square){if(nextPromotion)return;const piece=nextGame.get(square);if(nextSelected){if(square===nextSelected){nextSelected=null;nextLegalTargets=[];renderNextBoard();return;}if(nextLegalTargets.includes(square)){nextAttemptMove(nextSelected,square);return;}if(piece&&piece.color===nextGame.turn()){nextSelectSquare(square);return;}nextSelected=null;nextLegalTargets=[];renderNextBoard();return;}if(piece&&piece.color===nextGame.turn())nextSelectSquare(square);}
 function nextSelectSquare(square){nextSelected=square;nextLegalTargets=nextGame.moves({square,verbose:true}).map(m=>m.to);renderNextBoard();}
-function nextAttemptMove(from,to,promotion){const moves=nextGame.moves({square:from,verbose:true}).filter(m=>m.to===to);if(!moves.length)return;if(moves.length>1&&!promotion){nextShowPromotion(from,to);return;}const move=moves.find(m=>!m.promotion||m.promotion===promotion)||moves[0];const made=nextGame.move({from:move.from,to:move.to,promotion:move.promotion||"q"});if(!made)return;nextLastMove={from:made.from,to:made.to};nextSelected=null;nextLegalTargets=[];renderNextBoard();analyzeNextPosition();}
+function nextAttemptMove(from,to,promotion,animate=true){const moves=nextGame.moves({square:from,verbose:true}).filter(m=>m.to===to);if(!moves.length)return;if(moves.length>1&&!promotion){nextShowPromotion(from,to);return;}const move=moves.find(m=>!m.promotion||m.promotion===promotion)||moves[0];const made=nextGame.move({from:move.from,to:move.to,promotion:move.promotion||"q"});if(!made)return;nextLastMove={from:made.from,to:made.to};nextSelected=null;nextLegalTargets=[];renderNextBoard();if(animate)animateNextBoardMove(made.from,made.to);analyzeNextPosition();}
 function nextShowPromotion(from,to){nextPromotion={from,to};const color=nextGame.turn();$("promoChoices").innerHTML="";for(const type of ["q","r","b","n"]){const button=document.createElement("button"),image=document.createElement("img");image.src=PIECE_IMAGES[color+type];image.alt=({q:"Queen",r:"Rook",b:"Bishop",n:"Horse"})[type];const label=document.createElement("span");label.textContent=image.alt;button.append(image,label);button.onclick=()=>{$("promoOverlay").style.display="none";nextPromotion=null;nextAttemptMove(from,to,type);};$("promoChoices").append(button);}$("promoOverlay").style.display="grid";}
-function nextPointerDown(event){if(event.button!==0||event.target.closest(".next-arrow-layer"))return;const square=nextSquareFromElement(event.target);if(!square)return;const piece=nextGame.get(square);nextPointerDrag={from:square,x:event.clientX,y:event.clientY,moved:false,piece:piece&&piece.color===nextGame.turn()?piece:null};event.preventDefault();}
-function nextPointerMove(event){if(!nextPointerDrag)return;const d=nextPointerDrag;if(Math.abs(event.clientX-d.x)>4||Math.abs(event.clientY-d.y)>4){d.moved=true;if(d.piece){if(!nextDragGhost){nextDragGhost=document.createElement("img");nextDragGhost.className="next-drag-ghost";nextDragGhost.src=PIECE_IMAGES[d.piece.color+d.piece.type];document.body.append(nextDragGhost);}nextDragGhost.style.left=event.clientX+"px";nextDragGhost.style.top=event.clientY+"px";}}}
-function nextPointerUp(event){if(!nextPointerDrag)return;const drag=nextPointerDrag;nextPointerDrag=null;nextDragGhost?.remove();nextDragGhost=null;const destination=nextSquareFromElement(document.elementFromPoint(event.clientX,event.clientY));if(drag.moved&&drag.piece&&destination&&destination!==drag.from){if(nextGame.moves({square:drag.from,verbose:true}).some(m=>m.to===destination))nextAttemptMove(drag.from,destination);return;}if(!drag.moved)nextClickSquare(drag.from);}
-function nextPointerCancel(){nextPointerDrag=null;nextDragGhost?.remove();nextDragGhost=null;}
+function nextLiftRealPiece(square,x,y){const cell=$(`nextBoard`).querySelector(`[data-square="${square}"]`),image=cell?.querySelector(".piece-image");if(!image)return null;const rect=image.getBoundingClientRect(),drag={image,cell,originalStyle:image.getAttribute("style"),rect};image.style.position="fixed";image.style.left=rect.left+"px";image.style.top=rect.top+"px";image.style.width=rect.width+"px";image.style.height=rect.height+"px";image.style.margin="0";image.style.zIndex="1001";image.style.pointerEvents="none";image.style.transform="none";image.style.transition="none";document.body.append(image);nextMoveRealPiece(drag,x,y);return drag;}
+function nextMoveRealPiece(drag,x,y){if(drag){drag.image.style.left=(x-drag.rect.width/2)+"px";drag.image.style.top=(y-drag.rect.height/2)+"px";}}
+function nextLowerRealPiece(drag){if(!drag)return;drag.cell.append(drag.image);if(drag.originalStyle===null)drag.image.removeAttribute("style");else drag.image.setAttribute("style",drag.originalStyle);}
+function animateNextBoardMove(from,to){const board=$("nextBoard"),cell=board.querySelector(`[data-square="${to}"]`),image=cell?.querySelector(".piece-image"),fromCell=board.querySelector(`[data-square="${from}"]`);if(!image||!fromCell)return;const a=fromCell.getBoundingClientRect(),b=cell.getBoundingClientRect(),base=getComputedStyle(image).transform;try{image.animate([{transform:`translate(${a.left-b.left}px,${a.top-b.top}px) ${base}`},{transform:base}],{duration:190,easing:"cubic-bezier(.2,.75,.25,1)"});}catch{}}
+function nextPointerDown(event){if(event.button!==0||event.target.closest(".next-arrow-layer"))return;const square=nextSquareFromElement(event.target);if(!square)return;const piece=nextGame.get(square);nextPointerDrag={from:square,x:event.clientX,y:event.clientY,moved:false,piece:piece&&piece.color===nextGame.turn()?piece:null,lifted:null};event.preventDefault();}
+function nextPointerMove(event){if(!nextPointerDrag)return;const d=nextPointerDrag;if(Math.abs(event.clientX-d.x)>4||Math.abs(event.clientY-d.y)>4){if(!d.moved){d.moved=true;if(d.piece)d.lifted=nextLiftRealPiece(d.from,event.clientX,event.clientY);}nextMoveRealPiece(d.lifted,event.clientX,event.clientY);}}
+function nextPointerUp(event){if(!nextPointerDrag)return;const drag=nextPointerDrag;nextPointerDrag=null;nextLowerRealPiece(drag.lifted);const destination=nextSquareFromElement(document.elementFromPoint(event.clientX,event.clientY));if(drag.moved&&drag.piece&&destination&&destination!==drag.from){if(nextGame.moves({square:drag.from,verbose:true}).some(m=>m.to===destination))nextAttemptMove(drag.from,destination,undefined,false);return;}if(!drag.moved)nextClickSquare(drag.from);}
+function nextPointerCancel(){if(nextPointerDrag?.lifted)nextLowerRealPiece(nextPointerDrag.lifted);nextPointerDrag=null;}
 function nextFen(){return nextGame.fen();}
 function updateNextTurnLabel(){if(!nextGame)return;const turn=nextGame.turn();$("nextTurnLabel").textContent=nextGame.isGameOver()?"Game over — "+(nextGame.isCheckmate()?sideName(turn==="w"?"b":"w")+" wins":"Draw"):sideName(turn)+" to move"+(nextGame.isCheck()?" · Check":"");}
 function drawAnalysisArrows(svg, candidates, coordinates) {
