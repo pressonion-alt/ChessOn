@@ -1,3 +1,253 @@
+GitHub Go into my pressonion-alt/ChessOn repo and tell me how to fix the animations from not loading
+
+I went through pressonion-alt/ChessOn on the main branch, and I found several problems with the piece animation implementation.
+
+The biggest issue is how you're handling the actual chess piece DOM elements during animations. You're temporarily removing them from the board, but your board renderer assumes they're always present. 💀
+
+Everything relevant is inside index.html. There isn't a missing animation library — you're using the browser's native Web Animations API (Element.animate()).
+1. Your animation function removes elements that the renderer needs
+
+In index.html:799–810, animateBoardMove() does this:
+
+document.body.appendChild(image);
+
+That moves the actual piece image out of its square until the 190ms animation finishes.
+
+However, inside renderBoard() at line 962, you're doing:
+
+const image = element.querySelector(".piece-image");
+
+And then immediately accessing properties on image without checking whether it exists.
+
+If the board rerenders while the animation is active, image is null, potentially causing:
+Uncaught TypeError: Cannot read properties of null
+
+This is particularly problematic during multiplayer updates, rapid interactions, or board flips.
+2. Replace both animation functions
+
+Instead of moving the real DOM element, clone it, animate the clone, and temporarily hide the original using visibility: hidden.
+
+Replace animateBoardMove() at line 799 and animateNextBoardMove() at line 1241 with this shared implementation:
+
+const activeAnimations = new WeakMap();
+
+function finishBoardAnimation(board) {
+    activeAnimations.get(board)?.();
+}
+
+function animatePiece(board, fromCell, toCell) {
+    finishBoardAnimation(board);
+
+    const image = toCell?.querySelector(".piece-image");
+
+    if (!image || image.hidden || !fromCell) return;
+
+    const from = fromCell.getBoundingClientRect();
+    const to = toCell.getBoundingClientRect();
+    const rect = image.getBoundingClientRect();
+
+    if (!rect.width || !rect.height) return;
+
+    const dx = from.left + from.width / 2
+             - to.left - to.width / 2;
+
+    const dy = from.top + from.height / 2
+             - to.top - to.height / 2;
+
+    const ghost = image.cloneNode(true);
+    const originalVisibility = image.style.visibility;
+
+    Object.assign(ghost.style, {
+        position: "fixed",
+        left: `${rect.left}px`,
+        top: `${rect.top}px`,
+        width: `${rect.width}px`,
+        height: `${rect.height}px`,
+        margin: "0",
+        transform: "none",
+        transition: "none",
+        visibility: "visible",
+        pointerEvents: "none",
+        zIndex: "2147483000",
+        willChange: "transform"
+    });
+
+    ghost.setAttribute("aria-hidden", "true");
+
+    document.body.appendChild(ghost);
+    image.style.visibility = "hidden";
+
+    const animation = ghost.animate(
+        [
+            {
+                transform: `translate3d(${dx}px, ${dy}px, 0)`
+            },
+            {
+                transform: "translate3d(0, 0, 0)"
+            }
+        ],
+        {
+            duration: 190,
+            easing: "cubic-bezier(.2,.75,.25,1)",
+            fill: "both"
+        }
+    );
+
+    function cleanup() {
+        activeAnimations.delete(board);
+
+        animation.onfinish = null;
+        animation.oncancel = null;
+        animation.cancel();
+
+        ghost.remove();
+        image.style.visibility = originalVisibility;
+    }
+
+    activeAnimations.set(board, cleanup);
+
+    animation.onfinish = cleanup;
+    animation.oncancel = cleanup;
+}
+
+function animateBoardMove(from, to) {
+    animatePiece(
+        $("board"),
+        boardSquares.find(el => squareFromElement(el) === from),
+        boardSquares.find(el => squareFromElement(el) === to)
+    );
+}
+
+function animateNextBoardMove(from, to) {
+    const board = $("nextBoard");
+
+    animatePiece(
+        board,
+        board.querySelector(`[data-square="${from}"]`),
+        board.querySelector(`[data-square="${to}"]`)
+    );
+}
+
+Put the shared code before the initial board rendering calls at the bottom of your script.
+
+Also add this at the beginning of renderBoard():
+
+finishBoardAnimation($("board"));
+
+And this at the beginning of renderNextBoard():
+
+finishBoardAnimation($("nextBoard"));
+
+This ensures that an old animation cannot interfere with a new board state.
+Animation implementation comparison
+Illustration of an interrupted animation
+
+Using translate3d() instead of animating left and top can also reduce layout work during the animation.
+3. You're explicitly disabling drag-and-drop animations
+
+At line 928:
+
+attemptMove(drag.from, destination, undefined, false);
+
+And at line 1244:
+
+nextAttemptMove(drag.from, destination, undefined, false);
+
+That last false disables animation.
+
+This appears intentional because the piece already follows the mouse while dragging. Click-to-move and AI moves should animate, whereas drag-and-drop moves should immediately settle into their destination.
+
+I would keep this behaviour unless you specifically want an animation after dropping a piece.
+4. Your multiplayer animation condition is broken
+
+At line 642, you assign:
+
+session.moveCount = reply.moves.length;
+
+Then, at line 654, you check:
+
+reply.moves.length - session.moveCount > 1
+
+That subtraction will always equal zero.
+
+At the beginning of receiveOnlineState(), add:
+
+const newMoveCount = reply.moves.length - session.moveCount;
+
+Then replace line 654 with:
+
+if (boardChanged && reply.moves.length) {
+    const lastCode = reply.moves.at(-1);
+
+    if (
+        session.animatePending !== false ||
+        newMoveCount > 1
+    ) {
+        animateBoardMove(
+            lastCode.slice(0, 2),
+            lastCode.slice(2, 4)
+        );
+    }
+
+    session.animatePending = null;
+}
+
+This fixes the existing condition without changing your intended multiplayer behaviour.
+5. There's another problem entirely unrelated to animations
+
+Your latest server.js commit appears to have accidentally deleted most of your server implementation.
+
+The current file literally starts with:
+
+    } catch (failure) {
+
+There's no preceding try block, imports, or server initialization.
+
+Run:
+
+node --check server.js
+
+That file as currently committed cannot execute. If you're still running an older server version, you might not have noticed yet.
+Summary
+
+Problem
+	
+
+Priority
+
+Animation removes required DOM elements
+	
+
+High
+
+Animation cleanup can target detached squares
+	
+
+High
+
+Multiplayer move-count condition always evaluates false
+	
+
+High
+
+Drag-and-drop explicitly disables animations
+	
+
+Intentional
+
+Animating positional properties instead of transforms
+	
+
+Performance
+
+Truncated server.js
+	
+
+Critical
+
+I'd fix the animation implementation rather than rewrite the entire renderer. Your existing buildBoardOnce() approach is perfectly compatible with smooth animations as long as you preserve its DOM elements.
+
+I inspected the actual repository source and commit history, but haven't executed the website in a browser, so I can confirm these code defects without confirming which one is causing your specific visible symptom. I haven't modified or committed anything to your repository.
 <html lang="en" data-theme="classic"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -82,11 +332,9 @@ main{max-width:1320px;margin:24px auto;padding:0 20px;display:grid;grid-template
 .arrow-head{fill:#e5a900;opacity:.95}
 .arrow-start{display:none}
 
-/* Pieces animate smoothly after click-to-move; drag uses the real board image. */
+/* Moving overlays never replace the images owned by the board renderer. */
 .piece-image{will-change:transform}
-body>.piece-image{position:fixed!important;z-index:2147483000!important;pointer-events:none!important;max-width:none!important;max-height:none!important}
-.next-square .piece-image{will-change:transform}
-body>.piece-image{position:fixed!important;z-index:2147483000!important;pointer-events:none!important;max-width:none!important;max-height:none!important}
+body>.moving-piece{position:fixed;z-index:49;pointer-events:none;max-width:none;max-height:none;object-fit:contain;user-select:none;will-change:transform}
 .drag-ghost{display:none}
 .next-drag-ghost{display:none}
 
@@ -560,6 +808,7 @@ function connectOnline(session) {
   }
   if (reply.type === "error") {
    session.pendingMove = false;
+   session.animatePending = null;
    if (session.ready) setStatus(reply.message);
    else resetOnline(session, reply.message);
   }
@@ -629,7 +878,9 @@ function displayOnlineControls(session) {
 }
 
 function receiveOnlineState(session, reply) {
- const boardChanged = reply.moves.length !== session.moveCount;
+ const newMoveCount = reply.moves.length - session.moveCount;
+ const boardChanged = newMoveCount !== 0;
+ let latestMove = null;
  const reanalyze = boardChanged || reply.opponentJoined !== session.opponentJoined || reply.resigned !== session.resigned;
  session.ready = true;
  session.opponentJoined = reply.opponentJoined;
@@ -638,6 +889,7 @@ function receiveOnlineState(session, reply) {
  for (const code of reply.moves.slice(session.moveCount)) {
   const move = game.move({ from: code.slice(0, 2), to: code.slice(2, 4), promotion: code[4] });
   lastMove = { from: move.from, to: move.to };
+  latestMove = move;
  }
  session.moveCount = reply.moves.length;
  gameStarted = session.opponentConnected && !session.resigned && !game.isGameOver();
@@ -650,8 +902,15 @@ function receiveOnlineState(session, reply) {
  }
  if (reanalyze) session.candidates = [];
  updateOpening();
- renderAll();
- if(boardChanged&&reply.moves.length){const lastCode=reply.moves[reply.moves.length-1];if(session.animatePending!==false||reply.moves.length-session.moveCount>1)animateBoardMove(lastCode.slice(0,2),lastCode.slice(2,4));session.animatePending=null;}
+ // Connection-only updates should not cancel an in-progress move animation.
+ if (boardChanged || !gameStarted || reanalyze) renderAll();
+ else updateLabels();
+ if (boardChanged) {
+  if (latestMove && (session.animatePending !== false || newMoveCount > 1)) {
+   animateBoardMove(latestMove.from, latestMove.to, latestMove);
+  }
+  session.animatePending = null;
+ }
  updateOnlineStatus(session);
  if (reanalyze) analyzeOnlinePosition();
 }
@@ -780,35 +1039,122 @@ function addArrow(from,to){
  renderArrows();
 }
 
-function liftRealPiece(square,x,y){
- const piece=game.get(square);if(!piece)return null;
- const cell=boardSquares.find(el=>squareFromElement(el)===square);const image=cell?.querySelector(".piece-image");if(!image||image.hidden)return null;
- const rect=image.getBoundingClientRect();
- const drag={image,cell,originalStyle:image.getAttribute("style"),rect};
- image.style.position="fixed";image.style.left=rect.left+"px";image.style.top=rect.top+"px";
- image.style.width=rect.width+"px";image.style.height=rect.height+"px";image.style.margin="0";
- image.style.zIndex="1001";image.style.pointerEvents="none";image.style.transform="none";
- image.style.transition="none";image.style.filter="none";image.style.visibility="visible";
- // Move the actual image out of the board's clipping/stacking context.
- image.style.position="fixed";image.style.zIndex="2147483000";
- document.body.appendChild(image);
- moveRealPiece(drag,x,y);return drag;
-}
-function moveRealPiece(drag,x,y){if(!drag)return;drag.image.style.left=(x-drag.rect.width/2)+"px";drag.image.style.top=(y-drag.rect.height/2)+"px";}
-function lowerRealPiece(drag){if(!drag)return;drag.cell.appendChild(drag.image);if(drag.originalStyle===null)drag.image.removeAttribute("style");else drag.image.setAttribute("style",drag.originalStyle);}
-function animateBoardMove(from,to){
- const cell=boardSquares.find(el=>squareFromElement(el)===to);const image=cell?.querySelector(".piece-image");
- const fromCell=boardSquares.find(el=>squareFromElement(el)===from);if(!image||image.hidden||!fromCell)return;
- const a=fromCell.getBoundingClientRect(),b=cell.getBoundingClientRect();
- const originalStyle=image.getAttribute("style"),width=image.getBoundingClientRect().width,height=image.getBoundingClientRect().height;
- image.style.position="fixed";image.style.left=a.left+(a.width-width)/2+"px";image.style.top=a.top+(a.height-height)/2+"px";
- image.style.width=width+"px";image.style.height=height+"px";image.style.margin="0";image.style.transform="none";
- image.style.zIndex="2147483000";image.style.pointerEvents="none";image.style.transition="none";
- document.body.appendChild(image);
- const animation=image.animate([{left:a.left+(a.width-width)/2+"px",top:a.top+(a.height-height)/2+"px"},{left:b.left+(b.width-width)/2+"px",top:b.top+(b.height-height)/2+"px"}],{duration:190,easing:"cubic-bezier(.2,.75,.25,1)"});
- animation.onfinish=()=>{cell.appendChild(image);if(originalStyle===null)image.removeAttribute("style");else image.setAttribute("style",originalStyle);};
+const activeAnimations = new WeakMap();
+const MOVE_DURATION = 190;
+
+function finishBoardAnimation(board) {
+ activeAnimations.get(board)?.();
 }
 
+function createMovingPiece(image) {
+ if (!image || image.hidden || !image.isConnected) return null;
+ const rect = image.getBoundingClientRect();
+ if (!rect.width || !rect.height) return null;
+ const ghost = image.cloneNode(true);
+ ghost.className = "moving-piece";
+ ghost.removeAttribute("id");
+ ghost.removeAttribute("style");
+ ghost.alt = "";
+ ghost.setAttribute("aria-hidden", "true");
+ Object.assign(ghost.style, {
+  left: `${rect.left}px`, top: `${rect.top}px`,
+  width: `${rect.width}px`, height: `${rect.height}px`,
+  margin: "0", transform: "none", visibility: "visible"
+ });
+ const originalVisibility = image.style.visibility;
+ document.body.appendChild(ghost);
+ image.style.visibility = "hidden";
+ let cleaned = false;
+ return { image, ghost, rect, cleanup() {
+  if (cleaned) return;
+  cleaned = true;
+  ghost.remove();
+  image.style.visibility = originalVisibility;
+ }};
+}
+
+function moveRealPiece(drag,x,y) {
+ if (!drag) return;
+ drag.ghost.style.transform = `translate3d(${x-drag.rect.left-drag.rect.width/2}px, ${y-drag.rect.top-drag.rect.height/2}px, 0)`;
+}
+function lowerRealPiece(drag) { drag?.cleanup(); }
+function liftRealPiece(square,x,y) {
+ if (!game.get(square)) return null;
+ finishBoardAnimation($("board"));
+ const cell = boardSquares.find(el=>squareFromElement(el)===square);
+ const drag = createMovingPiece(cell?.querySelector(".piece-image"));
+ moveRealPiece(drag,x,y);
+ return drag;
+}
+
+// Each board has one animation group. Castling can animate both pieces together.
+function animatePieces(board, pairs) {
+ finishBoardAnimation(board);
+ if (!board?.getClientRects().length) return;
+ const moving = [];
+ let remaining = 0;
+ let stopped = false;
+ let fallbackTimer;
+ function cleanup() {
+  if (stopped) return;
+  stopped = true;
+  clearTimeout(fallbackTimer);
+  if (activeAnimations.get(board) === cleanup) activeAnimations.delete(board);
+  for (const item of moving) {
+   if (item.animation) {
+    item.animation.onfinish = null;
+    item.animation.oncancel = null;
+    item.animation.cancel();
+   }
+   item.cleanup();
+  }
+ }
+ for (const [fromCell, toCell] of pairs) {
+  if (!fromCell || !toCell || fromCell === toCell) continue;
+  const from = fromCell.getBoundingClientRect();
+  const to = toCell.getBoundingClientRect();
+  if (!from.width || !to.width) continue;
+  const item = createMovingPiece(toCell.querySelector(".piece-image"));
+  if (!item) continue;
+  moving.push(item);
+  const dx = from.left + from.width/2 - to.left - to.width/2;
+  const dy = from.top + from.height/2 - to.top - to.height/2;
+  try {
+   item.animation = item.ghost.animate([
+    {transform: `translate3d(${dx}px, ${dy}px, 0)`},
+    {transform: "translate3d(0, 0, 0)"}
+   ], {duration: MOVE_DURATION, easing: "cubic-bezier(.2,.75,.25,1)", fill: "both"});
+  } catch {
+   item.cleanup();
+   moving.pop();
+  }
+ }
+ if (!moving.length) return;
+ remaining = moving.length;
+ activeAnimations.set(board, cleanup);
+ for (const item of moving) {
+  item.animation.onfinish = () => { if (--remaining === 0) cleanup(); };
+  item.animation.oncancel = cleanup;
+ }
+ // Prevent stranded overlays if the browser interrupts animation delivery.
+ fallbackTimer = setTimeout(cleanup, MOVE_DURATION + 150);
+}
+
+function moveAnimationPairs(from,to,findCell,move) {
+ const pairs = [[findCell(from), findCell(to)]];
+ if (move?.flags?.includes("k")) pairs.push([findCell("h"+from[1]),findCell("f"+from[1])]);
+ if (move?.flags?.includes("q")) pairs.push([findCell("a"+from[1]),findCell("d"+from[1])]);
+ return pairs;
+}
+function animateBoardMove(from,to,move) {
+ const findCell = square => boardSquares.find(el=>squareFromElement(el)===square);
+ animatePieces($("board"),moveAnimationPairs(from,to,findCell,move));
+}
+function animateNextBoardMove(from,to,move) {
+ const board = $("nextBoard");
+ const findCell = square => board.querySelector(`[data-square="${square}"]`);
+ animatePieces(board,moveAnimationPairs(from,to,findCell,move));
+}
 function buildBoardOnce(){
  if(boardSquares.length)return;
 
@@ -932,6 +1278,8 @@ function onPointerUp(event){
 function cancelPointer(){if(pointerDrag?.lifted)lowerRealPiece(pointerDrag.lifted);pointerDrag=null;arrowDrag=null;renderArrows();}
 
 function renderBoard(){
+ if (pointerDrag?.lifted) cancelPointer();
+ finishBoardAnimation($("board"));
  buildBoardOnce();
 
  for(let row=0;row<8;row++){
@@ -1136,7 +1484,7 @@ function makeMove(move,animate=true){
   return;
  }
  const made=game.move({from:move.from,to:move.to,promotion:move.promotion||"q"});if(!made)return;
- lastMove={from:made.from,to:made.to};updateOpening();clearSelection();clearArrows();renderAll();if(animate)animateBoardMove(made.from,made.to);
+ lastMove={from:made.from,to:made.to};updateOpening();clearSelection();clearArrows();renderAll();if(animate)animateBoardMove(made.from,made.to,made);
  if(game.isGameOver()){clockRunning=false;showGameOver();return;}
  if(game.turn()!==humanColor)engineMove();
 }
@@ -1193,7 +1541,13 @@ function applyPieceSet(id){
 function showPage(page){
  const changed = activePage !== page;
  if (changed && page === "themes") themesFromGame = activePage === "game";
- if (changed) stopAnalysis();
+ if (changed) {
+  finishBoardAnimation($("board"));
+  finishBoardAnimation($("nextBoard"));
+  cancelPointer();
+  nextPointerCancel();
+  stopAnalysis();
+ }
  activePage=page;
  $("playHub").classList.toggle("visible",page==="hub");
  $("themesPage").classList.toggle("visible",page==="themes");
@@ -1214,6 +1568,8 @@ function nextSquareFromElement(element){return element?.closest?.(".next-square"
 function nextCoordinates(square){const file="abcdefgh".indexOf(square[0]),rank=Number(square[1]);const col=nextViewSide==="w"?file:7-file;const row=nextViewSide==="w"?8-rank:rank-1;return{x:(col+.5)*100,y:(row+.5)*100};}
 function nextPieceName(piece){return sideName(piece.color)+" "+({p:"Pawn",r:"Rook",n:"Horse",b:"Bishop",q:"Queen",k:"King"}[piece.type]);}
 function renderNextBoard(){
+ if (nextPointerDrag?.lifted) nextPointerCancel();
+ finishBoardAnimation($("nextBoard"));
  const board=$("nextBoard");if(!board||!nextGame)return;board.innerHTML="";
  for(let row=0;row<8;row++)for(let col=0;col<8;col++){
   const file=nextViewSide==="w"?col:7-col,rank=nextViewSide==="w"?8-row:row+1,square="abcdefgh"[file]+rank,piece=nextGame.get(square);
@@ -1233,12 +1589,17 @@ function renderNextBoard(){
 function nextFindKing(color){for(let rank=1;rank<=8;rank++)for(const file of "abcdefgh"){const p=nextGame.get(file+rank);if(p&&p.type==="k"&&p.color===color)return file+rank;}return null;}
 function nextClickSquare(square){if(nextPromotion)return;const piece=nextGame.get(square);if(nextSelected){if(square===nextSelected){nextSelected=null;nextLegalTargets=[];renderNextBoard();return;}if(nextLegalTargets.includes(square)){nextAttemptMove(nextSelected,square);return;}if(piece&&piece.color===nextGame.turn()){nextSelectSquare(square);return;}nextSelected=null;nextLegalTargets=[];renderNextBoard();return;}if(piece&&piece.color===nextGame.turn())nextSelectSquare(square);}
 function nextSelectSquare(square){nextSelected=square;nextLegalTargets=nextGame.moves({square,verbose:true}).map(m=>m.to);renderNextBoard();}
-function nextAttemptMove(from,to,promotion,animate=true){const moves=nextGame.moves({square:from,verbose:true}).filter(m=>m.to===to);if(!moves.length)return;if(moves.length>1&&!promotion){nextShowPromotion(from,to);return;}const move=moves.find(m=>!m.promotion||m.promotion===promotion)||moves[0];const made=nextGame.move({from:move.from,to:move.to,promotion:move.promotion||"q"});if(!made)return;nextLastMove={from:made.from,to:made.to};nextSelected=null;nextLegalTargets=[];renderNextBoard();if(animate)animateNextBoardMove(made.from,made.to);analyzeNextPosition();}
+function nextAttemptMove(from,to,promotion,animate=true){const moves=nextGame.moves({square:from,verbose:true}).filter(m=>m.to===to);if(!moves.length)return;if(moves.length>1&&!promotion){nextShowPromotion(from,to);return;}const move=moves.find(m=>!m.promotion||m.promotion===promotion)||moves[0];const made=nextGame.move({from:move.from,to:move.to,promotion:move.promotion||"q"});if(!made)return;nextLastMove={from:made.from,to:made.to};nextSelected=null;nextLegalTargets=[];renderNextBoard();if(animate)animateNextBoardMove(made.from,made.to,made);analyzeNextPosition();}
 function nextShowPromotion(from,to){nextPromotion={from,to};const color=nextGame.turn();$("promoChoices").innerHTML="";for(const type of ["q","r","b","n"]){const button=document.createElement("button"),image=document.createElement("img");image.src=PIECE_IMAGES[color+type];image.alt=({q:"Queen",r:"Rook",b:"Bishop",n:"Horse"})[type];const label=document.createElement("span");label.textContent=image.alt;button.append(image,label);button.onclick=()=>{$("promoOverlay").style.display="none";nextPromotion=null;nextAttemptMove(from,to,type);};$("promoChoices").append(button);}$("promoOverlay").style.display="grid";}
-function nextLiftRealPiece(square,x,y){const cell=$(`nextBoard`).querySelector(`[data-square="${square}"]`),image=cell?.querySelector(".piece-image");if(!image)return null;const rect=image.getBoundingClientRect(),drag={image,cell,originalStyle:image.getAttribute("style"),rect};image.style.position="fixed";image.style.left=rect.left+"px";image.style.top=rect.top+"px";image.style.width=rect.width+"px";image.style.height=rect.height+"px";image.style.margin="0";image.style.zIndex="2147483000";image.style.pointerEvents="none";image.style.transform="none";image.style.transition="none";document.body.append(image);nextMoveRealPiece(drag,x,y);return drag;}
-function nextMoveRealPiece(drag,x,y){if(drag){drag.image.style.left=(x-drag.rect.width/2)+"px";drag.image.style.top=(y-drag.rect.height/2)+"px";}}
-function nextLowerRealPiece(drag){if(!drag)return;drag.cell.append(drag.image);if(drag.originalStyle===null)drag.image.removeAttribute("style");else drag.image.setAttribute("style",drag.originalStyle);}
-function animateNextBoardMove(from,to){const board=$("nextBoard"),cell=board.querySelector(`[data-square="${to}"]`),image=cell?.querySelector(".piece-image"),fromCell=board.querySelector(`[data-square="${from}"]`);if(!image||!fromCell)return;const a=fromCell.getBoundingClientRect(),b=cell.getBoundingClientRect(),r=image.getBoundingClientRect(),originalStyle=image.getAttribute("style"),w=r.width,h=r.height;image.style.position="fixed";image.style.left=a.left+(a.width-w)/2+"px";image.style.top=a.top+(a.height-h)/2+"px";image.style.width=w+"px";image.style.height=h+"px";image.style.margin="0";image.style.transform="none";image.style.zIndex="2147483000";image.style.pointerEvents="none";image.style.transition="none";document.body.append(image);const anim=image.animate([{left:a.left+(a.width-w)/2+"px",top:a.top+(a.height-h)/2+"px"},{left:b.left+(b.width-w)/2+"px",top:b.top+(b.height-h)/2+"px"}],{duration:190,easing:"cubic-bezier(.2,.75,.25,1)"});anim.onfinish=()=>{cell.append(image);if(originalStyle===null)image.removeAttribute("style");else image.setAttribute("style",originalStyle);};}
+function nextLiftRealPiece(square,x,y){
+ finishBoardAnimation($("nextBoard"));
+ const cell = $("nextBoard").querySelector(`[data-square="${square}"]`);
+ const drag = createMovingPiece(cell?.querySelector(".piece-image"));
+ moveRealPiece(drag,x,y);
+ return drag;
+}
+function nextMoveRealPiece(drag,x,y){moveRealPiece(drag,x,y);}
+function nextLowerRealPiece(drag){lowerRealPiece(drag);}
 function nextPointerDown(event){if(event.button!==0||event.target.closest(".next-arrow-layer"))return;const square=nextSquareFromElement(event.target);if(!square)return;try{$("nextBoard").setPointerCapture(event.pointerId);}catch{}const piece=nextGame.get(square);nextPointerDrag={from:square,x:event.clientX,y:event.clientY,moved:false,piece:piece&&piece.color===nextGame.turn()?piece:null,lifted:null,pointerId:event.pointerId};event.preventDefault();}
 function nextPointerMove(event){if(!nextPointerDrag)return;const d=nextPointerDrag;if(Math.abs(event.clientX-d.x)>4||Math.abs(event.clientY-d.y)>4){if(!d.moved){d.moved=true;if(d.piece)d.lifted=nextLiftRealPiece(d.from,event.clientX,event.clientY);}nextMoveRealPiece(d.lifted,event.clientX,event.clientY);}}
 function nextPointerUp(event){if(!nextPointerDrag)return;const drag=nextPointerDrag;nextPointerDrag=null;nextLowerRealPiece(drag.lifted);const destination=nextSquareFromElement(document.elementFromPoint(event.clientX,event.clientY));if(drag.moved&&drag.piece&&destination&&destination!==drag.from){if(nextGame.moves({square:drag.from,verbose:true}).some(m=>m.to===destination))nextAttemptMove(drag.from,destination,undefined,false);return;}if(!drag.moved)nextClickSquare(drag.from);}
@@ -1770,6 +2131,13 @@ $("aiChoice").onclick=()=>{
  if (!engine) initEngine();
 };
 window.addEventListener("hashchange", joinFromInvite);
+function finishVisibleAnimations(){
+ finishBoardAnimation($("board"));
+ finishBoardAnimation($("nextBoard"));
+}
+window.addEventListener("resize", finishVisibleAnimations);
+window.addEventListener("scroll", finishVisibleAnimations, {passive:true});
+window.addEventListener("blur", ()=>{finishVisibleAnimations();cancelPointer();nextPointerCancel();});
 applyTheme(document.documentElement.dataset.theme);
 setColorMode(document.documentElement.classList.contains("dark-mode") ? "dark" : "light");
  let savedPieceSet="chesson";
@@ -1782,7 +2150,4 @@ renderAll();
 showPage("hub");
 joinFromInvite();
 </script>
-
-
-
 </body></html>
